@@ -1,0 +1,4 @@
+#!/bin/sh
+# Stamp created/updated on staged notes. Enable with:
+#   git config core.hooksPath .githooks
+exec bun run scripts/update-note-dates.ts

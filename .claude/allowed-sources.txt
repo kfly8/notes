@@ -1,0 +1,10 @@
+# Working directories whose research may become a note here.
+#
+# One shell glob per line, matched against the session's cwd. Anything not
+# listed here — client work above all — must never end up in notes/*.md, even
+# when the finding looks like generic public knowledge. See CLAUDE.md.
+
+/Users/kfly8/src/github.com/kfly8/*
+/Users/kfly8/src/github.com/kfly8-sandbox/*
+/Users/kfly8/src/github.com/piconic-ai/barefootjs
+/Users/kfly8/src/github.com/piconic-ai/agent-koans
