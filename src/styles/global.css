@@ -332,6 +332,37 @@ a:hover { text-decoration-style: solid; }
 }
 .mermaid svg { display: block; margin: 0 auto; }
 
+/* ---- 復習の問い ---- */
+
+.quiz {
+  margin: 1.75rem 0;
+  padding: 0.85rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+}
+
+.quiz summary {
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.quiz summary::marker { color: var(--accent); }
+.quiz summary > :first-child { display: inline; }
+.quiz summary > p { margin: 0; }
+.quiz summary > p + p { margin-top: 0.6rem; }
+
+.quiz-answer {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+.quiz-answer > :first-child { margin-top: 0; }
+.quiz-answer > :last-child { margin-bottom: 0; }
+.quiz-answer pre { font-size: 0.82rem; }
+
 /* ---- バックリンク ---- */
 
 .backlinks {

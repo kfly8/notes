@@ -6,6 +6,7 @@ import { defineConfig } from 'astro/config'
 import { mermaid } from './src/plugins/mermaid'
 import { noteLinks } from './src/plugins/note-links'
 import { noteTitle } from './src/plugins/note-title'
+import { quiz } from './src/plugins/quiz'
 
 export default defineConfig({
   site: 'https://notes.kobaken.co',
@@ -28,7 +29,7 @@ export default defineConfig({
       defaultColor: false,
     },
     processor: satteri({
-      mdastPlugins: [noteTitle, mermaid, noteLinks],
+      mdastPlugins: [noteTitle, mermaid, quiz, noteLinks],
     }),
   },
 })

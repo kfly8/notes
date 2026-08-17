@@ -7,9 +7,11 @@ type Props = {
   title?: string
   description?: string
   mermaid?: boolean
+  /** このページの Markdown ソースの URL。ノートのページだけが持つ。 */
+  markdown?: string
 }
 
-const { title, description, mermaid = false } = Astro.props
+const { title, description, mermaid = false, markdown } = Astro.props
 
 const pageTitle = title ? `${title} - ${site.name}` : `${site.name} - ${site.author}`
 const pageDescription = description || site.description
@@ -44,6 +46,7 @@ mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'default', flowch
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:creator" content="@kfly8" />
     <link rel="alternate" type="application/atom+xml" href="/feed.xml" title={site.name} />
+    {markdown && <link rel="alternate" type="text/markdown" href={markdown} />}
     <script is:inline>
       try {
         const theme = localStorage.getItem('theme')
