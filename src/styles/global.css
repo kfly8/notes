@@ -39,12 +39,16 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* ブラウザの既定より 10% 大きく。px ではなく % なので、ユーザーのフォント設定には追従する。
+   ほかの寸法は rem 指定なので、ここを変えると全体が同じ比率で拡大する。 */
+html { font-size: 110%; }
+
 body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
   font-family: system-ui, -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.85;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
