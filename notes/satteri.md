@@ -67,12 +67,6 @@ text(node, ctx) {
 
 `data.hProperties` も効くので、生成した link ノードに `class` を付けられる。
 
-```quiz
-Sätteri のビジターが `{ raw }` や `{ rawHtml }` を返すと、インライン位置の text ノードはどうなるか。
----
-ブロックとして解釈され、段落の中に `<p>` が入れ子で生成される。インラインのまま分割するには、宣言的な mdast ノードの配列を `insertBefore` して元のノードを `removeNode` する。
-```
-
 なお、コードブロックとインラインコードは別のノード型なので、text ノードだけを見ているぶんには `#include` のような記述を誤って拾う心配がない。これは remark でも同じだが、AST を触る方式の素直な利点。
 
 ## プラグインの変更が効かないときはキャッシュを疑う
@@ -81,12 +75,6 @@ Sätteri のビジターが `{ raw }` や `{ rawHtml }` を返すと、インラ
 
 ```sh
 rm -rf .astro node_modules/.astro node_modules/.vite dist
-```
-
-```quiz
-Markdown プラグインを書き換えたのに出力が変わらない。`.astro` を消しても直らないとき、次に消すのはどこか。
----
-`node_modules/.astro` と `node_modules/.vite`。設定ファイル経由で読まれるプラグインは Vite 側にキャッシュされる。
 ```
 
 ## シンタックスハイライト
@@ -99,6 +87,20 @@ Astro が組み込みのハイライトプラグインを挿すので、`markdow
 ```
 
 [[astro-hono-adapter|Astro の Hono アダプタ]]と組み合わせて使っている。
+
+## 理解度チェック
+
+```quiz
+Sätteri のビジターが `{ raw }` や `{ rawHtml }` を返すと、インライン位置の text ノードはどうなるか。
+---
+ブロックとして解釈され、段落の中に `<p>` が入れ子で生成される。インラインのまま分割するには、宣言的な mdast ノードの配列を `insertBefore` して元のノードを `removeNode` する。
+```
+
+```quiz
+Markdown プラグインを書き換えたのに出力が変わらない。`.astro` を消しても直らないとき、次に消すのはどこか。
+---
+`node_modules/.astro` と `node_modules/.vite`。設定ファイル経由で読まれるプラグインは Vite 側にキャッシュされる。
+```
 
 ## 出典
 

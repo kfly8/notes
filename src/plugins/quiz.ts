@@ -1,7 +1,7 @@
 import { defineMdastPlugin, markdownToHtml } from 'satteri'
 
 /**
- * 本文中に埋め込む復習用の問い。
+ * ノート末尾の「理解度チェック」に並べる問い。
  *
  * ```quiz
  * 問い（Markdown）
@@ -9,9 +9,9 @@ import { defineMdastPlugin, markdownToHtml } from 'satteri'
  * 答え（Markdown）
  * ```
  *
- * 問いはノートの文脈の中に置く。カードを別ファイルに切り出すと、文脈から離れて
- * 意味が痩せ、ノートと乖離して腐っていく。生の Markdown で読んでも問いと答えの
- * 区別がつく形にしてある。
+ * 問いは同じノートの中に置く。カードを別ファイルに切り出すと、文脈から離れて意味が
+ * 痩せ、ノートと乖離して腐っていく。生の Markdown で読んでも問いと答えの区別がつく
+ * 形にしてある。
  */
 export const quiz = defineMdastPlugin({
   name: 'quiz',
