@@ -7,3 +7,7 @@ dist
 worker-configuration.d.ts
 
 .DS_Store
+
+# ctags の `tags` を無視するグローバル設定（~/.gitignore）が、タグページの
+# ディレクトリまで巻き込むので打ち消す。これがないと CI 側でタグページが消える。
+!src/pages/tags/

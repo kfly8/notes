@@ -1,0 +1,19 @@
+---
+import NoteList from '../../components/NoteList.astro'
+import Layout from '../../layouts/Layout.astro'
+import { type TagSummary, loadNotes } from '../../lib/notes'
+
+export async function getStaticPaths() {
+  const { tags } = await loadNotes()
+  return tags.map((entry) => ({ params: { tag: entry.tag }, props: { entry } }))
+}
+
+type Props = { entry: TagSummary }
+
+const { entry } = Astro.props
+---
+
+<Layout title={`#${entry.tag}`} description={`#${entry.tag} のタグが付いたノート`}>
+  <h1 class="page-title">#{entry.tag}</h1>
+  <NoteList notes={entry.notes} />
+</Layout>
