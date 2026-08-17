@@ -1,7 +1,10 @@
 
 :root {
   --bg: #f8fbf8;
+  /* 見出しなど、強く見せたいもの */
   --fg: #2b2b2b;
+  /* 本文。純黒に寄せるとコントラストが強すぎて目が疲れるので、少し明るい温かグレー */
+  --fg-body: #57534d;
   --fg-sub: #6b6a68;
   --fg-faint: #9a9a96;
   --border: #dfe4df;
@@ -14,6 +17,7 @@
 [data-theme='dark'] {
   --bg: #2b2b2b;
   --fg: #f8fbf8;
+  --fg-body: #d8d5d0;
   --fg-sub: #b0b0aa;
   --fg-faint: #7e7e79;
   --border: #3e3f3d;
@@ -27,6 +31,7 @@
   :root:not([data-theme='light']) {
     --bg: #2b2b2b;
     --fg: #f8fbf8;
+    --fg-body: #d8d5d0;
     --fg-sub: #b0b0aa;
     --fg-faint: #7e7e79;
     --border: #3e3f3d;
@@ -46,8 +51,12 @@ html { font-size: 110%; }
 body {
   margin: 0;
   background: var(--bg);
-  color: var(--fg);
-  font-family: system-ui, -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  color: var(--fg-body);
+  /* system-ui（macOS では SF Pro）は UI 向けの書体なので、長文には欧文・和文とも
+     読み物向きのものを先に置く。ヒラギノは ProN → Sans、Windows は Yu Gothic に落ちる。 */
+  font-family:
+    'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic UI', Meiryo,
+    'Noto Sans JP', sans-serif;
   font-size: 1rem;
   line-height: 1.85;
   text-rendering: optimizeLegibility;
@@ -186,6 +195,7 @@ a:hover { text-decoration-style: solid; }
 .page-title {
   font-size: 1.3rem;
   margin: 0 0 1.75rem;
+  color: var(--fg);
 }
 
 .note-list .note-meta { display: block; margin-bottom: 0.15rem; }
@@ -249,9 +259,15 @@ a:hover { text-decoration-style: solid; }
   line-height: 1.45;
   margin: 0 0 0.5rem;
   letter-spacing: 0.01em;
+  color: var(--fg);
 }
 
 .note-body { overflow-wrap: anywhere; }
+/* 見出しと強調は本文より濃くして、拾い読みのとっかかりにする */
+.note-body h2,
+.note-body h3,
+.note-body h4,
+.note-body strong { color: var(--fg); }
 .note-body h2 {
   font-size: 1.2rem;
   margin: 2.75rem 0 0.9rem;
