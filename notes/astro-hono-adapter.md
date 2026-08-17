@@ -40,7 +40,9 @@ fetch.ts pipeline.
 
 ## static でも使える
 
-`output: 'static'` にアダプタを組み合わせると、全ページが prerender された上でサーバーエントリも生成される。Cloudflare Workers に載せた場合、静的アセットは Workers Assets が直接返すので、Hono のパイプラインはそこから漏れたリクエストだけを扱う。将来 prerender しないルートを足したくなったときの受け皿として置いておける。
+`output: 'static'` にアダプタを組み合わせると、全ページが prerender された上でサーバーエントリも生成される。Cloudflare Workers に載せた場合、静的アセットは [[cloudflare-workers-assets|Workers の静的アセット配信]]が直接返すので、Hono のパイプラインはそこから漏れたリクエストだけを扱う。将来 prerender しないルートを足したくなったときの受け皿として置いておける。
+
+この構成では `_headers` が効く範囲に注意がいる。`_headers` のルールは静的アセットとして返るレスポンスにしか適用されず、Hono を通って生成されたレスポンスには当たらない。
 
 なお `@astrojs/cloudflare` は出力を `dist/client` と `dist/server` に分けるので、`wrangler.jsonc` の `assets.directory` は `./dist/client` を指す必要がある。`./dist` のままだと `_worker` 側まで配信対象に含めてしまう。
 
