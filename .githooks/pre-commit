@@ -1,4 +1,4 @@
 #!/bin/sh
-# Stamp created/updated on staged notes. Enable with:
+# ステージされたノートに created/updated を書き込む。有効化は次のとおり:
 #   git config core.hooksPath .githooks
 exec bun run scripts/update-note-dates.ts

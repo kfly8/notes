@@ -1,140 +1,165 @@
 # notes.kobaken.co
 
-kobaken's personal note site. Markdown files in `notes/` are rendered to static HTML by
-Hono's SSG helper and served as Cloudflare Workers static assets.
+AI が調べたことを、あとから価値が残る形で書き残しておくノートサイト。ノートに載せるのは調査結果であって、
+セッションの記録ではない。
 
-Notes themselves are written in Japanese. This file, the README and source comments are in English.
+ここに書くのはノートの書き方だけ。サイトの作りは [README.md](./README.md) を参照。
 
-## Where note material may come from — read this first
+**ノート・ドキュメント・コード中のコメントは、すべて日本語で書く。**
 
-**This repository is public.** Anything committed here is published immediately and cannot be
-taken back, so the boundary below is a hard rule, not a preference.
+## ノートの元にしてよい情報 — 最初に読むこと
 
-A note may only be based on research done in a session whose working directory is on the
-allowlist in `.claude/allowed-sources.txt`:
+**このリポジトリは public。** コミットした内容はその場で公開され、取り消せない。だから以下は好みの問題では
+なく、必ず守る規則とする。
 
-- `/Users/kfly8/src/github.com/kfly8/*`
-- `/Users/kfly8/src/github.com/kfly8-sandbox/*`
-- `/Users/kfly8/src/github.com/piconic-ai/barefootjs`
-- `/Users/kfly8/src/github.com/piconic-ai/agent-koans`
+ノートの元にしてよいのは、**作業ディレクトリが `.claude/allowed-sources.txt` の許可リストに一致するセッション
+で調べたこと**だけ。
 
-Everything else — client work above all — is off limits, **even when the finding looks like
-generic public knowledge**. What leaks is rarely the technique itself but the context around it:
-why it was investigated, what the surrounding architecture looks like, which names appear in the
-examples. If such a topic deserves a note, research it again from public sources in a session
-rooted in an allowlisted directory, and write the note from those sources alone.
+それ以外の場所で得た知見は、**一般的な技術情報に見えても書かない**。漏れるのは技術そのものよりも周辺の文脈で、
+なぜ調べたのか、どんな構成なのか、例に出てくる名前は何か、といった部分からにじむ。同じ話題をノートにしたい
+なら、許可リスト内のディレクトリを作業ディレクトリにしたセッションで、公開情報から調べ直し、その情報だけで書く。
 
-`.claude/hooks/guard-notes.sh` runs as a `PreToolUse` hook and blocks writes to `notes/*.md`
-from sessions outside the allowlist. It is a backstop for mistakes, not the rule itself — never
-work around it. To allow another directory, add a glob line to `.claude/allowed-sources.txt`.
+`.claude/hooks/guard-notes.sh` が `PreToolUse` フックとして動き、許可リスト外のセッションからの
+`notes/*.md` への書き込みを拒否する。これは事故を防ぐための最後の壁であって規則そのものではない。回避しては
+いけない。ディレクトリを追加するときは `.claude/allowed-sources.txt` に glob を1行足す。
 
-## Design principles for notes
+## ノートの設計原則
 
-1. **One note, one concept.** If a note grows a second topic, split it out and link the two.
-2. **Write about concepts, not events.** The subject is the topic itself, not "the article I read"
-   or "what I did today".
-3. **Link densely.** Before creating a note, grep `notes/*.md` for existing mentions of the topic
-   and turn plain-text mentions into `[[...]]` links. Links are the value of this site.
-4. **Associative, not hierarchical.** No folders. Relate notes with `[[...]]` links and `#tag`.
-5. **Write for yourself.** Rough is fine. No preamble, no reader hand-holding.
-6. **Re-read the structure after appending.** When adding a section to an existing note, check
-   that the note as a whole still flows — headings in a sensible order, no duplication.
+エバーグリーンノートの考え方をこの場所に当てはめたもの。
 
-## Adding a note
+1. **1ノート1概念。** ノートに2つ目の話題が育ってきたら、切り出して `[[...]]` で繋ぐ。
+2. **出来事ではなく概念を書く。** 主語は概念そのもの。「読んだ記事」や「今日やったこと」ではない。
+3. **密にリンクする。** 新しいノートを作る前に `notes/*.md` を grep して、その話題への言及がすでにないか
+   確認する。プレーンテキストで言及しているノートが見つかったら、そちらも `[[...]]` に書き換える。リンクこそ
+   がこのサイトの価値なので、両方向に張る価値がある。
+4. **階層ではなく連想で繋ぐ。** フォルダは作らない。`[[...]]` リンクと `#tag` で関連付ける。
+5. **自分のために書く。** ラフでよい。前置きも読者への配慮も要らない。
+6. **追記したら全体の構成を見直す。** 既存ノートに節を足したときは、足した節だけでなくノート全体を読み返す。
+   見出しの順序、重複、話の流れのずれを確認し、必要なら既存の見出しの位置や粒度も直す。
 
-1. Create `notes/<kebab-case-slug>.md`. The slug becomes the URL (`/<slug>`), so keep it to
-   lowercase ASCII and hyphens.
-2. Frontmatter holds the dates:
+## ノートを追加する手順
 
-   ```
-   ---
-   created: 2026-08-17
-   updated: 2026-08-17
-   ---
-   ```
+1. `notes/<kebab-case-slug>.md` を作る。slug はそのまま URL (`/<slug>`) になるので、英小文字とハイフンに
+   留める。
+2. frontmatter を書く（次節）。
+3. 本文の1行目は `# タイトル`。この見出しは本文から取り除かれてページタイトルとして使われるので、あとで
+   同じ見出しを繰り返さない。
+4. 本文は Markdown で書く。フェンス付きコードブロックはハイライトされるので、必ず言語を指定する。
+5. `#tag` は最終行にまとめて置く。
+6. `bun run build` を実行する。解決できない `[[...]]` は警告として stderr に出る。
+7. `notes/*.md` をコミットする。Markdown だけの変更なら `main` に直接コミットしてよい。サイトのコードに
+   手を入れた場合は PR にする。
 
-   `bun run notes:dates` fills these in for changed files, and the pre-commit hook runs it
-   automatically. Do not hand-edit them afterwards.
-3. The first line of the body is `# タイトル` (Japanese). It is stripped from the body and used as
-   the page title, so do not repeat it as an `<h1>` later.
-4. Write the body in Markdown. Fenced code blocks get syntax highlighting via shiki — always tag
-   the language.
-5. Put `#tag`s on the last line.
-6. Run `bun run build`. Broken `[[...]]` links are reported as warnings on stderr.
-7. Commit `notes/*.md`. Markdown-only changes can go straight to `main`; changes to the site code
-   go through a PR.
+## ノートの frontmatter
 
-## Wiki links
+日付だけ入っていればよい。`bun run notes:dates` がステージされたノートの日付を埋め、pre-commit フックが
+自動で実行するので、あとから手で書き換えないこと。
 
-`[[slug]]` links to another note and renders using that note's title. `[[slug|表示テキスト]]`
-overrides the text. Unresolved targets render as dotted grey text and produce a build warning.
-
-Backlinks are collected automatically and shown at the bottom of each note — never maintain them
-by hand.
-
-When writing a new note, link out to related existing notes, and add a link from those notes back
-to the new one where it fits naturally (principle 3).
-
-## Tags
-
-Written inline as `#tag`, conventionally on the last line of the note.
-
-- Must start with a letter (ASCII or Japanese): `#hono`, `#戦国時代`, `#ai-agent`. Digits and
-  underscores cannot start a tag, so `#123` and `#_foo` are left alone.
-- ASCII tags are lowercased (`#AI` and `#ai` are the same tag). Japanese tags are not normalised,
-  so watch out for inconsistent spellings.
-- A `#` glued to a preceding word character is not a tag, which keeps `C#` and URL fragments safe.
-- Tags inside code blocks and inline code are never interpreted.
-- `/tags/` lists every tag.
-
-Frontmatter also accepts `tags: [foo, bar]` for tags that should not appear in the body, but
-inline tags are the norm.
-
-## Diagrams
-
-A ```mermaid fenced block is rendered client-side by mermaid.js, loaded only on pages that use it.
-Prefer a diagram over ASCII art for network topologies, sequences and state machines.
-
-## Tone
-
-- Rough personal memo, in Japanese. Concrete commands, versions and observed results beat prose.
-- Never write something you cannot source. When the note comes out of web research, end it with a
-  `## 出典` section linking the sources. Mark guesses as guesses, or leave them out.
-- Stay factual about products and technologies, including ones that did not work out. No
-  evaluative or inflammatory framing, even when quoting a source that uses it.
-
-## Suggesting notes
-
-- After answering an open research question about some technology, product or term, ask whether
-  to keep the result as a note here.
-- After writing a note, look for concepts it mentions in passing that have no note of their own,
-  and offer to split them out.
-
-## Claude Code on web
-
-Web sessions clone this repository, so the allowlist check falls back to "the working directory is
-this repository". Writing notes from a web session works as-is; open this repository when doing
-research meant to end up here.
-
-Web sessions cannot reach local client repositories, which is the safe side of the boundary. The
-rule above still applies to anything carried over from another session.
-
-## Development
-
-```sh
-bun run dev      # Vite dev server
-bun run build    # generate dist/
-bun run preview  # build, then serve dist/ with wrangler
-bun run deploy   # build, then wrangler deploy
+```
+---
+created: 2026-08-17
+updated: 2026-08-17
+---
 ```
 
-- `notes/*.md` — note sources; the filename is the slug
-- `src/lib/notes.ts` — loads every note via `import.meta.glob`, builds the link/backlink/tag index
-- `src/lib/markdown.ts` — marked extensions for `[[wikilink]]` and `#tag`, shiki highlighting
-- `src/index.tsx` — routes (`/`, `/:slug`, `/tags/`, `/tags/:tag`, `/feed`, `/404`)
-- `src/renderer.tsx` — the HTML shell, theme toggle, mermaid loader
-- `src/styles.ts` — CSS, inlined into every page
-- `scripts/update-note-dates.ts` — fills in `created` / `updated`; run by the pre-commit hook
+タイトル・要約・タグは本文から導出されるので、frontmatter には書かない。必要なときだけ足せるのは次の2つ。
 
-Routes are static: `/feed` is emitted as `dist/feed.xml` because of its `application/atom+xml`
-content type, and `/404` becomes `dist/404.html`, which `not_found_handling` picks up.
+| キー | 用途 |
+| --- | --- |
+| `description` | 本文冒頭から作られる要約では、ノートの主旨が伝わらないとき |
+| `type` | 概念の種類。既定は `Note` で、たいていはそのままでよい |
+
+これらは `/<slug>.md` が返す
+[Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
+の frontmatter（`type` / `title` / `description` / `tags`）に使われる。他のツールや AI がノートを取り込む
+ときの手がかりになる。
+
+## ウィキリンク
+
+`[[slug]]` で他のノートにリンクでき、表示にはリンク先のタイトルが使われる。`[[slug|表示テキスト]]` で表示を
+変えられる。解決できない場合は点線のグレー表示になり、ビルド時に警告が出る。
+
+バックリンクは自動で収集されてノート下部に表示される。手でメンテしない。
+
+## タグ
+
+本文中に `#tag` として書く。慣例として最終行に置く。
+
+- 先頭は文字（英字または日本語）であること。`#hono`、`#戦国時代`、`#ai-agent` など。数字とアンダースコアは
+  先頭に使えないので、`#123` のような issue 番号はタグにならない。日付や連番をタグにしないこと。
+- 英字タグは小文字に正規化される（`#AI` と `#ai` は同じタグ）。日本語タグは正規化されないので、表記ゆれに
+  注意する。
+- 直前が英数字の `#` はタグにならない。`C#` や URL のフラグメントが誤認されない。
+- コードブロック・インラインコードの中のタグは解釈されない。
+- 全タグは `/tags` で一覧できる。
+
+frontmatter の `tags: [foo, bar]` も使えるが、これは本文に出したくないタグ用。通常は本文に直接書く。
+
+## ハブノート (MOC)
+
+原子ノートとは別に、同じ話題領域を見取り図的にまとめる**ハブノート**を作ってよい。Zettelkasten / LYT で言う
+Map of Content にあたる。ハブノート自身は深掘りせず、配下のノートを `[[...]]` でリンクし、それぞれの位置づけ
+と違いを一言で書く役割に徹する。
+
+- 同じ領域の原子ノートが3つほど溜まったら作成を検討する。
+- 配下のノートからもハブノートへリンクする。`## [[ハブノート名]]の中での位置づけ` のような見出しを使う。
+- ハブノートには話題のタグに加えて `#moc` を付ける。`/tags/moc` で一覧できるようにするため。
+
+## 図
+
+` ```mermaid ` のフェンス付きブロックは図として描画される。構成図・シーケンス図・状態遷移は、ASCII アートより
+図を優先する。
+
+## 書き方のトーン
+
+- ラフな個人メモでよい。日本語で書く。文章の巧さより、具体的なコマンド・バージョン・実際に観測した結果を優先
+  する。
+- 裏の取れないことは書かない。ウェブ調査から書いたノートは末尾に `## 出典` を設けて参照元をリンクする。推測
+  は推測と明記するか、書かない。
+- プロダクトや技術については、うまくいかなかったものも含めて事実ベースで淡々と書く。評価的・煽情的な言い回し
+  はしない。出典がそういう言葉を使っていても、そのまま見出しや地の文に持ち込まず、背景にある客観的な事実だけ
+  を抽出する。
+
+## URL を渡されたときのノート化方針
+
+URL を渡して「ノートにして」と言われたときは、その記事の性質でノートの主語を決める。
+
+- **記事自体が有益な場合**（具体的な手順、発表、実装報告など）— 記事のトピックそのものを主語にする。
+- **記事が要素技術の紹介にとどまる場合** — 紹介されている技術そのものを主語にし、記事は入り口として扱う。
+
+どちらの場合も、原文の構成を尊重し、自分の要約で潰さない。自分の考察は要約とは別の節に分ける。
+
+X の投稿を発端にするノートも同じで、「投稿はこう言っていた → それを踏まえてこう考えた」の順に組み立てる。
+地の文で言い換えて済ませない。
+
+## 知識を問われたら調べてから答える
+
+事実を問う質問には、聞き覚えのない固有名詞はもちろん、記憶で答えられそうな質問でも、最低1回はウェブで裏を
+取ってから答える。学習データは古くなるし、記憶は当てにならない。
+
+検索結果に納得がいかないとき、「これはこういうジャンルの話だろう」という決めつけを保ったまま似た検索を繰り返さ
+ないこと。まずその決めつけ自体を疑い、固有名詞だけで検索する、複数の分野にまたがる中立的な語を使う、といった
+方向に広げる。
+
+## 手を動かして確かめる
+
+説明を読んで終わりにしない。可能な場面では小さなプログラムを書いて実際に動かし、その結果からノートを書く。
+特にカーネル・ネットワーク・コンパイラの周辺は、読むだけでは理解が浅いままになりやすい。
+
+- 実験は `<トピック>-experiment.md` として独立したノートにし、概念のノートからリンクする。ログを概念ノートに
+  混ぜない（原則1）。
+- 実験ノートは再現できる記録にする。目的、使った材料、躓いた点とその対処、実際の出力、コードから読み取れること。
+- 実行する前に、何を動かすのか（コマンド、触るデバイスやリソース）を説明し、ユーザーの許可を取る。
+
+## 医療に関する話題
+
+病気・症状・治療法については、厚生労働省や e-ヘルスネットなど日本の公的機関の情報を優先する。病態生理などの
+国際的に共通する内容は NIH/PMC のような海外の文献で裏を取ってよいが、診断基準・治療方針・薬剤の扱いなど、国内
+の運用に関わる部分は日本の情報と突き合わせる。技術の調査では一次情報（多くは英語）を優先するが、ここだけは
+その原則を適用しない。
+
+## ノート化の提案
+
+- 技術・プロダクト・地名・用語などについてのオープンな質問に答えたあとは、その内容をノートとして残すか聞く。
+- ノートを書いたあとは、本文中で触れただけでまだ独立ノートになっていない概念がないか確認し、切り出すかを
+  提案する。ノートを分割した直後も同じ確認をする。分割後のノートにまた種が含まれていることが多い。

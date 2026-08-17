@@ -1,43 +1,84 @@
 # notes
 
-Personal notes, published at <https://notes.kobaken.co>.
+AI が調べたことの置き場所。<https://notes.kobaken.co> で公開している。
 
-Markdown in `notes/` is rendered to static HTML by Hono's SSG helper and served as Cloudflare
-Workers static assets. Notes are written in Japanese.
+ノートの書き方と、どこで調べたことをノートにしてよいかは [CLAUDE.md](./CLAUDE.md) を参照。その指針は
+[tokuhirom/64p.org](https://github.com/tokuhirom/64p.org) の CLAUDE.md を下敷きにしている。この README は
+サイトの作りとセットアップを扱う。
 
-See [CLAUDE.md](./CLAUDE.md) for how notes are written — and, more importantly, which research is
-allowed to become a note here.
+## セットアップ
 
-## Development
+Bun が必要。
 
 ```sh
 bun install
-git config core.hooksPath .githooks   # once: stamps created/updated on commit
-
-bun run dev      # Vite dev server
-bun run build    # generate dist/
-bun run preview  # build, then serve dist/ with wrangler
-bun run deploy   # build, then wrangler deploy
+git config core.hooksPath .githooks   # コミット時に created/updated を埋める
+bun run dev                            # http://localhost:4321
 ```
 
-## Layout
+## コマンド
 
-| Path | What |
+| コマンド | 内容 |
 | --- | --- |
-| `notes/*.md` | note sources; filename is the URL slug |
-| `src/lib/notes.ts` | loads notes, builds the link / backlink / tag index |
-| `src/lib/markdown.ts` | `[[wikilink]]` and `#tag` extensions, shiki highlighting |
-| `src/index.tsx` | routes |
-| `src/renderer.tsx` | HTML shell, theme toggle, mermaid loader |
-| `src/styles.ts` | CSS, inlined into every page |
-| `scripts/update-note-dates.ts` | fills in `created` / `updated` for staged notes |
+| `bun run dev` | 開発サーバー |
+| `bun run build` | `dist/client`（静的アセット）と `dist/server`（Worker）を生成 |
+| `bun run preview` | ビルドして wrangler で配信。本番と同じ経路で確認する |
+| `bun run deploy` | ビルドして `wrangler deploy` |
+| `bun run check` | `astro check` による型チェック |
+| `bun run notes:dates` | ステージされたノートの `created` / `updated` を埋める |
 
-## Deployment
+## 構成
 
-Pushing to `main` runs `.github/workflows/deploy.yml`, which builds and deploys the Worker.
-It needs two repository secrets:
+`notes/` の Markdown を Astro で静的サイトにビルドし、Cloudflare Workers の静的アセットとして配信している。
+Markdown の処理は Sätteri、ヘッダーの検索は Solid のアイランド、Worker の入口は Astro の `astro/hono`
+アダプタ経由の Hono。ページ間のリンクは prefetch される。
 
-- `CLOUDFLARE_API_TOKEN` — a token with the *Edit Cloudflare Workers* template
+| パス | 内容 |
+| --- | --- |
+| `notes/*.md` | ノートのソース。ファイル名が URL の slug |
+| `src/content.config.ts` | `notes` コレクションの定義 |
+| `src/lib/notes.ts` | リンク・バックリンク・タグの索引 |
+| `src/lib/markdown-text.ts` | プラグインと索引で共有するプレーンテキスト処理 |
+| `src/lib/okf.ts` | `/<slug>.md` が返す OKF frontmatter の組み立て |
+| `src/plugins/*.ts` | Sätteri の mdast プラグイン（タイトル、mermaid、ウィキリンク、タグ） |
+| `src/pages/` | ルーティング。`[slug].md.ts`、`feed.xml.ts`、`search-index.json.ts` を含む |
+| `src/components/Search.tsx` | Solid の検索アイランド |
+| `src/layouts/Layout.astro` | HTML の外枠、テーマ切り替え、mermaid のローダ |
+| `src/styles/global.css` | CSS |
+| `src/fetch.ts` | Astro のリクエストが通る Hono アプリ |
+| `scripts/update-note-dates.ts` | ステージされたノートの日付を埋める |
+
+### 配信するもの
+
+| パス | 内容 |
+| --- | --- |
+| `/` | ノート一覧 |
+| `/<slug>` | ノート |
+| `/<slug>.md` | ノートの Markdown ソース（OKF v0.2 の frontmatter 付き、`text/markdown`） |
+| `/tags`, `/tags/<tag>` | タグ一覧とタグ別一覧 |
+| `/feed.xml` | Atom フィード |
+| `/search-index.json` | 検索アイランドが読むインデックス |
+
+`/<slug>.md` の frontmatter は
+[Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
+v0.2 に従い、ノートを一目で捉えるための最小限だけを出す。OKF が必須とする `type` と、推奨フィールドのうち
+`title` / `description` / `tags` の4つ。`title` は本文の `# 見出し`、`description` は本文冒頭の1文、
+`tags` は本文中の `#tag` から導出する（`type` と `description` はソースの frontmatter で上書きできる）。
+
+## 引っかかりやすい点
+
+- **プラグインを直したのに反映されない。** Markdown のプラグインは設定ファイル経由で読まれ、Vite に
+  キャッシュされる。`rm -rf .astro node_modules/.astro node_modules/.vite dist` で消す。
+- **ハイライトにスタイルが当たらない。** Astro が `<pre>` に付けるクラスは `.shiki` ではなく `.astro-code`。
+- **`astro check` が TypeScript のバージョンで落ちる。** TypeScript 7 系はまだ `astro check` が使う
+  プログラマティック API を持たないので、6 系に固定している。
+
+## デプロイ
+
+`main` への push で `.github/workflows/deploy.yml` が動き、ビルドして Worker をデプロイする。リポジトリに
+次の2つの secret が必要。
+
+- `CLOUDFLARE_API_TOKEN` — *Edit Cloudflare Workers* テンプレートのトークン
 - `CLOUDFLARE_ACCOUNT_ID`
 
-The custom domain `notes.kobaken.co` is declared in `wrangler.jsonc`.
+カスタムドメイン `notes.kobaken.co` は `wrangler.jsonc` で宣言している。

@@ -1,8 +1,8 @@
-# Working directories whose research may become a note here.
+# ここで調べたことをノートにしてよい作業ディレクトリ。
 #
-# One shell glob per line, matched against the session's cwd. Anything not
-# listed here — client work above all — must never end up in notes/*.md, even
-# when the finding looks like generic public knowledge. See CLAUDE.md.
+# 1行につき1つのシェル glob で、セッションの cwd と照合する。ここに載っていない場所で
+# 得た内容は、一般的な技術情報に見えても notes/*.md に入れてはいけない。
+# 詳細は CLAUDE.md を参照。
 
 /Users/kfly8/src/github.com/kfly8/*
 /Users/kfly8/src/github.com/kfly8-sandbox/*

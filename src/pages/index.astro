@@ -1,0 +1,13 @@
+---
+import NoteList from '../components/NoteList.astro'
+import Layout from '../layouts/Layout.astro'
+import { site } from '../lib/config'
+import { loadNotes } from '../lib/notes'
+
+const { notes } = await loadNotes()
+---
+
+<Layout>
+  <p class="lede">{site.description}</p>
+  <NoteList notes={notes} />
+</Layout>

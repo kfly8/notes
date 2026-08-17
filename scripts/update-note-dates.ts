@@ -1,11 +1,10 @@
 #!/usr/bin/env bun
 //
-// Stamp `created` / `updated` on the notes staged for the current commit, then
-// re-stage them. Run by the pre-commit hook in .githooks/, or by hand with
-// `bun run notes:dates`.
+// これからコミットするノートに `created` / `updated` を書き込み、ステージし直す。
+// .githooks/ の pre-commit フックから実行されるほか、`bun run notes:dates` でも動く。
 //
-// The dates come from the commit, not from file mtime: a fresh clone or a CI
-// checkout has meaningless mtimes.
+// 日付はファイルの mtime ではなくコミットのタイミングから取る。clone し直した直後や
+// CI のチェックアウトでは mtime が意味を持たないため。
 
 import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'

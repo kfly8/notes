@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #
-# PreToolUse hook: refuse to write a note from a session outside the allowlist.
+# PreToolUse フック: 許可リスト外のセッションからのノート書き込みを拒否する。
 #
-# Notes may only be based on research done in a working directory listed in
-# .claude/allowed-sources.txt. This repository is public, so a note built from
-# client work cannot be taken back once pushed. Site code is not guarded — only
-# notes/*.md, which is what actually gets published as prose.
+# ノートの元にしてよいのは .claude/allowed-sources.txt に載っている作業ディレクトリで
+# 調べたことだけ。このリポジトリは public なので、許可されていない場所で得た内容から書いた
+# ノートは push したら取り消せない。守るのは notes/*.md だけで、サイトのコードは対象外
+# にしている。実際に文章として公開されるのはノートだから。
 #
-# Registered from ~/.claude/settings.json (so it also covers sessions rooted in
-# other repositories) and from this repository's .claude/settings.json.
+# ~/.claude/settings.json（他のリポジトリを作業ディレクトリとするセッションも対象に
+# するため）と、このリポジトリの .claude/settings.json の両方から登録している。
 
 set -uo pipefail
 
@@ -30,8 +30,8 @@ case "$file" in
   *) exit 0 ;;
 esac
 
-# Sessions rooted in this repository are fine. This also covers Claude Code on
-# web, where the checkout lives at some arbitrary path.
+# このリポジトリ自身を作業ディレクトリとするセッションは許可する。Claude Code on web の
+# ように、チェックアウト先のパスが不定な場合もここで拾える。
 if [[ "$cwd" == "$repo_root" || "$cwd" == "$repo_root"/* ]]; then
   exit 0
 fi
@@ -41,7 +41,7 @@ if [[ -r "$allowlist" ]]; then
     pattern="${line#"${line%%[![:space:]]*}"}"
     pattern="${pattern%"${pattern##*[![:space:]]}"}"
     [[ -z "$pattern" || "$pattern" == \#* ]] && continue
-    # shellcheck disable=SC2254 # the allowlist entries are globs on purpose
+    # shellcheck disable=SC2254 # 許可リストの各行は意図的に glob として扱う
     case "$cwd" in
       $pattern) exit 0 ;;
     esac

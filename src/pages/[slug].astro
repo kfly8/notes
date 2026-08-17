@@ -1,0 +1,48 @@
+---
+import { render } from 'astro:content'
+import Layout from '../layouts/Layout.astro'
+import { notePath } from '../lib/markdown-text'
+import { type Note, loadNotes } from '../lib/notes'
+
+export async function getStaticPaths() {
+  const { notes } = await loadNotes()
+  return notes.map((note) => ({ params: { slug: note.slug }, props: { note } }))
+}
+
+type Props = { note: Note }
+
+const { note } = Astro.props
+const { Content } = await render(note.entry)
+---
+
+<Layout title={note.title} description={note.excerpt} mermaid={note.hasMermaid}>
+  <article>
+    <header class="note-header">
+      <h1>{note.title}</h1>
+      <div class="note-meta">
+        {note.created && <span>作成 {note.created}</span>}
+        {note.updated && note.updated !== note.created && <span> / 更新 {note.updated}</span>}
+        <span> / <a href={`/${note.slug}.md`}>markdown</a></span>
+      </div>
+    </header>
+
+    <div class="note-body">
+      <Content />
+    </div>
+
+    {
+      note.backlinks.length > 0 && (
+        <section class="backlinks">
+          <h2>このノートにリンクしているノート</h2>
+          <ul>
+            {note.backlinks.map((ref) => (
+              <li>
+                <a href={notePath(ref.slug)}>{ref.title}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </article>
+</Layout>

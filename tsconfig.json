@@ -1,16 +1,10 @@
 {
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "skipLibCheck": true,
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "types": ["vite/client", "bun"],
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "types": ["astro/client", "bun"]
   }
 }
