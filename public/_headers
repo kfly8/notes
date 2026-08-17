@@ -1,0 +1,5 @@
+# Markdown には HTML の <meta charset> にあたる手段がないので、Cloudflare が付ける
+# `text/markdown`（charset なし）のままだとブラウザが既定のエンコーディングで解釈して
+# 文字化けする。charset を明示して上書きする。
+/*.md
+  Content-Type: text/markdown; charset=utf-8
