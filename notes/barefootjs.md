@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-08-17
+updated: 2026-08-22
 ---
 # BarefootJS
 
@@ -65,6 +65,10 @@ expect(button!.events).toContain('click')
 ```
 
 実際の操作や見た目は結局 E2E が要るが、構造の壊れはその手前で捕まえられる。`bf` CLI が全コマンドで `--json` を持っていることと合わせて、AI エージェントがソースを読まずにコンポーネントを組み立て・検証できるように設計されている。
+
+## Hono アダプタで使う
+
+Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[barefootjs-hono-scaffold]] を参照。クライアント側の `@barefootjs/router` を使う場合、`<head>` の扱いに一つだけ罠があり、[[barefootjs-router-head-contract]] にまとめた。
 
 ## 出典
 
