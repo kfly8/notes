@@ -4,7 +4,7 @@ updated: 2026-08-22
 ---
 # UnoCSS の arbitrary value のハマりどころ
 
-UnoCSS（[[barefootjs-hono-scaffold|BarefootJS の Hono scaffold]] で使った `presetWind4`）の `text-[...]` 系ユーティリティは、見た目どおりには解釈されないことがある。実際に2つ踏んだ。
+UnoCSS（[[barefootjs-hono-scaffold|BarefootJS の Hono scaffold]] で使った `presetWind4`）の `text-[...]` 系ユーティリティは、見た目どおりには解釈されないことがある。実際に3つ踏んだ。
 
 ## `text-[xx-large]` は文字色として解釈される
 
@@ -23,6 +23,25 @@ UnoCSS（[[barefootjs-hono-scaffold|BarefootJS の Hono scaffold]] で使った 
 ```
 
 CSS のキーワードサイズ（`xx-large` など）をそのまま持ち込みたい場合の代替記法は確認できていない。今回は元の見た目に近い px 値に落とし込んで解決した。
+
+## `text-[color:...]` のヒント記法は presetWind4 では効かない
+
+逆に「色として解釈させたい」場合の話。preset-mini / wind3 系で使えた data-type ヒント付きの arbitrary value（`text-[color:var(--color-text-sub)]`）は、presetWind4 では**マッチするルールがなく、静かに無視される**。エラーにも警告にもならず、単にそのクラスのCSSが生成されない。
+
+presetWind4 の色ルールは正規表現で明示プレフィックスを持つ形になっている（`@unocss/preset-wind4/dist/rules.mjs`）:
+
+```js
+/^text-(?:color-)?(.+)$/     // text-color-[...] または text-<theme色>
+/^(?:color|c)-(.+)$/          // color-[...] / c-[...]
+```
+
+**対処**: `text-color-[var(--color-text-sub)]` と書く（`color-[...]` / `c-[...]` も可）。これなら期待どおり生成される:
+
+```css
+.text-color-\[var\(--color-text-sub\)\]{color:color-mix(in oklab, var(--color-text-sub) var(--un-text-opacity), transparent);}
+```
+
+なお `decoration-[var(...)]` はプロパティが色で確定しているため、ヒントなしの裸記法で問題ない。ヒントが要りそうに見えるのは `text-*` のような多義的なユーティリティだけで、そこでは wind4 流の明示プレフィックスを使う。
 
 ## `font-mono` の既定スタックは `monospace` より幅が広い
 
@@ -47,6 +66,6 @@ export default defineConfig({
 
 ## 気づきにくさの共通点
 
-どちらも「クラス名は書いた通りに解釈されている」と思い込みやすい。実際に UnoCSS が生成した CSS ファイル（`public/static/uno.css` など）を `grep` して、目的のプロパティ（`font-size:` や `font-family:`）が本当に出力されているか確認するのが最短の切り分け方だった。
+いずれも「クラス名は書いた通りに解釈されている」と思い込みやすい。誤解釈（`text-[xx-large]`）も無視（`text-[color:...]`）もビルドは黙って通るので、実際に UnoCSS が生成した CSS ファイル（`public/static/uno.css` など）を `grep` して、目的のセレクタとプロパティ（`font-size:` や `color:`）が本当に出力されているか確認するのが最短の切り分け方だった。
 
 #unocss #css
