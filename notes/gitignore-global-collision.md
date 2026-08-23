@@ -1,8 +1,8 @@
 ---
 created: 2026-08-17
-updated: 2026-08-17
+updated: 2026-08-23
 ---
-# グローバル gitignore がディレクトリを巻き込む
+# グローバル gitignore が必要なものを落とす
 
 `~/.gitignore`（`core.excludesfile`）に書いたパターンは、すべてのリポジトリに効く。ここに置きがちな `tags` — ctags が吐くタグファイルを無視するための1行 — が、`tags` という名前の**ディレクトリ**にもマッチする。gitignore のパターンは、スラッシュを含まない限りファイルとディレクトリを区別しないため。
 
@@ -42,11 +42,33 @@ $ git check-ignore -v src/pages/tags/index.astro
 
 `git add -f` で強制追加もできるが、それだと同じ罠が次のファイルで再発する。ディレクトリごと打ち消しておく方がよい。
 
+## ファイルでも同じことが起きる
+
+衝突ではなく、**意図して書いた1行がそのリポジトリでは間違っている**場合もある。`~/.gitignore` に `package-lock.json` を入れていると、ロックファイルを必要とするリポジトリでもコミットされない。
+
+見え方は同じで、手元では何も起きない。`npm ci` も `npm test` も通る。壊れるのは CI で、しかもかなり手前で落ちる。
+
+```
+##[error]Dependencies lock file is not found in /home/runner/work/….
+Supported file patterns: package-lock.json, npm-shrinkwrap.json, yarn.lock
+```
+
+`actions/setup-node` の `cache: npm` がロックファイルを探して止まるので、テストどころか `npm ci` にも到達しない。
+
+打ち消し方は同じで、リポジトリ側の `.gitignore` に否定を書く。**リポジトリの `.gitignore` は `core.excludesfile` より優先される**ので、これだけで効く（`git add -f` は要らない）。
+
+```
+!package-lock.json
+```
+
+ロックファイルは CI の再現性そのものなので、**クリーンなチェックアウトからビルドを再現させたい場面**では最初に確認する価値がある。ソース一式から同じ成果物が出ることを検証する [[wxt]] のようなケースでは、これが無いと検証が成立しない。
+
 ## 教訓
 
 - グローバルの gitignore に短い一般名詞を書くと、いつか何かのディレクトリ名と衝突する（`tags`, `build`, `dist`, `tmp`, `log` あたりは要注意）
 - 新しいディレクトリを作ったら、コミット前に `git status` に出ているかを確認する
 - CI が「手元と同じ成果物」を作っていることを、ページ数やファイル数のような粗い数字でよいので照合する。ログに `18 page(s) built` と出ているなら、それは読む価値のある数字
+- CI を組むときは、**先に `git ls-files` で必要なファイルが追跡されているかを見る**。特にロックファイル
 
 ## 理解度チェック
 
@@ -60,6 +82,12 @@ $ git check-ignore -v src/pages/tags/index.astro
 除外されたディレクトリの中のファイルを、`!` で個別に再包含できないのはなぜか。
 ---
 git は除外されたディレクトリを走査しないので、中のファイルにパターンを当てる機会がそもそもない。打ち消すならディレクトリ自体を否定する。
+```
+
+```quiz
+`~/.gitignore` に `package-lock.json` を書いていると、CI のどこで落ちるか。
+---
+`actions/setup-node` の `cache: npm` がロックファイルを探す時点。`npm ci` にも到達しないので、テストの失敗としては見えない。
 ```
 
 #git #ci
