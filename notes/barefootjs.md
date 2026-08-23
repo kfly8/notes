@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-08-22
+updated: 2026-08-23
 ---
 # BarefootJS
 
@@ -68,7 +68,7 @@ expect(button!.events).toContain('click')
 
 ## Hono アダプタで使う
 
-Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[barefootjs-hono-scaffold]] を参照。クライアント側の `@barefootjs/router` を使う場合、`<head>` の扱いに一つだけ罠があり、[[barefootjs-router-head-contract]] にまとめた。
+Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[barefootjs-hono-scaffold]] を参照。クライアント側の `@barefootjs/router` を使う場合、region の外は一切更新されないという契約があり、[[barefootjs-router-region-contract]] にまとめた。
 
 ## 出典
 
