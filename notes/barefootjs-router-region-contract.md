@@ -20,7 +20,7 @@ updated: 2026-08-24
 
 ### リソースは一切触られない
 
-`<link rel="stylesheet">`、`<script>`、`<style>` は往復どちらの方向にも触られない。理由は「そのリソースがまだ必要かどうかは、遷移先のドキュメントだけを見ても判断できない」から。`[data-bf-permanent]` なノードやポータル、region の外で生き続けるアイランドが、次のページの head には載っていないシートに依存し続けているかもしれない。
+`<link rel="stylesheet">`、`<script>`、`<style>` は往復どちらの方向にも触られない。理由は「そのリソースがまだ必要かどうかは、遷移先のドキュメントだけを見ても判断できない」から。`[data-bf-permanent]`（[[barefootjs-data-bf-permanent|詳細]]）なノードやポータル、region の外で生き続けるアイランドが、次のページの head には載っていないシートに依存し続けているかもしれない。
 
 これが唯一の罠を作る。**route ごとに内容が変わる `<style>` を `<head>` に置くと**:
 
@@ -84,9 +84,12 @@ export function Layout(props: { children?: unknown; className?: string; showLogo
 
 サーバーコンポーネントをクライアントコンポーネントから import すると BF003（"use client" ファイルは "use client" でないファイルを import できない）になるので、移した先で `Header` と、その中で使う `ToggleTheme` にも `'use client'` を足す必要があった。
 
-## 余談: 遷移後にフォーカスも動く
+## 余談: swap の副作用2つ
 
-region の中身が差し替わったあと、ルーターは新しい region の最初の見出しへ `tabindex="-1"` + `focus({ preventScroll: true })` でフォーカスを移す（スクリーンリーダーへのページ変化の告知が目的）。これはプログラムによる focus で、キーボード操作ではないため `:focus-visible` にはマッチしない。サイト側が `:focus` にだけ outline を当てていると、遷移のたびに触ってもいない見出しに枠が付いて見える——詳細と対処は [[programmatic-focus-and-focus-visible]]。
+region が丸ごと作り直される、という性質そのものから来る副作用を2つ実地で踏んだ。
+
+- **フォーカス**: swap 後、ルーターは新しい region の最初の見出しへ `tabindex="-1"` + `focus({ preventScroll: true })` でフォーカスを移す（スクリーンリーダーへのページ変化の告知が目的）。サイト側の CSS がこのプログラム的な focus と、キーボード操作による本物の focus を区別していないと、遷移のたびに触ってもいない見出しに枠が付いて見える——詳細と対処は [[programmatic-focus-and-focus-visible]]。
+- **ちらつき**: region 内の要素は、ページをまたいで見た目が同じでも DOM ノードとしては毎回作り直される。画像などは HTTP キャッシュが効いていても、ノードの破棄・再生成自体がちらついて見えることがある——対処は [[barefootjs-data-bf-permanent]]。
 
 ## 出典
 
