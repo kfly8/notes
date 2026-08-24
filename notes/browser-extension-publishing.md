@@ -1,6 +1,6 @@
 ---
 created: 2026-08-23
-updated: 2026-08-23
+updated: 2026-08-24
 description: ブラウザ拡張をストアに出すまでに触ることになる話題の見取り図
 ---
 # ブラウザ拡張を公開する
@@ -11,6 +11,7 @@ Chrome ウェブストアと AMO に拡張機能を出すまでに調べたこ�
 
 - [[wxt]] — Vite ベースのフレームワーク。ブラウザごとに manifest を出し分ける。Firefox MV3 に service worker が無いので、手書きの manifest では両対応が二重管理になる
 - [[optional-host-permissions]] — インストール時の「すべてのウェブサイトのデータを読み取り、変更する」を消す設計。代償はサイトごとの許可ダイアログ
+- [[feed-item-scope]] — ページの一部を隠すとき、本文にマッチしたら**どこまでを1件とみなすか**。フィードは本文と画像を兄弟に置くので、段落だけでは足りない
 
 ## 出す
 
@@ -25,6 +26,8 @@ Chrome ウェブストアと AMO に拡張機能を出すまでに調べたこ�
 - **審査に数日かかる。** CI の仕事は「提出した」で終わり、公開はそのあと
 
 そのため定番はタグ駆動で、**タグを打ったら CI がビルドしてアップロードする**形が多い。Chrome だけなら [chrome-webstore-upload-cli](https://github.com/fregante/chrome-webstore-upload-cli) が事実上の標準。Release PR 方式を採るなら、この領域では release-please が選ばれやすい。マージ即公開の semantic-release は、番号を焼く事故と相性が悪い。
+
+タグを打つところまで任せるなら [[tagpr]]。コミットメッセージの書き方を変えずに済む。どの方式でも [[github-token-does-not-trigger-workflows]] に当たるので、タグ駆動の別ジョブに分けられない点だけは共通して効いてくる。
 
 複数ストアに出すなら [[wxt]] の `wxt submit` のように、1つのコマンドで両方に出せるものを使うと分岐が減る。
 

@@ -1,6 +1,6 @@
 ---
 created: 2026-08-23
-updated: 2026-08-23
+updated: 2026-08-24
 ---
 # WXT
 
@@ -52,6 +52,8 @@ CI で防ぐなら、出力の JS/HTML が想定どおりの集合かを照合�
 `defineContentScript` に `registration: "runtime"` を指定すると manifest から外れるが、**代わりに `matches` が `host_permissions` に入る。** [[optional-host-permissions]] でインストール時の警告を消している場合、これでは目的が消える。
 
 `defineUnlistedScript` で書いて、background から `scripting.registerContentScripts()` で登録する形にすると、manifest には何も現れない。出力は自己完結した IIFE になるので、そのまま `js: ["sheepify.js"]` に渡せる。
+
+そのスクリプトがページの一部だけを隠す場合、どこまでを対象にするかは [[feed-item-scope]] を参照。
 
 ## アセットは `?raw` で取り込める
 
