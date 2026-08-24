@@ -34,9 +34,25 @@ updated: 2026-08-24
 
 `showLogo` のようなページごとに変わる prop で要素の出現・消滅を切り替えるコンポーネントと、`data-bf-permanent` は無理なく共存する——`data-bf-permanent` はマッチする要素があるときだけ保持を行うオプトインの仕組みで、マッチしなければ普通の作り直しにフォールバックするだけだから。
 
+## 見た目だけでなく機能も壊れる: 外部スクリプトの addEventListener
+
+ロゴより深刻だったのがテーマ切り替えボタン。ボタン自体は BarefootJS のコンポーネントだが、クリック処理は素の JS（`script.js`）が初期ロード時に一度だけ担当していた。
+
+```js
+// script.js — ページロード時に一度だけ実行される
+const toggleThemeButton = document.getElementById('toggle-theme');
+toggleThemeButton.addEventListener('click', toggleTheme);
+```
+
+region 内の DOM ノードが swap のたびに作り直されるので、`addEventListener` を貼った**その** DOM ノードはもう存在しない。1回でもナビゲーションした後は、見た目は同じボタンがそこにあるのに、クリックしても何も起きない——ちらつきと違って気づきにくい（クリックしても "何も起きない" ようにしか見えず、コンソールにも何も出ない）。
+
+対処はロゴと同じ、`id="toggle-theme"` の要素に `data-bf-permanent="toggle-theme"` を足すだけ。ノードそのものが生き残るので、貼ったリスナーも生き残る。BarefootJS 側のコンポーネントを signal ベースの `'use client'` に書き換える必要はなかった。
+
+一般化すると: **DOM ノードに対して直接 `addEventListener` する外部スクリプトに依存する要素は、region 内に置くなら `data-bf-permanent` が要る**。BarefootJS の `'use client'` コンポーネント自身のイベントハンドラ（JSX の `onClick` など）はコンパイラがハイドレーションのたびに再アタッチするので対象外——今回問題になったのは、コンパイラの管理下にない生の `getElementById` + `addEventListener` パターンの方だった。
+
 ## 出典
 
 - `node_modules/@barefootjs/router/README.md`（`Persistence (data-bf-permanent)` の節）
-- kobaken.co での実機検証（`img.dataset` にマーカーを仕込んで遷移前後の同一性を確認）
+- kobaken.co での実機検証（`img.dataset` / DOM ノードの同一性チェックで遷移前後の挙動を確認、テーマ切り替えボタンは実際にクリックして `data-theme` が変わるかどうかで確認）
 
 #barefootjs #router
