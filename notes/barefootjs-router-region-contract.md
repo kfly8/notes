@@ -1,6 +1,6 @@
 ---
 created: 2026-08-22
-updated: 2026-08-23
+updated: 2026-08-24
 ---
 # BarefootJS Router の region 契約
 
@@ -83,6 +83,10 @@ export function Layout(props: { children?: unknown; className?: string; showLogo
 ```
 
 サーバーコンポーネントをクライアントコンポーネントから import すると BF003（"use client" ファイルは "use client" でないファイルを import できない）になるので、移した先で `Header` と、その中で使う `ToggleTheme` にも `'use client'` を足す必要があった。
+
+## 余談: 遷移後にフォーカスも動く
+
+region の中身が差し替わったあと、ルーターは新しい region の最初の見出しへ `tabindex="-1"` + `focus({ preventScroll: true })` でフォーカスを移す（スクリーンリーダーへのページ変化の告知が目的）。これはプログラムによる focus で、キーボード操作ではないため `:focus-visible` にはマッチしない。サイト側が `:focus` にだけ outline を当てていると、遷移のたびに触ってもいない見出しに枠が付いて見える——詳細と対処は [[programmatic-focus-and-focus-visible]]。
 
 ## 出典
 
