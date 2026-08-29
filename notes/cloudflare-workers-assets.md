@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-08-17
+updated: 2026-08-29
 ---
 # Cloudflare Workers の静的アセット配信
 
@@ -68,6 +68,10 @@ $ curl -s -o /dev/null -w '%{http_code}' https://notes.kobaken.co/agent-koans.ht
 アセットのディレクトリに置くと、そこに書いたファイルはアップロードから除外される。書式は gitignore と同じ。
 
 `@astrojs/cloudflare` はビルド時に解決済みの `wrangler.json` を出力ディレクトリに書き出すが、同時に `.assetsignore` に自分で登録して、設定ファイルが公開されないようにしている。
+
+## [[cloudflare-workers]]の中での位置づけ
+
+静的ファイルの配信を扱う。Worker自身が生成したレスポンスのキャッシュは別の仕組みで、[[cloudflare-workers-cache]] に分けた。
 
 ## 理解度チェック
 

@@ -58,6 +58,10 @@ but you've requested "2026-08-28". Falling back to "2025-05-08"...
 
 対照的に、[[cloudflare-workers-assets|Workers Assets]] の `_headers` は静的アセットにしか効かず、Worker が生成したレスポンスには適用されない。Workers CacheはWorker生成レスポンス側のキャッシュを埋める位置づけになる。
 
+## [[cloudflare-workers]]の中での位置づけ
+
+Worker生成レスポンスのキャッシュを扱う。静的ファイルのキャッシュは [[cloudflare-workers-assets]] が別に扱う。実例は [[cloudflare-workers-og-image]]。
+
 ## 理解度チェック
 
 ```quiz

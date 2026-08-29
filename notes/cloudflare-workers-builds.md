@@ -51,6 +51,10 @@ wranglerのバージョンは `package.json` に指定したものが使われ�
 - **Workers Builds**: ダッシュボードで設定する、Workers/Pagesの「pushしたらデプロイ」に特化したシンプルな機能。今回使ったのはこちら
 - **`@cloudflare/ci`**: Workflows / Sandbox SDK / Artifacts の上に構築された、TypeScriptでパイプラインを書く汎用CI/CD製品。自己修復エージェントなど、単純なpushデプロイより高度な機能を持つ
 
+## [[cloudflare-workers]]の中での位置づけ
+
+デプロイ時の自動化を扱う。実行時の配信・キャッシュを扱う他のノート([[cloudflare-workers-assets]]・[[cloudflare-workers-cache]]・[[cloudflare-workers-og-image]])とは別レイヤーの話。
+
 ## 理解度チェック
 
 ```quiz
