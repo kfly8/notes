@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-08-17
+updated: 2026-08-30
 ---
 # Astro の Hono アダプタ
 
@@ -45,6 +45,8 @@ fetch.ts pipeline.
 この構成では `_headers` が効く範囲に注意がいる。`_headers` のルールは静的アセットとして返るレスポンスにしか適用されず、Hono を通って生成されたレスポンスには当たらない。
 
 なお `@astrojs/cloudflare` は出力を `dist/client` と `dist/server` に分けるので、`wrangler.jsonc` の `assets.directory` は `./dist/client` を指す必要がある。`./dist` のままだと `_worker` 側まで配信対象に含めてしまう。
+
+notes.kobaken.co では実際にこの受け皿を使わず終いだった。呼んでいたハンドラのうち意味を持っていたのは `trailingSlash()` だけで、それも assets 側の `html_handling` と重複していたため、後に `main` ごと外して Worker なし構成に変えた。詳細は [[cloudflare-workers-assets]] の「Worker のリダイレクト処理と重複しがち」を参照。
 
 ## 参考にした構成
 
