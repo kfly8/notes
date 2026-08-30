@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-08-30
 description: Worker が生成したレスポンス自体を、Cache-Control ヘッダーを見て自動でキャッシュするCloudflareの機能
 ---
 # Workers Cache
@@ -36,7 +36,15 @@ Worker の手前に専用のキャッシュ層を置く機能。2026年6〜8月�
 ctx.cache.purge({ tags: ['product:123'] })
 ```
 
-タグを付けてパージできる。
+タグを付けてパージできる(`pathPrefixes`・`purgeEverything` も指定可)。呼び出し方は2通りあり、`ctx` を持たないコード(ユーティリティ関数など)からは `import { cache } from 'cloudflare:workers'; cache.purge({...})` でも同じことができる。
+
+**ローカルの `wrangler dev` は purge を実装していない(2026年8月時点、最新の wrangler 4.127.0 でも)。** 最小再現(`onMount` で `cache.purge()` を呼ぶだけのWorker)を作って確認したところ、`cloudflare:workers` 経由・`ctx.cache.purge()` 経由のどちらも同じエラーになった。
+
+```
+TypeError: cache2.purge is not a function
+```
+
+`cache.enabled` 自体は認識されヘッダーベースのキャッシュ(読み書き)は動くので、purge の RPC だけローカルのworkerdシミュレーションが未実装と見られる。本番(実エッジ)で動くかはこの方法では確認できない。purge に依存する設計にする場合、ローカルでは検証できない前提で進める必要がある。
 
 ## 手元で詰まった点: wrangler / compatibility_date
 
@@ -54,7 +62,7 @@ but you've requested "2026-08-28". Falling back to "2025-05-08"...
 
 ## 使用例
 
-[[cloudflare-workers-og-image|Worker内で生成したOGP画像(PNG)]]に `Cache-Control: public, max-age=86400, stale-while-revalidate=604800` を付けてこの仕組みでキャッシュさせた。記事タイトルを直しても1日以内に反映され、手動パージの運用を作らずに済む。
+[[cloudflare-workers-og-image|Worker内で生成したOGP画像(PNG)]]をこの仕組みでキャッシュさせた。最初は `max-age=86400` 程度の短い寿命でお茶を濁す案、次に「URLに `?v=<contentのhash>` を付けて中身が変わったらURLごと変える」案を試したが、前者は結局パージ運用が要り、後者は「URLが汚い」という理由で却下した。最終的には `Cache-Control: public, max-age=604800, stale-while-revalidate=2592000` の長寿命キャッシュ + `ETag`(記事全体のハッシュ)の組み合わせに落ち着いた。詳細は [[cloudflare-workers-og-image]] を参照。
 
 対照的に、[[cloudflare-workers-assets|Workers Assets]] の `_headers` は静的アセットにしか効かず、Worker が生成したレスポンスには適用されない。Workers CacheはWorker生成レスポンス側のキャッシュを埋める位置づけになる。
 

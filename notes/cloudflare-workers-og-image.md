@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-08-30
 description: satori(レイアウト)+ resvg-wasm(ラスタライズ)でCloudflare Workers上に動的OGP画像を生成する方法
 ---
 # Cloudflare Workers での動的OGP画像生成
@@ -26,6 +26,26 @@ return await ImageResponse.async(element, {
 ```
 
 `Cache-Control` を指定しないと、production では `public, immutable, no-transform, max-age=31536000`(1年)、dev では `no-cache, no-store` が既定で付く。[[cloudflare-workers-cache|Workers Cache]] と組み合わせれば、このヘッダーだけで生成結果がキャッシュされる。
+
+## キャッシュの鮮度: ETagで安く再検証する
+
+記事タイトルを直したときに古い画像が残り続けないようにする必要がある。試した順:
+
+1. `max-age` を短く(1日)+ `stale-while-revalidate` — 結局「編集したら手動で消す」運用が要る
+2. URLに `?v=<タイトルのhash>` を付け、中身が変わったらURLごと変える(静的アセットの `?v=<hash>` と同じ発想) — 機能はしたが「URLが汚い」という理由で却下された
+3. **最終形**: URLは素のまま、`ETag` に記事全体(タイトルだけでなくbody/tags/description)のFNV-1aハッシュを設定。リクエストの `If-None-Match` がこのETagと一致したら、satori/resvgの重い処理を実行する前に `304` を即返す
+
+```ts
+const etag = `"${post.contentHash}"`
+if (ifNoneMatch === etag) {
+  return new Response(null, { status: 304, headers: { ETag: etag } })
+}
+// ここから先が重い処理(satori + resvg)
+```
+
+`Cache-Control` は `public, max-age=604800, stale-while-revalidate=2592000`(1週間新鮮、以降30日はstaleを返しつつ裏で再検証)。immutableは使わない — 同じURLの中身が本当に変わりうるので、immutableと書くのは不正確。
+
+**未確認点**: Workers Cacheの `stale-while-revalidate` が実際にバックグラウンド再検証時に `If-None-Match` をWorkerまで転送してくるかはドキュメントに記載がなく、ローカル環境([[cloudflare-workers-cache|Workers Cacheのpurgeと同じ理由]])でも確認できない。転送されなくても実害はなく、304のショートカットを使えずWorkerが毎回フル生成し直すだけ(このユースケースなら週1回程度の頻度なので誤差)。
 
 ## JSXなしでも書ける
 
@@ -90,6 +110,12 @@ satoriの既定フォントはLatinしかカバーしないので、CJKなど非
 satori+resvgでのOGP画像生成が、Cloudflare Workers Freeプランでは事実上動かないのはなぜか。
 ---
 レイアウト計算とラスタライズ(wasm初期化・フォント処理込み)で数十ms級のCPU時間がかかりやすく、Freeプランの「リクエストあたりCPU時間10ms」の上限を超えるため。Paidプランが実質前提になる。
+```
+
+```quiz
+生成した画像のキャッシュ鍵をURLに `?v=<hash>` で埋め込む案と、ETagに載せる案では何が違うか。
+---
+機能的にはどちらも「内容が変わったら別物として扱う」ことを実現できるが、URL版はURLそのものが変わる(汚い、外部からリンクされたURLが変わる)。ETag版はURLはそのままで、If-None-Matchとの比較で304を返すかを決める。
 ```
 
 ## 出典
