@@ -1,6 +1,6 @@
 ---
 created: 2026-08-22
-updated: 2026-08-24
+updated: 2026-08-30
 ---
 # BarefootJS Router の region 契約
 
@@ -84,12 +84,13 @@ export function Layout(props: { children?: unknown; className?: string; showLogo
 
 サーバーコンポーネントをクライアントコンポーネントから import すると BF003（"use client" ファイルは "use client" でないファイルを import できない）になるので、移した先で `Header` と、その中で使う `ToggleTheme` にも `'use client'` を足す必要があった。
 
-## 余談: swap の副作用2つ
+## 余談: swap の副作用3つ
 
-region が丸ごと作り直される、という性質そのものから来る副作用を2つ実地で踏んだ。
+region が丸ごと作り直される、という性質そのものから来る副作用を3つ実地で踏んだ。
 
 - **フォーカス**: swap 後、ルーターは新しい region の最初の見出しへ `tabindex="-1"` + `focus({ preventScroll: true })` でフォーカスを移す（スクリーンリーダーへのページ変化の告知が目的）。サイト側の CSS がこのプログラム的な focus と、キーボード操作による本物の focus を区別していないと、遷移のたびに触ってもいない見出しに枠が付いて見える——詳細と対処は [[programmatic-focus-and-focus-visible]]。
 - **ちらつき**: region 内の要素は、ページをまたいで見た目が同じでも DOM ノードとしては毎回作り直される。画像などは HTTP キャッシュが効いていても、ノードの破棄・再生成自体がちらついて見えることがある——対処は [[barefootjs-data-bf-permanent]]。
+- **View Transitionのタイムアウト**: 遷移に `document.startViewTransition()` を組み合わせようとすると、「swapがいつ終わったか」を示す公開APIがない（`NAVIGATING_ATTR`はナビゲーション全体の開始〜終了しか示さない）ため、updateCallbackが後処理まで律儀に待ってタイムアウトしやすい——詳細は [[view-transition-update-callback-timeout]]。
 
 ## 出典
 
