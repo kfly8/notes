@@ -8,3 +8,4 @@
 /Users/kfly8/src/github.com/kfly8-sandbox/*
 /Users/kfly8/src/github.com/piconic-ai/barefootjs
 /Users/kfly8/src/github.com/piconic-ai/agent-koans
+/home/user/barefootjs
