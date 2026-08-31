@@ -66,6 +66,8 @@ expect(button!.events).toContain('click')
 
 実際の操作や見た目は結局 E2E が要るが、構造の壊れはその手前で捕まえられる。`bf` CLI が全コマンドで `--json` を持っていることと合わせて、AI エージェントがソースを読まずにコンポーネントを組み立て・検証できるように設計されている。
 
+単機能のフィクスチャでは踏めない、機能同士の組み合わせで起きるバグの洗い出しには [[pairwise-testing]] を使っている。
+
 ## 出典
 
 - [piconic-ai/barefootjs](https://github.com/piconic-ai/barefootjs)
