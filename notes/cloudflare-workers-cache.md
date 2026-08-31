@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-08-30
+updated: 2026-08-31
 description: Worker が生成したレスポンス自体を、Cache-Control ヘッダーを見て自動でキャッシュするCloudflareの機能
 ---
 # Workers Cache
@@ -23,6 +23,27 @@ Worker の手前に専用のキャッシュ層を置く機能。2026年6〜8月�
 | 動く場所 | ゾーンに紐づく | Workerに紐づく。カスタムドメイン・workers.dev・service binding・preview URL・Workers for Platforms テナントのどこでも同じ挙動 |
 
 同時に複数の相手(例: OGP画像を取得しにくる複数のクローラー)が同じキーへ同時アクセスしても、Workers Cacheは1回の実行にまとめる。Cache APIにはこの仕組みがない。
+
+## `Cache-Control` を省略しても no-store にはならない
+
+レスポンスに `Cache-Control`(および `Expires`)を一切付けなかった場合、「キャッシュしない」にはならない。RFC 9111 の heuristic freshness が適用され、ステータスコードごとの既定 TTL でキャッシュされる。`200` は既定で2時間、`404` は3分。**明示的にキャッシュを止めたいなら `Cache-Control: no-store`(または `private`)を自分で付ける必要がある**。ヘッダーを省略することはキャッシュの opt-out にはならない。
+
+heuristic freshness にフォールバックしたレスポンスには Cache Deception Armor(キャッシュ欺瞞攻撃対策)も働く。
+
+すでに `Cache-Control`(または `Expires`)を設定していれば、この既定 TTL は適用されずそちらが尊重される。
+
+## 自動バイパス条件
+
+自分で `no-store` を付けなくても、以下の条件では自動でキャッシュがバイパスされる。
+
+- レスポンスに `Set-Cookie` ヘッダーがある。ただし `Cache-Control` に `private="set-cookie"` や `no-cache="set-cookie"` を指定すると、バイパスの代わりにキャッシュされる版から `Set-Cookie` だけが取り除かれる
+- リクエストに `Authorization` ヘッダーがある。ただしレスポンスが明示的に `Cache-Control: public, must-revalidate` や `s-maxage` を付けていれば例外
+
+## キャッシュキーは `Cookie` を見ない
+
+既定のキャッシュキーは host + path + query string で、`Cookie` や `User-Agent`、`Accept-Language`、`Authorization` などのリクエストヘッダーは含まれない。つまり `Cookie` の値が違っても同じキャッシュキーを指し、同じキャッシュエントリが返る。
+
+これは「リクエストに `Cookie` があるかどうか」を見てレスポンス側の `Cache-Control` を決める実装だと落とし穴になる。ある訪問者の `Cookie` 付きリクエストへのレスポンスをうっかり `public` でキャッシュ可能にすると、`Cookie` の値が違う別の訪問者にもそのキャッシュがそのまま返る — セッション固有の内容が別人に漏れる。「レスポンス側が `Set-Cookie` を持つ」「リクエスト側が `Cookie` を持つ」をどちらも明示的にバイパス条件として扱わない限り、Workers Cache 自体はそこを守ってくれない。[[cloudflare-workers-cache-cookie-key-experiment|実際に確認した]]。
 
 ## 課金
 
@@ -90,9 +111,23 @@ Workers Cache は Cache-Control ヘッダーを見て自動でキャッシュの
 「Unexpected fields found in top-level field: "cache"」という警告が出てフィールドごと無視される。要求した compatibility_date もサポート外なら黙って古い日付にフォールバックする。手元では wrangler 4.16.1 → 4.127.0 で解消した。
 ```
 
+```quiz
+レスポンスに `Cache-Control` を何も付けなかった場合、Workers Cache はそのレスポンスをキャッシュするか。
+---
+する。RFC 9111 の heuristic freshness が適用され、ステータスコードごとの既定 TTL(200 は2時間、404 は3分など)でキャッシュされる。ヘッダーを省略することはキャッシュの opt-out にはならない。止めたいなら `Cache-Control: no-store` を明示的に付ける必要がある。
+```
+
+```quiz
+既定のキャッシュキーに `Cookie` ヘッダーは含まれるか。
+---
+含まれない。既定のキャッシュキーは host + path + query string で、`Cookie` / `User-Agent` / `Accept-Language` / `Authorization` などのリクエストヘッダーは対象外。`Cookie` の値が違っても同じキャッシュエントリが返る。
+```
+
 ## 出典
 
 - [Your Worker can now have its own cache in front of it](https://blog.cloudflare.com/workers-cache/)
 - [Workers Cache · Cloudflare Workers docs](https://developers.cloudflare.com/workers/cache/)
+- [Cache keys · Cloudflare Workers docs](https://developers.cloudflare.com/workers/cache/cache-keys/)
+- [Configuration · Cloudflare Workers docs](https://developers.cloudflare.com/workers/cache/configuration/)
 
 #cloudflare #workers
