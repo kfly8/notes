@@ -74,10 +74,10 @@ v0.2 に従い、ノートを一目で捉えるための最小限だけを出す
 
 ## デプロイ
 
-`main` への push で `.github/workflows/deploy.yml` が動き、ビルドして `wrangler deploy` する。リポジトリに
-次の2つの secret が必要。
+Cloudflare の Workers Builds（ダッシュボードの *Connect to a repository* によるGit連携）で、`main` への
+push を検知してビルド・デプロイする。GitHub Actions は使わない。
 
-- `CLOUDFLARE_API_TOKEN` — *Edit Cloudflare Workers* テンプレートのトークン
-- `CLOUDFLARE_ACCOUNT_ID`
+- Build command: `bun run build`
+- Deploy command: `bunx wrangler deploy`
 
 カスタムドメイン `notes.kobaken.co` は `wrangler.jsonc` で宣言している。
