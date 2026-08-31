@@ -21,7 +21,7 @@ bun run dev                            # http://localhost:4321
 | コマンド | 内容 |
 | --- | --- |
 | `bun run dev` | 開発サーバー |
-| `bun run build` | `dist/client`（静的アセット）と `dist/server`（Worker）を生成 |
+| `bun run build` | `dist/client`（Cloudflare Assets として配信する静的ファイル一式）を生成 |
 | `bun run preview` | ビルドして wrangler で配信。本番と同じ経路で確認する |
 | `bun run deploy` | ビルドして `wrangler deploy` |
 | `bun run check` | `astro check` による型チェック |
@@ -29,9 +29,9 @@ bun run dev                            # http://localhost:4321
 
 ## 構成
 
-`notes/` の Markdown を Astro で静的サイトにビルドし、Cloudflare Workers の静的アセットとして配信している。
-Markdown の処理は Sätteri、ヘッダーの検索は Solid のアイランド、Worker の入口は Astro の `astro/hono`
-アダプタ経由の Hono。ページ間のリンクは prefetch される。
+`notes/` の Markdown を Astro で静的サイトにビルドし、Cloudflare Workers の Assets 機能で配信している（Worker
+は経由しない）。Markdown の処理は Sätteri、ヘッダーの検索は Solid のアイランド。ページ間のリンクは prefetch
+される。
 
 | パス | 内容 |
 | --- | --- |
@@ -45,7 +45,6 @@ Markdown の処理は Sätteri、ヘッダーの検索は Solid のアイラン�
 | `src/components/Search.tsx` | Solid の検索アイランド |
 | `src/layouts/Layout.astro` | HTML の外枠、テーマ切り替え、mermaid のローダ |
 | `src/styles/global.css` | CSS |
-| `src/fetch.ts` | Astro のリクエストが通る Hono アプリ |
 | `scripts/update-note-dates.ts` | ステージされたノートの日付を埋める |
 
 ### 配信するもの
@@ -75,7 +74,7 @@ v0.2 に従い、ノートを一目で捉えるための最小限だけを出す
 
 ## デプロイ
 
-`main` への push で `.github/workflows/deploy.yml` が動き、ビルドして Worker をデプロイする。リポジトリに
+`main` への push で `.github/workflows/deploy.yml` が動き、ビルドして `wrangler deploy` する。リポジトリに
 次の2つの secret が必要。
 
 - `CLOUDFLARE_API_TOKEN` — *Edit Cloudflare Workers* テンプレートのトークン

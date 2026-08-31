@@ -1,21 +1,21 @@
 ---
 created: 2026-08-17
-updated: 2026-08-29
+updated: 2026-08-30
 ---
 # Cloudflare Workers の静的アセット配信
 
-Worker に静的ファイルを同梱して配信する仕組み。`wrangler.jsonc` の `assets.directory` を指すだけで、アップロード・配信・キャッシュまで面倒を見てくれる。ただし既定で付くヘッダーには癖があり、`_headers` で上書きすることになる。
+Cloudflare Workers の静的ファイル配信の仕組み。`wrangler.jsonc` の `assets.directory` を指すだけで、アップロード・配信・キャッシュまで面倒を見てくれる。`main`（Worker のエントリポイント）は必須ではなく、書かなければ Worker を経由せずこの assets 機能だけでリクエストが完結する。ただし既定で付くヘッダーには癖があり、`_headers` で上書きすることになる。
 
 ```jsonc
 {
-  "main": "@astrojs/cloudflare/entrypoints/server",
   "assets": {
     "directory": "./dist/client",
-    "binding": "ASSETS",
     "not_found_handling": "404-page"
   }
 }
 ```
+
+Worker と組み合わせる場合は `main` を足し、Worker 側からアセットにアクセスしたいときだけ `assets.binding` も足す。
 
 ## 既定で付くヘッダー
 
@@ -63,6 +63,10 @@ $ curl -s -o /dev/null -w '%{http_code}' https://notes.kobaken.co/agent-koans.ht
 
 `.html` 付きでアクセスすると拡張子なしへリダイレクトされる。**この挙動は「そのファイルが存在するか」の判定にも使える**。デプロイしたはずのページが 404 なら、`.html` 付きで叩いてみて 307 が返らない時点で、アセットとしてアップロードされていないと分かる。
 
+## Worker のリダイレクト処理と重複しがち
+
+`auto-trailing-slash` は assets 層で完結するので、Worker 側で同じ正規化をもう一度書くと処理が二重になる。実例として、notes.kobaken.co はもともと [[astro-hono-adapter|Astro の Hono アダプタ]]経由で `main: "@astrojs/cloudflare/entrypoints/server"` を Worker として立てていたが、全ページ prerender のため Hono パイプラインで意味を持っていたのは `trailingSlash()` ミドルウェアだけだった。それがこの `auto-trailing-slash` と同じ仕事をしていたため、`wrangler dev` で `.html` の 307・末尾スラッシュの 307・`.md` の Content-Type・404・通常ページがすべて変更前と同じ挙動であることを確認した上で `main` / `assets.binding` / `observability` を外し、Worker なしの構成に変更した。
+
 ## `.assetsignore`
 
 アセットのディレクトリに置くと、そこに書いたファイルはアップロードから除外される。書式は gitignore と同じ。
@@ -85,6 +89,12 @@ $ curl -s -o /dev/null -w '%{http_code}' https://notes.kobaken.co/agent-koans.ht
 デプロイしたはずのページが 404 になる。`.html` を付けて叩くと何が分かるか。
 ---
 アセットとして上がっていれば拡張子なしへ 307 でリダイレクトされる。307 が返らなければ、そのファイルはアップロードされていない。
+```
+
+```quiz
+全ページ prerender の静的サイトで、Worker（`main`）の `trailingSlash()` ミドルウェアを外しても挙動が変わらないと判断できたのはなぜか。
+---
+`html_handling` の既定 `auto-trailing-slash` が、拡張子なし URL への正規化という同じ処理を assets 層ですでに担っていたため。
 ```
 
 ## 出典
