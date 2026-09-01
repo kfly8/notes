@@ -8,7 +8,9 @@
     "preview": "$npm_execpath run build && wrangler dev",
     "deploy": "$npm_execpath run build && wrangler deploy",
     "check": "astro check",
-    "notes:dates": "bun run scripts/update-note-dates.ts"
+    "notes:sync": "bun run scripts/sync-notes-frontmatter.ts",
+    "notes:sync:all": "bun run scripts/sync-notes-frontmatter.ts --all",
+    "notes:check": "bun run scripts/check-notes-frontmatter.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.2.1",

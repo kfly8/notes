@@ -72,10 +72,15 @@ export const plainText = (body: string, limit = 2000): string =>
     .trim()
     .slice(0, limit)
 
-/** 冒頭の1文だけを取り出した要約。OKF の `description` に使う。 */
+/**
+ * 冒頭の1文だけを取り出した要約。OKF の `description` に使う。
+ * 日本語の句点（。．）は直後の空白なしでも文末とみなす。`.`/`!`/`?` は
+ * `element.focus()` のようなインラインコードの中の `.` を誤って文末と扱わないよう、
+ * 直後が空白か文字列末尾のときだけ文末とみなす。
+ */
 export const summary = (body: string, titles?: Map<string, string>): string => {
   const text = excerpt(body, titles, 200)
-  const [first] = text.split(/(?<=[。．.!?])\s*/)
+  const [first] = text.split(/(?<=[。．])|(?<=[.!?])(?=\s|$)/)
   return first && first.length > 0 ? first : text
 }
 
