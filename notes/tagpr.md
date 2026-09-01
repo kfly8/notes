@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: tagpr
+description: リリース用の PR を維持しておいて、それをマージした瞬間にタグを打つツール。
+tags: [リリース, ci, github]
 ---
 # tagpr
 

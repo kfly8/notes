@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: プログラム的な focus() の outline を消す
+description: SPA ルーターがページ遷移後に JS で element.focus() を呼ぶと、その要素にブラウザ既定の focus outline が付く。
+tags: [css, a11y, barefootjs, router, safari]
 ---
 # プログラム的な focus() の outline を消す
 

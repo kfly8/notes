@@ -1,6 +1,9 @@
 ---
 created: 2026-08-17
 updated: 2026-08-30
+title: Cloudflare Workers の静的アセット配信
+description: Cloudflare Workers の静的ファイル配信の仕組み。
+tags: [cloudflare, workers, http]
 ---
 # Cloudflare Workers の静的アセット配信
 

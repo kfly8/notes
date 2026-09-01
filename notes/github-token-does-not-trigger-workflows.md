@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: GITHUB_TOKEN の操作は他のワークフローを起動しない
+description: ワークフローの中から GITHUBTOKEN で push・タグ付け・PR 作成をしても、それを契機とする別のワークフローは動かない。
+tags: [github, ci]
 ---
 # GITHUB_TOKEN の操作は他のワークフローを起動しない
 

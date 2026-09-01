@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: Kitesurf
+description: Cloudflare が2026年8月6日(木)、Cloudflare Agents Week 2026 で発表した、AI エージェント専用のブラウザ。
+tags: [cloudflare, agents-week-2026, ai-agent, browser]
 ---
 # Kitesurf
 

@@ -1,6 +1,9 @@
 ---
 created: 2026-08-28
 updated: 2026-08-28
+title: Pullfrog
+description: GitHub 上でコーディングエージェントを動かすボット。
+tags: [pullfrog, ai-agent, code-review, github-actions]
 ---
 # Pullfrog
 

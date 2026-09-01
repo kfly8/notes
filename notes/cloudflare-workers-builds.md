@@ -1,7 +1,9 @@
 ---
 created: 2026-08-29
 updated: 2026-08-29
+title: Workers Builds
 description: GitHubリポジトリをダッシュボードで接続するだけでpush毎に自動ビルド・デプロイするCloudflare純正のCI/CD
+tags: [cloudflare, workers, ci-cd]
 ---
 # Workers Builds
 

@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: MCP v2
+description: Model Context Protocol (MCP) の 2026-07-28 仕様で導入された、プロトコルコアのステートレス化。
+tags: [cloudflare, agents-week-2026, mcp]
 ---
 # MCP v2
 

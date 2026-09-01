@@ -1,6 +1,9 @@
 ---
 created: 2026-08-30
 updated: 2026-08-30
+title: View TransitionのupdateCallbackは重い処理を待つとタイムアウトで無言スキップされる
+description: document.startViewTransition(updateCallback) の updateCallback が一定時間内に確定(resolve/reject)しないと、Chromiumはtransition自体を中断する。
+tags: [view-transitions, barefootjs, router, javascript]
 ---
 # View TransitionのupdateCallbackは重い処理を待つとタイムアウトで無言スキップされる
 

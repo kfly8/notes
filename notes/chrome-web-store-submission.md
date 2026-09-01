@@ -1,6 +1,9 @@
 ---
 created: 2026-08-23
 updated: 2026-08-23
+title: Chrome ウェブストアへの提出
+description: 掲載情報の一部はZIP の中の manifest から来るので、ダッシュボードだけ整えても反映されない。
+tags: [ブラウザ拡張, chrome, リリース]
 ---
 # Chrome ウェブストアへの提出
 

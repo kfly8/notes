@@ -1,6 +1,9 @@
 ---
 created: 2026-08-23
 updated: 2026-08-24
+title: WXT
+description: Vite ベースのブラウザ拡張フレームワーク。
+tags: [ブラウザ拡張, wxt, chrome, firefox]
 ---
 # WXT
 

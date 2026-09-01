@@ -1,7 +1,9 @@
 ---
 created: 2026-08-29
 updated: 2026-08-29
+title: CRIU
 description: 動いているLinuxプロセスの状態(メモリ・ファイルディスクリプタ・ネットワーク接続など)をまるごとダンプし、あとから復元できる技術
+tags: [linux, docker, container]
 ---
 # CRIU
 

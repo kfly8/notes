@@ -1,6 +1,9 @@
 ---
 created: 2026-08-17
 updated: 2026-08-31
+title: BarefootJS
+description: signal ベースの TSX をビルド時にコンパイルして、バックエンドのネイティブなテンプレートを吐くフレームワーク。
+tags: [barefootjs, signals, jsx, hono]
 ---
 # BarefootJS
 

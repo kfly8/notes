@@ -1,6 +1,9 @@
 ---
 created: 2026-08-17
 updated: 2026-08-17
+title: agent-koans
+description: AI エージェント実装のためのコンフォーマンステストスイート。
+tags: [ai-agent, testing, conformance]
 ---
 # agent-koans
 

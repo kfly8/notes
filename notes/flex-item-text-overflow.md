@@ -1,6 +1,9 @@
 ---
 created: 2026-08-22
 updated: 2026-08-22
+title: flex アイテムの折り返せないテキストは幅を無視してはみ出す
+description: "flex コンテナの子孫要素は既定で min-width: auto。"
+tags: [css, flexbox]
 ---
 # flex アイテムの折り返せないテキストは幅を無視してはみ出す
 

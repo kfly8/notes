@@ -1,7 +1,9 @@
 ---
 created: 2026-08-23
 updated: 2026-08-24
+title: ブラウザ拡張を公開する
 description: ブラウザ拡張をストアに出すまでに触ることになる話題の見取り図
+tags: [ブラウザ拡張, chrome, firefox, リリース, moc]
 ---
 # ブラウザ拡張を公開する
 

@@ -1,6 +1,9 @@
 ---
 created: 2026-08-23
 updated: 2026-08-23
+title: optional_host_permissions でインストール時の警告を消す
+description: MV3 の拡張機能で hostpermissions に <allurls> を書くと、インストール時に「すべてのウェブサイトのデータを読み取り、変更する」という警告が出る。
+tags: [ブラウザ拡張, chrome, firefox, 権限]
 ---
 # optional_host_permissions でインストール時の警告を消す
 

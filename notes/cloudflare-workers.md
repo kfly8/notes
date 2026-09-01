@@ -1,7 +1,9 @@
 ---
 created: 2026-08-29
 updated: 2026-08-29
+title: Cloudflare Workers
 description: Cloudflare Workers のプラットフォーム機能(配信・キャッシュ・デプロイなど)を扱うノートの見取り図
+tags: [cloudflare, workers, moc]
 ---
 # Cloudflare Workers
 

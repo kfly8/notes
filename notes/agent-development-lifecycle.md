@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: Agent Development Lifecycle (ADLC)
+description: Cloudflare が2026年8月4日、Cloudflare Agents Week 2026 で提唱したソフトウェア開発モデル。
+tags: [cloudflare, agents-week-2026, ai-agent]
 ---
 # Agent Development Lifecycle (ADLC)
 

@@ -1,6 +1,9 @@
 ---
 created: 2026-08-22
 updated: 2026-08-30
+title: BarefootJS Router の region 契約
+description: BarefootJS の @barefootjs/router は部分ナビゲーション（[bf-region] だけを差し替える遷移）の際、region の外にあるものには一切触らない。
+tags: [barefootjs, router, hono, css]
 ---
 # BarefootJS Router の region 契約
 

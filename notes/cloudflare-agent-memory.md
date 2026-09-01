@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: Cloudflare Agent Memory
+description: AI エージェントに永続的な記憶を持たせるマネージドサービス。
+tags: [cloudflare, agents-week-2026, ai-agent]
 ---
 # Cloudflare Agent Memory
 

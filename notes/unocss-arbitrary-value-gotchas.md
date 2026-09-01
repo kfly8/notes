@@ -1,6 +1,9 @@
 ---
 created: 2026-08-22
 updated: 2026-08-22
+title: UnoCSS の arbitrary value のハマりどころ
+description: UnoCSS（BarefootJS の Hono scaffold で使った presetWind4）の text-[...] 系ユーティリティは、見た目どおりには解釈されないことがある。
+tags: [unocss, css]
 ---
 # UnoCSS の arbitrary value のハマりどころ
 

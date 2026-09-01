@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: Cloudflare AI Search
+description: 自分のデータに対する検索エンジンを、1コマンドで作れるマネージドサービス。
+tags: [cloudflare, agents-week-2026, ai-agent, rag]
 ---
 # Cloudflare AI Search
 

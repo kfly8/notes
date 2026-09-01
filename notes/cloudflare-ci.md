@@ -1,7 +1,9 @@
 ---
 created: 2026-08-25
 updated: 2026-08-24
+title: Cloudflare CI/CD (@cloudflare/ci)
 description: Cloudflare Workflows 上に構築された、コードで書く CI/CD パイプライン。@cloudflare/ci として提供される
+tags: [cloudflare, agents-week-2026, ai-agent]
 ---
 # Cloudflare CI/CD (@cloudflare/ci)
 

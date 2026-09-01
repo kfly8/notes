@@ -1,6 +1,9 @@
 ---
 created: 2026-08-22
 updated: 2026-08-22
+title: BarefootJS Hono アダプタの scaffold 構成
+description: BarefootJS を Hono / Cloudflare Workers 向けに npm create barefootjs@latest でスキャフォールドしたときの実際の構成。
+tags: [barefootjs, unocss, hono, vite]
 ---
 # BarefootJS Hono アダプタの scaffold 構成
 

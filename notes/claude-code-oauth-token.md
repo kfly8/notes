@@ -1,6 +1,9 @@
 ---
 created: 2026-08-28
 updated: 2026-08-28
+title: CLAUDE_CODE_OAUTH_TOKEN で CI のモデル課金をサブスク定額にする
+description: claude setup-token で発行される長寿命の OAuth トークン（sk-ant-oat 接頭辞）を CI のシークレットに置くと、そのジョブの Claude 呼び出しが Claude Pro/Max サブスクリプションの枠で動く。
+tags: [claude, ci, github-actions]
 ---
 # CLAUDE_CODE_OAUTH_TOKEN で CI のモデル課金をサブスク定額にする
 
