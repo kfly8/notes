@@ -1,7 +1,9 @@
 ---
 created: 2026-08-25
 updated: 2026-08-24
+title: Cloudflare OS
 description: 組織のコンテキスト・システムに接続したエージェントワークスペースを、社内向けアプリ基盤ごとオープンソースで提供するプラットフォーム
+tags: [cloudflare, agents-week-2026, ai-agent]
 ---
 # Cloudflare OS
 

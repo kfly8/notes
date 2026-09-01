@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: WebMCP
+description: ブラウザ内で動く AI エージェントが、サイトを直接操作できるようにするための新しいブラウザ標準。
+tags: [cloudflare, agents-week-2026, mcp]
 ---
 # WebMCP
 

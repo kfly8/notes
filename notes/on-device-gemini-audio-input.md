@@ -1,6 +1,9 @@
 ---
 created: 2026-08-28
 updated: 2026-08-28
+title: オンデバイス Gemini / Gemma の音声入力対応状況
+description: Google のオンデバイス系モデルで音声入力を受けられるのは、Chrome 内蔵の Gemini Nano(Prompt API 経由)と、オープンウェイトの Gemma 3n の2系統。
+tags: [chrome, llm, 音声]
 ---
 # オンデバイス Gemini / Gemma の音声入力対応状況
 

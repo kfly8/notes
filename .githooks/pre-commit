@@ -1,4 +1,4 @@
 #!/bin/sh
-# ステージされたノートに created/updated を書き込む。有効化は次のとおり:
+# ステージされたノートに created/updated/title/description/tags を書き込む。有効化は次のとおり:
 #   git config core.hooksPath .githooks
-exec bun run scripts/update-note-dates.ts
+exec bun run scripts/sync-notes-frontmatter.ts

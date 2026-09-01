@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: data-bf-permanent でナビゲーション間の再描画を防ぐ
+description: "@barefootjs/router は region の swap（差し替え）のたびに、region 内の要素を丸ごと作り直す。"
+tags: [barefootjs, router]
 ---
 # data-bf-permanent でナビゲーション間の再描画を防ぐ
 

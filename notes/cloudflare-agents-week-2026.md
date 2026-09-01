@@ -1,7 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: Cloudflare Agents Week 2026
 description: Cloudflare が2026年8月に開催したテーマウィークで発表されたプロダクト・機能の見取り図
+tags: [cloudflare, agents-week-2026, ai-agent, moc]
 ---
 # Cloudflare Agents Week 2026
 

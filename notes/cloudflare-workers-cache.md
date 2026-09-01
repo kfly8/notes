@@ -1,7 +1,9 @@
 ---
 created: 2026-08-29
 updated: 2026-08-31
+title: Workers Cache
 description: Worker が生成したレスポンス自体を、Cache-Control ヘッダーを見て自動でキャッシュするCloudflareの機能
+tags: [cloudflare, workers]
 ---
 # Workers Cache
 

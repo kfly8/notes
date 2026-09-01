@@ -1,7 +1,9 @@
 ---
 created: 2026-08-29
 updated: 2026-08-30
+title: Cloudflare Workers での動的OGP画像生成
 description: satori(レイアウト)+ resvg-wasm(ラスタライズ)でCloudflare Workers上に動的OGP画像を生成する方法
+tags: [cloudflare, workers, ogp]
 ---
 # Cloudflare Workers での動的OGP画像生成
 

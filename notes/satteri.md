@@ -1,6 +1,9 @@
 ---
 created: 2026-08-17
 updated: 2026-08-17
+title: Sätteri
+description: Astro 7 からデフォルトになった Markdown / MDX プロセッサ。
+tags: [astro, markdown, rust]
 ---
 # Sätteri
 

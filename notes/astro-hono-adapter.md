@@ -1,6 +1,9 @@
 ---
 created: 2026-08-17
 updated: 2026-08-30
+title: Astro の Hono アダプタ
+description: Astro 7 は astro/hono から Hono ミドルウェアの一式を公開していて、Astro のリクエスト処理を自分の Hono アプリに組み込める。
+tags: [astro, hono, cloudflare]
 ---
 # Astro の Hono アダプタ
 

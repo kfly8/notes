@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: Cloudflare Sandboxes
+description: AI エージェント専用の永続的・隔離された実行環境。
+tags: [cloudflare, agents-week-2026, ai-agent, sandbox]
 ---
 # Cloudflare Sandboxes
 

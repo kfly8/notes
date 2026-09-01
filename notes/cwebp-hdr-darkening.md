@@ -1,7 +1,9 @@
 ---
 created: 2026-08-30
 updated: 2026-08-30
+title: cwebpでHDR画像を変換すると暗くなる
 description: HDR(Display P3 + PQ)なPNGをcwebpでWebP化すると、暗く沈んだ画像になる
+tags: [image, color, macos]
 ---
 # cwebpでHDR画像を変換すると暗くなる
 

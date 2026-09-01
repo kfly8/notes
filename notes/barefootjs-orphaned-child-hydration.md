@@ -1,7 +1,9 @@
 ---
 created: 2026-08-30
 updated: 2026-08-30
+title: "BarefootJS: サーバーコンポーネントの子は孤立してhydrateされない"
 description: サーバーコンポーネントの子として置いたクライアントコンポーネントは、静かにhydrateされない
+tags: [barefootjs, hono, hydration]
 ---
 # BarefootJS: サーバーコンポーネントの子は孤立してhydrateされない
 

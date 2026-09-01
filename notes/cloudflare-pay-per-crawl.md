@@ -1,6 +1,9 @@
 ---
 created: 2026-08-28
 updated: 2026-08-28
+title: Cloudflare Pay per Crawl
+description: AIクローラーからのアクセスを、サイト運営者がクローラーごとに制御・課金できる仕組み。
+tags: [cloudflare, ai, bot, マイクロペイメント]
 ---
 # Cloudflare Pay per Crawl
 

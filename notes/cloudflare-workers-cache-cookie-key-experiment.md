@@ -1,6 +1,9 @@
 ---
 created: 2026-08-31
 updated: 2026-08-31
+title: Cookie を持つ訪問者でも Workers Cache のキャッシュを共有してしまう
+description: Workers Cache の既定のキャッシュキーが Cookie ヘッダーを見ないことを、実際に curl で確認した記録。
+tags: [cloudflare, workers]
 ---
 # Cookie を持つ訪問者でも Workers Cache のキャッシュを共有してしまう
 

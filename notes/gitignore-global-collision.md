@@ -1,6 +1,9 @@
 ---
 created: 2026-08-17
 updated: 2026-08-23
+title: グローバル gitignore が必要なものを落とす
+description: ~/.gitignore（core.excludesfile）に書いたパターンは、すべてのリポジトリに効く。
+tags: [git, ci]
 ---
 # グローバル gitignore が必要なものを落とす
 

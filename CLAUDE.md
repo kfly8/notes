@@ -41,7 +41,7 @@ AI が調べたことを、あとから価値が残る形で書き残してお�
 
 1. `notes/<kebab-case-slug>.md` を作る。slug はそのまま URL (`/<slug>`) になるので、英小文字とハイフンに
    留める。
-2. frontmatter を書く（次節）。
+2. frontmatter は書かなくてよい（次節）。
 3. 本文の1行目は `# タイトル`。この見出しは本文から取り除かれてページタイトルとして使われるので、あとで
    同じ見出しを繰り返さない。
 4. 本文は Markdown で書く。フェンス付きコードブロックはハイライトされるので、必ず言語を指定する。
@@ -52,27 +52,37 @@ AI が調べたことを、あとから価値が残る形で書き残してお�
 
 ## ノートの frontmatter
 
-日付だけ入っていればよい。`bun run notes:dates` がステージされたノートの日付を埋め、pre-commit フックが
-自動で実行するので、あとから手で書き換えないこと。
+`created`/`updated`/`title`/`description`/`tags` の5項目が入るが、著者が手で書く必要はない。コミット時に
+pre-commit フック（`bun run notes:sync`、`.githooks/` から自動実行）が本文から導出して書き込む。
 
 ```
 ---
 created: 2026-08-17
 updated: 2026-08-17
+title: BarefootJS
+description: signal ベースの TSX をビルド時にコンパイルして、バックエンドのネイティブなテンプレートを吐くフレームワーク。
+tags: [barefootjs, signals, jsx, hono]
 ---
 ```
 
-タイトル・要約・タグは本文から導出されるので、frontmatter には書かない。必要なときだけ足せるのは次の2つ。
+- `title` は本文の `# 見出し` を常に上書きで複製する。frontmatter 側を手で直しても本文とズレるだけなので
+  触らない。
+- `description` はフィールドが空のときだけ本文冒頭の1文から自動生成される。生成結果でノートの主旨が伝わら
+  ないと分かっている場合は、先に `description:` へ文章を書いておけば以後は上書きされない（手動指定が優先）。
+- `tags` は本文中の `#tag` を自動集計して書き込まれる。本文には出したくない「隠しタグ」を足したいときだけ
+  ここに直接追記する（コミット時に本文のタグと合算される。ただし本文からタグを削除しても、この和集合方式
+  では frontmatter 側からは自動で消えない点に注意）。
+- `type` だけは今まで通り、概念の種類を変えたいときに手で書く（既定は `Note`）。
 
-| キー | 用途 |
-| --- | --- |
-| `description` | 本文冒頭から作られる要約では、ノートの主旨が伝わらないとき |
-| `type` | 概念の種類。既定は `Note` で、たいていはそのままでよい |
+コミット前に `bun run dev` でプレビューしたい場合は、`git add notes/<slug>.md && bun run notes:sync` を
+先に実行するとフックと同じ処理で frontmatter が埋まる（`content.config.ts` のスキーマは必須項目として
+検証するので、空のままだとビルドが失敗する）。
 
 これらは `/<slug>.md` が返す
 [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
-の frontmatter（`type` / `title` / `description` / `tags`）に使われる。他のツールや AI がノートを取り込む
-ときの手がかりになる。
+の frontmatter（`type` / `title` / `description` / `tags`）にも使われる。他のツールや AI がノートを取り込む
+ときの手がかりになる。CI (`.github/workflows/ci.yml`) が `bun run notes:check` でソース側とこの導出結果の
+整合性を検査しており、pre-commit フックをすり抜けた frontmatter の欠落・ズレを検出する。
 
 ## ウィキリンク
 
@@ -94,6 +104,8 @@ updated: 2026-08-17
 - 全タグは `/tags` で一覧できる。
 
 frontmatter の `tags: [foo, bar]` も使えるが、これは本文に出したくないタグ用。通常は本文に直接書く。
+本文の `#tag` はコミット時に pre-commit フックが frontmatter の `tags` へ自動転記するので、frontmatter の
+`tags` は手で編集する必要が普段はない（詳細は「ノートの frontmatter」節）。
 
 ## ハブノート (MOC)
 

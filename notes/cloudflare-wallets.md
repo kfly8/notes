@@ -1,6 +1,9 @@
 ---
 created: 2026-08-24
 updated: 2026-08-24
+title: Cloudflare Wallets
+description: AI エージェントに支払い手段と検証可能な身元を持たせる仕組み。
+tags: [cloudflare, agents-week-2026, ai-agent]
 ---
 # Cloudflare Wallets
 
