@@ -8,14 +8,8 @@ tags: [fuzzing, gleam, compiler, testing]
 # Gleam コンパイラの structure-aware fuzzing
 
 [Fuzzing the Gleam Compiler](https://www.kurz.net/posts/fuzzing-gleam-compiler)（kurz.net、2026-08-25）が、Gleam
-コンパイラに structure-aware fuzzing を適用し、9件のバグを見つけた記録。
-
-## structure-aware fuzzing とは
-
-ランダムなバイト列をそのまま入力にする通常のファジングは、コンパイラのように「まず構文解析を通る」ことが
-前提の対象では大半が構文エラーで弾かれ、その先の意味解析・コード生成には届かない。structure-aware
-fuzzing は、入力の構造（この場合は言語の AST）を意識してジェネレーターを組み、構文的に、できれば型的にも
-妥当な入力を生成することで、パーサーの先のバグに届かせる手法。
+コンパイラに [[structure-aware-fuzzing]] を適用し、9件のバグを見つけた記録。生成ベースの手法（後述の
+smith）だけを使っている。
 
 ## Phase 1: パーサーのファジング
 
