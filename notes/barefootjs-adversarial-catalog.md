@@ -1,6 +1,6 @@
 ---
 created: 2026-09-01
-updated: 2026-09-01
+updated: 2026-09-02
 title: BarefootJS の adversarial value catalog
 description: 型ごとに壊れやすい代表値をカタログ化し、既存 fixture の props を1プロパティずつ置き換えて壊れないか 検証する仕組み。
 tags: [barefootjs, testing]
@@ -27,7 +27,7 @@ tags: [barefootjs, testing]
   特別扱いする `switch` 等）の不具合が出やすい両端を優先する設計。非リテラルメンバー（bare な
   `string`型のメンバーなど）は合成できる値がないためスキップされ、v1スコープでは未カバーのまま残る。
 - object/interface（#2277 で追加）: 必須フィールドのみの "minimal" な点と、オプションフィールドを1個
-  だけ "present" にした点を1フィールドずつ（クロスプロダクトはしない）。ネストは深さ3
+  だけ "present" にした点を1フィールドずつ（cross-product はしない）。ネストは深さ3
   （`OBJECT_DEPTH_CAP`）で打ち切り、それ以上ネストしたフィールドは空オブジェクト `{}` で埋める。
 
 ## OFAT（one-factor-at-a-time）であって全組み合わせではない
