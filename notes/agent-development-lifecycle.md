@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-09-02
 title: Agent Development Lifecycle (ADLC)
 description: Cloudflare が2026年8月4日、Cloudflare Agents Week 2026 で提唱したソフトウェア開発モデル。
 tags: [cloudflare, agents-week-2026, ai-agent]
@@ -19,7 +19,7 @@ SDLC は Plan → Design → Implement → Test → Deploy → Maintain → Reti
 
 > AI has made the step that was previously the slowest and most expensive — implementation — the fastest
 
-実装がエージェントによって劇的に高速化した結果、レビュー・デプロイ・保守が相対的なボトルネックになった。オープンソースのメンテナは大量の PR や issue に押し寄せられ、本番のエンジニアはソフトウェアの供給速度の増加によって収拾がつかなくなりつつある。多くの組織は今も「エージェントに指示を出す→人間が検証→人間がマージ」という人間中心のフローのままで、エージェントを開発ライフサイクルの一部の工程にしか使えていない、という課題認識が背景にある。
+実装がエージェントによって高速化した結果、レビュー・デプロイ・保守が相対的なボトルネックになった。オープンソースのメンテナは大量の PR や issue に押し寄せられ、本番のエンジニアはソフトウェアの供給速度の増加によって収拾がつかなくなりつつある。多くの組織は今も「エージェントに指示を出す→人間が検証→人間がマージ」という人間中心のフローのままで、エージェントを開発ライフサイクルの一部の工程にしか使えていない、という課題認識が背景にある。
 
 ## ADLC を支える5つのプリミティブ
 
