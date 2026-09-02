@@ -1,6 +1,6 @@
 ---
 created: 2026-09-01
-updated: 2026-09-01
+updated: 2026-09-02
 title: BarefootJS の問題発見手法
 description: BarefootJS でバグ・設計の穴を見つけるためにこれまで使われてきた手法の見取り図。
 tags: [barefootjs, testing, moc]
@@ -44,6 +44,21 @@ coverage-floor と adversarial-catalog は249件の全量コーパス（IR 適�
 実績が多い軸（構造・イベント・コールバック形状）」を名指しで狙い撃ちする。どちらも network を広げず、
 根拠に基づいて狙いを絞る判断をしている。
 
+## 「実行して観測する」以外の2レイヤー
+
+上の5手法はどれも fixture を実行して壊れを観測するテストだが、それとは別に2つのレイヤーがある。
+
+- [[barefootjs-exhaustive-adt]]: IR を discriminated union（ADT）で定義し、種類を拡張したときの
+  アダプタ側の実装漏れを**コンパイル時**に検出する。テストを書く前に壊れた状態そのものを型で作れなく
+  する予防線。
+- [[barefootjs-reference-diff-testing]]: Hono（TypeScript/JS）をリファレンス実装とし、同じ入力を他の
+  全アダプタでもレンダーしてライブに突き合わせる差分オラクル。「コンパイルは通るのに出力が違う」という
+  サイレントな分岐を trichotomy で明示的に許さない設計になっていて、既知の差分は各アダプタパッケージ
+  自身が `render-divergences.ts` として所有する（adapter-tests 自体は個々のアダプタの知識を持たない）。
+
+前者は「実装漏れ」をコンパイル時に、後者は「実装済みだが出力が違う」を実行時に捉える。両方とも、
+fixture を追加・改変する5手法とは独立に、常時効いている基盤。
+
 ## まだできていないこと
 
 - **生成ベースの structure-aware fuzzing** が手つかず。[[structure-aware-fuzzing]] にまとめた Gleam
@@ -74,6 +89,14 @@ BarefootJS の問題発見手法で、現時点でまだ手つかずなのはど
 ---
 生成ベースの structure-aware fuzzing。既存 fixture の値や構造を変える手法はそろっているが、
 コンポーネント構造そのものをゼロから確率的に生成する仕組みはまだない。
+```
+
+```quiz
+「実行して観測する」5手法と、exhaustive-adt / reference-diff-testing の2レイヤーは、何が根本的に違うか。
+---
+前者は fixture を実際に実行して壊れを観測するテストだが、後者は実行に頼らない。exhaustive-adt はコン
+パイル時に実装漏れを検出し、reference-diff-testing は実行はするが fixture を増やすのではなく複数実装
+の出力をライブに突き合わせる、別方向のオラクル。
 ```
 
 #barefootjs #testing #moc
