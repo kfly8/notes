@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-09-02
 title: data-bf-permanent でナビゲーション間の再描画を防ぐ
 description: "@barefootjs/router は region の swap（差し替え）のたびに、region 内の要素を丸ごと作り直す。"
 tags: [barefootjs, router]
@@ -39,7 +39,7 @@ tags: [barefootjs, router]
 
 ## 見た目だけでなく機能も壊れる: 外部スクリプトの addEventListener
 
-ロゴより深刻だったのがテーマ切り替えボタン。ボタン自体は BarefootJS のコンポーネントだが、クリック処理は素の JS（`script.js`）が初期ロード時に一度だけ担当していた。
+ロゴより深刻だったのがテーマ切り替えボタン。ボタン自体は [[barefootjs|BarefootJS]] のコンポーネントだが、クリック処理は素の JS（`script.js`）が初期ロード時に一度だけ担当していた。
 
 ```js
 // script.js — ページロード時に一度だけ実行される

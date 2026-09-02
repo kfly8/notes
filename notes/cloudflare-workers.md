@@ -1,13 +1,13 @@
 ---
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-09-02
 title: Cloudflare Workers
 description: Cloudflare Workers のプラットフォーム機能(配信・キャッシュ・デプロイなど)を扱うノートの見取り図
 tags: [cloudflare, workers, moc]
 ---
 # Cloudflare Workers
 
-Cloudflare Workers のランタイム・プラットフォーム機能を扱うノートのハブ。[[cloudflare-agents-week-2026]] がAIエージェント関連の発表を時系列で追うハブなのに対し、こちらは「Workerを1つ運用する上で必要になる、プラットフォームの機能」という切り口でまとめる。
+Cloudflare Workers のランタイム・プラットフォーム機能を扱うノートのハブ。[[cloudflare-agents-week-2026]] が AI エージェント関連の発表を時系列で追うハブなのに対し、こちらは「Workerを1つ運用する上で必要になる、プラットフォームの機能」という切り口でまとめる。
 
 ## 配信
 
