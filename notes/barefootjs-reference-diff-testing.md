@@ -8,17 +8,19 @@ tags: [barefootjs, testing]
 # BarefootJS のリファレンス実装との差分テスト
 
 各アダプタ（Go/Perl/Rust などの DSL テンプレート）の出力を、Hono アダプタ（TypeScript/JS、実質
-リファレンス実装）の出力とライブに突き合わせ、一致しない箇所を見つける仕組み。単発の期待値比較
-（golden vector）とは別に、「同じソースを2つの経路でレンダーして食い違いを見る」という差分オラクル。
+リファレンス実装）の出力とライブに突き合わせ、一致しない箇所を見つける仕組み。事前に固定した期待値
+との単発比較とは別に、「同じソースを2つの経路でレンダーして食い違いを見る」という差分オラクル。
+
+（このリポジトリで「golden vector」と呼ばれるのはこの節の `expectedHtml` ではなく、実行時のランタイム
+ヘルパー・式評価器を対象にした別のコーパス——[[barefootjs-golden-vectors]] を参照。）
 
 ## `referenceAdapter` によるライブ比較
 
 `packages/adapter-tests/src/jsx-runner.ts` の `runJSXConformanceTests` は、`referenceAdapter` /
 `referenceRender` が渡されると、テスト対象アダプタと基準アダプタの両方で同じ fixture をレンダーし、
 双方を `normalizeHTML` で正規化してから `expect(normalizedHtml).toBe(normalizedRefHtml)` と完全一致を
-要求する。渡されなければ、事前生成された `fixture.expectedHtml`（golden vector）と比較する（[[coverage-floor]]
-や [[barefootjs-bug-finding]] の golden vectors はこちら）。`packages/compat` のクロスアダプタテストでは
-`hono` を `referenceAdapter` として扱う。
+要求する。渡されなければ、事前生成された `fixture.expectedHtml` と比較する。`packages/compat` の
+クロスアダプタテストでは `hono` を `referenceAdapter` として扱う。
 
 ## no-silent-divergence trichotomy: 3番目の状態を許さない
 
