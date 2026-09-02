@@ -7,7 +7,7 @@ tags: [barefootjs, testing]
 ---
 # BarefootJS の golden vector コーパス
 
-[[barefootjs-reference-diff-testing]] がコンパイル済み**テンプレート出力**を Hono とライブに突き合わせるのに対し、
+[[barefootjs-reference-diff-testing]]がコンパイル済み**テンプレート出力**を Hono とライブに突き合わせるのに対し、
 golden vector コーパスはその手前——各言語の**ネイティブランタイム**（テンプレートが実際に実行時に呼ぶ
 ヘルパー関数・式評価器）が、JS の挙動と値として一致するかを検証する。`packages/adapter-tests/vectors/`。
 

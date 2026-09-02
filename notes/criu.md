@@ -37,7 +37,7 @@ CRIUがキャッシュするのは「ビルド成果物」か「実行時の状�
 ```quiz
 `docker checkpoint` を使うには何を設定する必要があるか。2026年時点でのステータスは。
 ---
-daemon.jsonに `"experimental": true` を設定する必要がある。Docker 1.13以降に存在するが、2026年8月時点でもDocker公式ドキュメント上でexperimental機能のまま。
+daemon.json に `"experimental": true` を設定する必要がある。Docker 1.13以降に存在するが、2026年8月時点でもDocker公式ドキュメント上でexperimental機能のまま。
 ```
 
 ```quiz

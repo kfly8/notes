@@ -1,11 +1,11 @@
 ---
 created: 2026-09-02
 updated: 2026-09-02
-title: BarefootJS の網羅性ピン留め
+title: BarefootJS の exhaustiveness-pinned ADT
 description: コンパイラの IR（ParsedExpr など）を discriminated union（タグ付きユニオン、ADT）で定義し、種類を 拡張したときに対応漏れがあればコンパイル時に検出されるようにする設計。
 tags: [barefootjs, testing, typescript]
 ---
-# BarefootJS の網羅性ピン留め
+# BarefootJS の exhaustiveness-pinned ADT
 
 コンパイラの IR（`ParsedExpr` など）を discriminated union（タグ付きユニオン、ADT）で定義し、種類を
 拡張したときに対応漏れがあれば**コンパイル時に**検出されるようにする設計。テストで壊れを見つけるのでは

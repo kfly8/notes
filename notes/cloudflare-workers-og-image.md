@@ -1,13 +1,13 @@
 ---
 created: 2026-08-29
-updated: 2026-08-30
+updated: 2026-09-02
 title: Cloudflare Workers での動的OGP画像生成
 description: satori(レイアウト)+ resvg-wasm(ラスタライズ)でCloudflare Workers上に動的OGP画像を生成する方法
 tags: [cloudflare, workers, ogp]
 ---
 # Cloudflare Workers での動的OGP画像生成
 
-記事ごとに違うタイトルを描いた og:image を、リクエスト時にWorker側で生成する方法。node-canvas はネイティブバインディング依存でWorkersでは動かないので選択肢に入らない。
+記事ごとに違うタイトルを描いた og:image を、リクエスト時にWorker側で生成する方法。node-canvas はネイティブバインディング依存で Workers では動かないので選択肢に入らない。
 
 定番構成は satori(JSX/plain objectのツリー→SVGへのレイアウトエンジン、Vercelの `@vercel/og` と中身は同じ)+ resvg-wasm(SVG→PNGのラスタライズ)。Workers向けにこれをまとめたパッケージが `@cf-wasm/og`(`fineshopdesign/cf-wasm` 配下)で、`@vercel/og` に似せた `ImageResponse` / `GoogleFont` / `CustomFont` / `cache` を提供する。Workers専用のエントリは `@cf-wasm/og/workerd`。
 
@@ -51,7 +51,7 @@ if (ifNoneMatch === etag) {
 
 ## JSXなしでも書ける
 
-satoriは `{type, props.children, props.style}` の形のplain objectをそのまま受け付ける。JSXトランスパイラが要らない。
+satoriは `{type, props.children, props.style}` の形の plain object をそのまま受け付ける。JSXトランスパイラが要らない。
 
 ```js
 await satori(

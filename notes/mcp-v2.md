@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-09-02
 title: MCP v2
 description: Model Context Protocol (MCP) の 2026-07-28 仕様で導入された、プロトコルコアのステートレス化。
 tags: [cloudflare, agents-week-2026, mcp]
@@ -58,7 +58,7 @@ MCP v2 で人間の確認が必要な場面はどう扱われるか。
 ```quiz
 MCP v2 移行で MCP サーバーの実行基盤に起きた変化は。
 ---
-Durable Objectsのような状態管理インフラが不要になり、Cloudflare Workersのようなリクエストスコープのインフラだけで動かせるようになった。
+Durable Objects のような状態管理インフラが不要になり、Cloudflare Workers のようなリクエストスコープのインフラだけで動かせるようになった。
 ```
 
 ## 出典

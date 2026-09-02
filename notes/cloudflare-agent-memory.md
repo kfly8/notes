@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-09-02
 title: Cloudflare Agent Memory
 description: AI エージェントに永続的な記憶を持たせるマネージドサービス。
 tags: [cloudflare, agents-week-2026, ai-agent]
@@ -61,7 +61,7 @@ Agent Memory が解決しようとしている "context rot" のジレンマと�
 ```quiz
 Recall 操作は内部でどう検索しているか。
 ---
-フルテキスト検索・キー検索・メッセージ検索・直接ベクトル検索・HyDEという5つのチャネルを並列に実行し、結果を合成して返す。
+フルテキスト検索・キー検索・メッセージ検索・直接ベクトル検索・HyDE という5つのチャネルを並列に実行し、結果を合成して返す。
 ```
 
 ## 出典

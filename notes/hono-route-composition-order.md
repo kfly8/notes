@@ -1,13 +1,13 @@
 ---
 created: 2026-08-22
-updated: 2026-08-22
+updated: 2026-09-02
 title: Hono の `.route()` は呼び出し時点のルートをコピーする
 description: Astro の Hono アダプタ とは別の、Hono 自体のルーティングの話。
 tags: [hono, routing]
 ---
 # Hono の `.route()` は呼び出し時点のルートをコピーする
 
-[[astro-hono-adapter]] とは別の、Hono 自体のルーティングの話。`app.route(path, subApp)` の実体（`hono-base.js`）:
+[[astro-hono-adapter]]とは別の、Hono 自体のルーティングの話。`app.route(path, subApp)` の実体（`hono-base.js`）:
 
 ```js
 route(path, app) {

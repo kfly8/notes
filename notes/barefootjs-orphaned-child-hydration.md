@@ -1,6 +1,6 @@
 ---
 created: 2026-08-30
-updated: 2026-08-30
+updated: 2026-09-02
 title: "BarefootJS: サーバーコンポーネントの子は孤立してhydrateされない"
 description: サーバーコンポーネントの子として置いたクライアントコンポーネントは、静かにhydrateされない
 tags: [barefootjs, hono, hydration]
@@ -56,7 +56,7 @@ export function Parent(props: { label: string }) {
 
 子コンポーネントの参照先を、**すでに `'use client'` なコンポーネント**(たとえ理由がなくても)に移す。あるいは、BarefootJSのhydrationライフサイクルに頼らず、`renderer` 側に素の `<script>`(`dangerouslySetInnerHTML`)を1本置いて済ませる。後者は [[barefootjs-router-region-contract|region の外に置いたリソースの契約]]とも相性がよく、コンポーネントのマウント/アンマウントに一切依存しない。
 
-hydrationまわりの落とし穴という意味では [[barefootjs-router-region-contract]](region境界の外での挙動)と隣接するが、こちらはregionの**内側**での「誰がこの子のhydrationを呼ぶか」というownershipの話で、軸が別。
+hydrationまわりの落とし穴という意味では [[barefootjs-router-region-contract]](region境界の外での挙動)と隣接するが、こちらは region の**内側**での「誰がこの子のhydrationを呼ぶか」というownershipの話で、軸が別。
 
 ## 理解度チェック
 

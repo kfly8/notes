@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-08-31
+updated: 2026-09-02
 title: Workers Cache
 description: Worker が生成したレスポンス自体を、Cache-Control ヘッダーを見て自動でキャッシュする Cloudflare の機能
 tags: [cloudflare, workers]
@@ -24,7 +24,7 @@ Worker の手前に専用のキャッシュ層を置く機能。2026年6〜8月�
 | ヒット時にWorkerは動くか | 動く(コード側でmatch判定するため) | **動かない**(プラットフォーム側でヒット判定してから呼ばれる) |
 | 動く場所 | ゾーンに紐づく | Workerに紐づく。カスタムドメイン・workers.dev・service binding・preview URL・Workers for Platforms テナントのどこでも同じ挙動 |
 
-同時に複数の相手(例: OGP画像を取得しにくる複数のクローラー)が同じキーへ同時アクセスしても、Workers Cacheは1回の実行にまとめる。Cache APIにはこの仕組みがない。
+同時に複数の相手(例: OGP画像を取得しにくる複数のクローラー)が同じキーへ同時アクセスしても、Workers Cache は1回の実行にまとめる。Cache APIにはこの仕組みがない。
 
 ## `Cache-Control` を省略しても no-store にはならない
 
@@ -87,7 +87,7 @@ but you've requested "2026-08-28". Falling back to "2025-05-08"...
 
 [[cloudflare-workers-og-image|Worker内で生成したOGP画像(PNG)]]をこの仕組みでキャッシュさせた。最初は `max-age=86400` 程度の短い寿命でお茶を濁す案、次に「URLに `?v=<contentのhash>` を付けて中身が変わったらURLごと変える」案を試したが、前者は結局パージ運用が要り、後者は「URLが汚い」という理由で却下した。最終的には `Cache-Control: public, max-age=604800, stale-while-revalidate=2592000` の長寿命キャッシュ + `ETag`(記事全体のハッシュ)の組み合わせに落ち着いた。詳細は [[cloudflare-workers-og-image]] を参照。
 
-対照的に、[[cloudflare-workers-assets|Workers Assets]] の `_headers` は静的アセットにしか効かず、Worker が生成したレスポンスには適用されない。Workers CacheはWorker生成レスポンス側のキャッシュを埋める位置づけになる。
+対照的に、[[cloudflare-workers-assets|Workers Assets]] の `_headers` は静的アセットにしか効かず、Worker が生成したレスポンスには適用されない。Workers Cache は Worker生成レスポンス側のキャッシュを埋める位置づけになる。
 
 ## [[cloudflare-workers]]の中での位置づけ
 
