@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-08-17
+updated: 2026-09-02
 title: agent-koans
 description: AI エージェント実装のためのコンフォーマンステストスイート。
 tags: [ai-agent, testing, conformance]
@@ -17,7 +17,7 @@ AI エージェント実装のためのコンフォーマンステストスイ�
 
 ## 実行のかたち
 
-テスト対象のエージェントは HTTP サーバとして実装する。ランナーは koan ごとにエージェントを起動し、両側から観察する。
+テスト対象のエージェントは HTTP サーバーとして実装する。ランナーは koan ごとにエージェントを起動し、両側から観察する。
 
 ```mermaid
 flowchart LR

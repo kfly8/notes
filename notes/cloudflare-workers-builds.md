@@ -1,13 +1,13 @@
 ---
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-09-02
 title: Workers Builds
-description: GitHubリポジトリをダッシュボードで接続するだけでpush毎に自動ビルド・デプロイするCloudflare純正のCI/CD
+description: GitHub リポジトリをダッシュボードで接続するだけでpush毎に自動ビルド・デプロイするCloudflare純正のCI/CD
 tags: [cloudflare, workers, ci-cd]
 ---
 # Workers Builds
 
-GitHub/GitLabリポジトリをCloudflareダッシュボードで接続すると、指定ブランチへのpushで自動的にビルド・デプロイする機能。GitHub Actionsのワークフローや、手動発行したAPIトークンをGitHub Secretsに登録する作業が要らない。
+GitHub/GitLab リポジトリを Cloudflare ダッシュボードで接続すると、指定ブランチへのpushで自動的にビルド・デプロイする機能。GitHub Actionsのワークフローや、手動発行した API トークンをGitHub Secretsに登録する作業が要らない。
 
 ## 接続手順
 
@@ -18,7 +18,7 @@ GitHub/GitLabリポジトリをCloudflareダッシュボードで接続すると
 
 **ダッシュボード上のWorker名と、wrangler設定ファイルの `name` が一致していないとビルドが失敗する。**
 
-GitHubアカウントは1つのCloudflareアカウントにしか紐づけられない。
+GitHub アカウントは1つの Cloudflare アカウントにしか紐づけられない。
 
 ## 設定項目
 
@@ -36,7 +36,7 @@ GitHubアカウントは1つのCloudflareアカウントにしか紐づけられ
 
 wranglerのバージョンは `package.json` に指定したものが使われる。
 
-自己ホストのGitHub/GitLabインスタンスは非対応(2026年8月時点)。
+自己ホストの GitHub/GitLab インスタンスは非対応(2026年8月時点)。
 
 ## kobaken.co での実際の設定
 
@@ -60,7 +60,7 @@ wranglerのバージョンは `package.json` に指定したものが使われ�
 ## 理解度チェック
 
 ```quiz
-Workers Builds で自動デプロイするのに、手動発行したCloudflare APIトークンをGitHub Secretsに登録する必要はあるか。
+Workers Builds で自動デプロイするのに、手動発行した Cloudflare API トークンをGitHub Secretsに登録する必要はあるか。
 ---
 通常は不要。ダッシュボードで「Cloudflare Workers & Pages GitHub App」を認可してリポジトリを接続するだけで、Cloudflare側が認証を処理する。API token欄はあるが任意入力。
 ```
