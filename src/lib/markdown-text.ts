@@ -101,7 +101,10 @@ export const excerpt = (body: string, titles?: Map<string, string>, length = 120
         label ?? titles?.get(target.trim().replace(/\.md$/, '')) ?? target
     )
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/[*_]/g, '')
+    // アンダースコアは剥がさない。イタリック記法として使われている実例はコーパスに無く、
+    // `GITHUB_TOKEN` のようなインラインコード中の識別子から `_` だけ剥ぎ取ってしまう
+    // （withoutFences がバッククォートを外した後なので、通常の識別子と区別が付かない）。
+    .replace(/\*/g, '')
     .replace(/\s+/g, ' ')
     .trim()
   return text.length > length ? `${text.slice(0, length)}…` : text
