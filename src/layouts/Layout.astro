@@ -15,7 +15,11 @@ const { title, description, mermaid = false, markdown } = Astro.props
 
 const pageTitle = title ? `${title} - ${site.name}` : `${site.name} - ${site.author}`
 const pageDescription = description || site.description
-const canonical = new URL(Astro.url.pathname, site.origin).href
+// build.format: 'file' により Astro.url.pathname は `/slug.html` や `/index.html` を返すが、
+// サイトの実際の URL（ナビゲーションや sitemap.xml が使う URL）は拡張子なしの `/slug` なので揃える。
+const cleanPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '')
+const canonical = new URL(cleanPath, site.origin).href
+const ogImage = new URL('/og-image.png', site.origin).href
 const favicon = `data:image/svg+xml,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#2f6f5b"/><path d="M9 11h14M9 16h14M9 21h9" stroke="#f8fbf8" stroke-width="2.6" stroke-linecap="round"/></svg>'
 )}`
@@ -43,7 +47,12 @@ mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'default', flowch
     <meta property="og:site_name" content="notes.kobaken.co" />
     <meta property="og:url" content={canonical} />
     <meta property="og:type" content={Astro.url.pathname === '/' ? 'website' : 'article'} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="ja_JP" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:creator" content="@kfly8" />
     <link rel="alternate" type="application/atom+xml" href="/feed.xml" title={site.name} />
     {markdown && <link rel="alternate" type="text/markdown" href={markdown} />}
