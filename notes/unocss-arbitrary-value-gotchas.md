@@ -1,13 +1,13 @@
 ---
 created: 2026-08-22
-updated: 2026-08-22
+updated: 2026-09-06
 title: UnoCSS の arbitrary value のハマりどころ
-description: UnoCSS（BarefootJS の Hono scaffold で使った presetWind4）の text-[...] 系ユーティリティは、見た目どおりには解釈されないことがある。
+description: UnoCSS の presetWind4 は、text-[...]・border-[...] などの arbitrary value を見た目どおりに解釈しないことがある。
 tags: [unocss, css]
 ---
 # UnoCSS の arbitrary value のハマりどころ
 
-UnoCSS（[[barefootjs-hono-scaffold|BarefootJS の Hono scaffold]] で使った `presetWind4`）の `text-[...]` 系ユーティリティは、見た目どおりには解釈されないことがある。実際に3つ踏んだ。
+UnoCSS の `presetWind4` は、見た目どおりには解釈されない arbitrary value にたびたび遭遇する。`text-[...]` 系で[[barefootjs-hono-scaffold|BarefootJS の Hono scaffold]]で使った際に3つ、`border-[...]`系で別のTauri + BarefootJS CSRプロジェクトで使った際に1つ、踏んだ。
 
 ## `text-[xx-large]` は文字色として解釈される
 
@@ -46,6 +46,24 @@ presetWind4 の色ルールは正規表現で明示プレフィックスを持�
 
 なお `decoration-[var(...)]` はプロパティが色で確定しているため、ヒントなしの裸記法で問題ない。ヒントが要りそうに見えるのは `text-*` のような多義的なユーティリティだけで、そこでは wind4 流の明示プレフィックスを使う。
 
+## `border-[Npx]` はborder-**幅**ではなくborder-**色**として解釈される
+
+`text-*` と同じ構造の罠が `border-*` にもある。`border-*` は border-width と border-color の両方を兼ねるユーティリティで、`border-[6px]` のように単位付きの数値を渡しても、幅ではなく**色**として解釈される。
+
+```css
+.border-\[6px\]{border-color:color-mix(in oklab, 6px var(--un-border-opacity), transparent);}
+```
+
+`6px` が色として `color-mix()` に渡された、意味をなさない宣言になる。border-widthには一切反映されず、DevToolsのcomputed styleを見ても既定の太さのまま（枠線自体は他のborder系ユーティリティ由来の値で表示されていることもあり、「太さが変わらない」ことに気づいても「クラスが効いていない」と誤解しやすい）。
+
+**対処**: 数値スケールのユーティリティ（`border-2`、`border-4`、`border-8` など）を使う。これは正しく border-width として解釈される。
+
+```css
+.border-4{border-width:4px;}
+```
+
+任意のpx数を角括弧で指定したい場合の代替記法は確認できていない。今回は数値スケールに落とし込んで解決した。
+
 ## `font-mono` の既定スタックは `monospace` より幅が広い
 
 `font-mono` ユーティリティは既定で次のスタックを使う:
@@ -69,6 +87,6 @@ export default defineConfig({
 
 ## 気づきにくさの共通点
 
-いずれも「クラス名は書いた通りに解釈されている」と思い込みやすい。誤解釈（`text-[xx-large]`）も無視（`text-[color:...]`）もビルドは黙って通るので、実際に UnoCSS が生成した CSS ファイル（`public/static/uno.css` など）を `grep` して、目的のセレクタとプロパティ（`font-size:` や `color:`）が本当に出力されているか確認するのが最短の切り分け方だった。
+いずれも「クラス名は書いた通りに解釈されている」と思い込みやすい。誤解釈（`text-[xx-large]`、`border-[6px]`）も無視（`text-[color:...]`）もビルドは黙って通るので、実際に UnoCSS が生成した CSS ファイル（`public/static/uno.css` など）を `grep` して、目的のセレクタとプロパティ（`font-size:` や `color:`、`border-width:`）が本当に出力されているか確認するのが最短の切り分け方だった。
 
 #unocss #css

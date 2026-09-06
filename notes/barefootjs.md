@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-09-01
+updated: 2026-09-06
 title: BarefootJS
 description: signal ベースの TSX をビルド時にコンパイルして、バックエンドのネイティブなテンプレートを吐くフレームワーク。
 tags: [barefootjs, signals, jsx, hono]
@@ -69,7 +69,7 @@ expect(button!.events).toContain('click')
 
 実際の操作や見た目は結局 E2E が要るが、構造の壊れはその手前で捕まえられる。`bf` CLI が全コマンドで `--json` を持っていることと合わせて、AI エージェントがソースを読まずにコンポーネントを組み立て・検証できるように設計されている。
 
-単機能のフィクスチャでは踏めない、機能同士の組み合わせで起きるバグの洗い出しには [[pairwise-testing]] を使っている。問題発見の手法全体の変遷とできていないことの整理は [[barefootjs-bug-finding]] にまとめた。
+単機能のフィクスチャでは踏めない、機能同士の組み合わせで起きるバグの洗い出しには [[pairwise-testing]] を使っている。問題発見の手法全体の変遷とできていないことの整理は [[barefootjs-bug-finding]] にまとめた。実際にアプリを作りながら踏んだ個別のバグは [[barefootjs-map-array-reorder-staleness]]、避け方のパターンは [[barefootjs-per-key-signal-pattern]] を参照。
 
 ## Hono アダプタで使う
 
