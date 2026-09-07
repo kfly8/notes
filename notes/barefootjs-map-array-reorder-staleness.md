@@ -1,13 +1,15 @@
 ---
 created: 2026-09-06
-updated: 2026-09-06
+updated: 2026-09-07
 title: "BarefootJS: keyedな.map()を並べ替えると、ループ本体が読む生のindexだけ古いまま残る"
-description: BarefootJS のkeyedな.map()リスト(items().map((item, i) => <li key={item.id}>...</li>))で、配列を並べ替える(同じkeyのまま順序だけ変える)と、各行自身のitemから読む値は正しく追従するのに、.map()コールバックのindexパラメータiを直接使った式だけ、その行が最初に作られた時の値のまま固まる。
+description: BarefootJS のkeyedな.map()で並べ替え後に生のindexだけ古いまま残るバグ(#2859)は0.35.0で修正済みだが、item/signalと無関係な裸のindex式はまだ追跡されない残存ギャップ(#2861)がある。
 tags: [barefootjs, signals, reactivity]
 ---
 # BarefootJS: keyedな.map()を並べ替えると、ループ本体が読む生のindexだけ古いまま残る
 
-[[barefootjs]] のkeyedな`.map()`リスト(`items().map((item, i) => <li key={item.id}>...</li>)`)で、配列を並べ替える(同じkeyのまま順序だけ変える)と、各行**自身**のitemから読む値は正しく追従するのに、`.map()`コールバックの**indexパラメータ`i`を直接使った式**だけ、その行が最初に作られた時の値のまま固まる。コンパイルエラーもコンソールエラーも出ない。
+**`@barefootjs/client` 0.35.0で修正済み**([piconic-ai/barefootjs#2860](https://github.com/piconic-ai/barefootjs/pull/2860)、ただし裸のindex式だけを対象にした残存ギャップが1つある——後述)。
+
+[[barefootjs]] のkeyedな`.map()`リスト(`items().map((item, i) => <li key={item.id}>...</li>)`)で、配列を並べ替える(同じkeyのまま順序だけ変える)と、各行**自身**のitemから読む値は正しく追従するのに、`.map()`コールバックの**indexパラメータ`i`を直接使った式**だけ、その行が最初に作られた時の値のまま固まる。コンパイルエラーもコンソールエラーも出ない。以下は`0.33.6`(修正前)で確認した内容。
 
 ## 症状
 
@@ -50,13 +52,19 @@ if (existing) {
 
 同じ`i`をクリックハンドラで閉じたケース(`onClick={() => handle(i)}`)は、この問題の対象外。[piconic-ai/barefootjs#2189](https://github.com/piconic-ai/barefootjs/issues/2189) / [#2191](https://github.com/piconic-ai/barefootjs/pull/2191) で、`bf build`の委譲クリックディスパッチが`data-key`から`arr.findIndex(...)`でクリック時点の現在indexを再導出するよう修正済みだからで、これは**イベントハンドラ**専用の対処。今回の問題は**レンダー本体**(テキスト・属性・クラスの束縛)で生のindexを使った場合に限られ、#2191のスコープには含まれない別の不具合になる。
 
-## 再現・報告
+## 再現・報告・修正
 
-最小再現コードを実際にコンパイル・ブラウザ実行(Chromium, Playwright経由)して確認した上で、[piconic-ai/barefootjs#2859](https://github.com/piconic-ai/barefootjs/issues/2859)として報告した(2026-09時点でOPEN)。`@barefootjs/client`/`@barefootjs/jsx`/`@barefootjs/shared`/`@barefootjs/vite` `0.33.6`で確認。
+最小再現コードを実際にコンパイル・ブラウザ実行(Chromium, Playwright経由)して確認した上で、[piconic-ai/barefootjs#2859](https://github.com/piconic-ai/barefootjs/issues/2859)として報告(`0.33.6`で確認)。[#2860](https://github.com/piconic-ai/barefootjs/pull/2860)で修正され、`0.35.0`でリリース済み(2026-09-06マージ)。修正は`ItemScope`/`AnchorScope`にitemと並ぶ「index accessor」を追加し、同一key再利用時にitemと一緒に現在位置を流し込む形。コンパイラの`wrapLoopParamAsAccessor`もindexパラメータを同じルールでaccessor呼び出しに書き換えるよう拡張されている。
+
+## 残っているギャップ(#2861、修正後もOPEN)
+
+`#2860`の修正でも直らないケースが1つ、修正PR自身の説明で明言されている: **シグナルも関数呼び出しも一切含まない、item読み取りも無い、純粋にループindexだけに依存する式**(裸の`{i}`や`class={i % 2 === 0 ? 'a' : 'b'}`)は、コンパイラのreactivity解析でそもそも「reactiveな式」として分類されず、`createEffect`が一切配線されない——これは今回の修正が触れる前からの別ギャップで、[piconic-ai/barefootjs#2861](https://github.com/piconic-ai/barefootjs/issues/2861)として追跡されている(2026-09時点でOPEN)。
+
+これは実務上重要: たとえば「スライド番号バッジ」を`{String(i + 1)}`だけで書いていると(他のsignalと組み合わせていない)、`0.35.0`にアップグレードしても並べ替え後に古い番号のまま固まる。`item`か何らかのsignalと組み合わせた式(`selectedIndex() === i`など)は`#2860`で直っているので大丈夫。
 
 ## 回避策
 
-生のループindexをレンダー本体で直接使わず、「このkeyの現在位置」を per-key signal として保持し、そこから読む。詳細と実装パターンは [[barefootjs-per-key-signal-pattern]] を参照。
+`#2861`が閉じるまでは、**item・signalと無関係な裸のindex式**にだけ、per-key signalで「このkeyの現在位置」を保持する回避策が要る。詳細と実装パターンは [[barefootjs-per-key-signal-pattern]] を参照。item/signalと組み合わせた式は`0.35.0`以降そのままの生の`i`で正しく動く。
 
 ## 関連: `.map()`コールバックはブロック本体にできない
 
@@ -82,10 +90,18 @@ itemから読む値(`item.label`など)は`existing.setItem(item)`で正しく�
 同じkeyの行を再利用する際、`existing.setItem(item)`でper-item signalを更新するだけで`renderItem(itemAccessor, index, existing)`を再度呼ばない。最初にrenderItemへ渡されたindexがクロージャに閉じ込められたまま、再評価する仕組みが無い。
 ```
 
+```quiz
+`0.35.0`で#2859が直った後も、`{String(i + 1)}`のようなバッジ表示だけは並べ替え後に古いまま固まることがある。なぜか?
+---
+シグナルも関数呼び出しも一切含まない、item読み取りも無い、純粋にループindexだけに依存する式は、コンパイラのreactivity解析で「reactiveな式」として分類されず`createEffect`が配線されない(#2861、修正後もOPEN)。`selectedIndex() === i`のように他のsignal/itemと組み合わせた式は#2860で正しく直っている。
+```
+
 ## 出典
 
 - `packages/client/src/runtime/map-array.ts`(`mapArray`関数、`@barefootjs/client@0.33.6`)— 一次情報
 - 実際に立てたissue: [piconic-ai/barefootjs#2859](https://github.com/piconic-ai/barefootjs/issues/2859)
+- 修正PR: [piconic-ai/barefootjs#2860](https://github.com/piconic-ai/barefootjs/pull/2860)(`0.35.0`でリリース)
+- 残存ギャップ: [piconic-ai/barefootjs#2861](https://github.com/piconic-ai/barefootjs/issues/2861)
 - 関連PR: [piconic-ai/barefootjs#2191](https://github.com/piconic-ai/barefootjs/pull/2191)(イベントハンドラ側の類似問題の修正、今回のレンダー本体側の問題はスコープ外)
 
 #barefootjs #signals #reactivity
