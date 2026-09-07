@@ -3,3 +3,9 @@
 # 文字化けする。charset を明示して上書きする。
 /*.md
   Content-Type: text/markdown; charset=utf-8
+
+# AI が調べたことを書き残しているだけのノートで、検索結果に出したり bot に収集させたり
+# したくない。robots.txt の Disallow はクロール自体の抑止で、respect しない bot もいる
+# ので、ヘッダーでも明示的に検索エンジンへ非掲載を伝える。
+/*
+  X-Robots-Tag: noindex, nofollow

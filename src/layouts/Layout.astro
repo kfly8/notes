@@ -16,7 +16,7 @@ const { title, description, mermaid = false, markdown } = Astro.props
 const pageTitle = title ? `${title} - ${site.name}` : `${site.name} - ${site.author}`
 const pageDescription = description || site.description
 // build.format: 'file' により Astro.url.pathname は `/slug.html` や `/index.html` を返すが、
-// サイトの実際の URL（ナビゲーションや sitemap.xml が使う URL）は拡張子なしの `/slug` なので揃える。
+// サイトの実際の URL（ナビゲーションが使う URL）は拡張子なしの `/slug` なので揃える。
 const cleanPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '')
 const canonical = new URL(cleanPath, site.origin).href
 const ogImage = new URL('/og-image.png', site.origin).href
