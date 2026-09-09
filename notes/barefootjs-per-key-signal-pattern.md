@@ -1,6 +1,6 @@
 ---
 created: 2026-09-06
-updated: 2026-09-07
+updated: 2026-09-09
 title: "BarefootJS: コレクション全体を1つのsignalに持たない"
 description: keyedな.map()リストの各行が、他の行とは独立な「自分専用の値」(現在の描画内容、現在の並び順位置、など)を必要とする場面で、Record<key, X>やMap<key, X>を1つのsignal/memoにまとめて持つと、意図しない全行再レンダーを引き起こす。
 tags: [barefootjs, signals, reactivity, performance]
@@ -25,7 +25,7 @@ itemStateByKey().get(item.key)
 これは2つの文脈で実際に問題になった。
 
 1. **サムネイルのチラつき**: あるスライドを編集するたびに、選択中でない他のスライドのサムネイル(`<iframe srcdoc>`)まで再描画され、画面全体がちらつく。原因は、サムネイルのHTMLフラグメントを1つの`Record<key, string>` signalで持っていたこと——1件編集するたびに新しいRecordオブジェクトが作られ、全サムネイルの`srcdoc`バインディングが「値は同じでも」再評価され、`.srcdoc`への代入は値が同一でも常にiframeの再ナビゲーションを起こす。(この節の対処だけでは実は直りきらず、`.map()`のitem自体の参照churnという別レイヤーの原因が残っていた——[[barefootjs-map-item-reference-stability]]参照。)
-2. **[[barefootjs-map-array-reorder-staleness|並べ替え後のindex追従バグ]]の対処として書いた最初の実装が同じ罠を踏んだ**: 生のループindexの代わりに「keyの現在位置」を`createMemo<Map<key, number>>`で用意したところ、これも1つのmemoが`items`全体に依存するため、**1件のスライドを編集するだけで全スライドの位置表示が再計算対象になり**、直したはずのチラつきバグを同じ形で再発させてしまった。
+2. **keyedな`.map()`の生のループindexが並べ替え後に古いまま固まる問題**(詳細は[[barefootjs-loop-index-reactivity]])の対処として書いた最初の実装が同じ罠を踏んだ: 生のループindexの代わりに「keyの現在位置」を`createMemo<Map<key, number>>`で用意したところ、これも1つのmemoが`items`全体に依存するため、**1件のスライドを編集するだけで全スライドの位置表示が再計算対象になり**、直したはずのチラつきバグを同じ形で再発させてしまった。
 
 ## 対処: per-key signal
 
@@ -55,6 +55,12 @@ signalFor(item.key)[0]()
 ```
 
 各行は自分のkeyのsignalだけを購読するので、他の行の値が変わっても再レンダーされない。`if (get() !== next)`のガードも重要——これが無いと、`items`全体を辿るeffectが走るたびに**全キー**のsetterが呼ばれ、値が同じでも依存先を再評価させてしまい、結局同じ問題に戻る。
+
+## 追記: index追従はフレームワーク側で直った
+
+上の2番目の例が回避しようとしていた「keyedな`.map()`の生のループindexが並べ替え後に古いまま固まる」問題自体は、[piconic-ai/barefootjs#2860](https://github.com/piconic-ai/barefootjs/pull/2860)でフレームワーク本体が修正した——`mapArray`/`mapArrayLazy`がindexをitemと同じ仕組みでトラッキングするようになったため、この特定のケースについては自前のper-key signalはもう不要。ただし、シグナル読み取りも関数呼び出しも含まない生のindex単体の式は今も未対応([piconic-ai/barefootjs#2861](https://github.com/piconic-ai/barefootjs/issues/2861)、2026-09時点でOPEN)。詳細は[[barefootjs-loop-index-reactivity]]を参照。
+
+このper-key signalパターン自体(コレクション全体を1つのsignal/memoに持たない、という設計判断)は、フレームワークが面倒を見ない独自の派生状態全般に今も有効。
 
 ## 理解度チェック
 
