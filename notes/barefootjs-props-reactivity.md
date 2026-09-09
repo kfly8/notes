@@ -54,9 +54,9 @@ warning[BF043]: Props destructuring breaks reactivity
 
 `CSRAdapter`(ハイドレーション境界を持たない、純粋なクライアントサイドレンダリング)を使うアプリでは、この境界自体が存在しないため、コールバック関数(`Function`型)を含むどんなpropsを渡してもこの意味では問題にならない。実際、コールバックprops(`onSelect: () => void`など)はCSRアプリのどのコンポーネント間受け渡しでもごく普通に使われており、`BF049`はトリガーされない。
 
-## 動的追跡は`bf debug graph`の静的解析より広い
+## `bf debug graph`の表示を鵜呑みにしない
 
-`props.xxx`という読み取りパターンは、`bf debug graph`(コンパイル時の依存関係を可視化するCLIツール)の出力では**「no tracked deps」**(追跡している依存なし)と表示されることが多い。これは静的解析の限界であって、実際に壊れているという意味ではない——詳細は[[barefootjs-debug-graph-undercounts-deps]]。
+`props.xxx`という読み取りパターンは、`bf debug graph`(コンパイル時の依存関係を可視化するCLIツール)の出力では**「no tracked deps」**(追跡している依存なし)と表示されることが多い。実際には正しく動的更新されるにもかかわらず、このツールの表示だけを見て壊れていると判断するのは早計——詳細は[[barefootjs-debug-graph-undercounts-deps]]。
 
 ## 理解度チェック
 
