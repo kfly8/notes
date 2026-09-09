@@ -1,6 +1,6 @@
 ---
 created: 2026-08-22
-updated: 2026-09-06
+updated: 2026-09-09
 title: UnoCSS の arbitrary value のハマりどころ
 description: UnoCSS の presetWind4 は、text-[...]・border-[...] などの arbitrary value を見た目どおりに解釈しないことがある。
 tags: [unocss, css]
@@ -84,6 +84,10 @@ export default defineConfig({
   // ...
 })
 ```
+
+## `inset-0`がWKWebViewで効かないのはUnoCSSの罠ではない
+
+`inset-0`ユーティリティが生成する`inset: calc(var(--spacing) * 0)`が期待通りに効かないことがあるが、これはUnoCSSの誤解釈ではなく、Tauri v2アプリなどが使うWKWebView自体が`inset`ショートハンドを無視することが原因——詳細は[[wkwebview-css-inset-shorthand]]。ChromiumベースのブラウザやDevToolsでは普通に効くため、UnoCSS側を疑いたくなるが、生成されたCSS自体(`inset: calc(...)`)は正しい。
 
 ## 気づきにくさの共通点
 

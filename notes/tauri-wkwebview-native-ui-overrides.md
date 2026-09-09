@@ -1,6 +1,6 @@
 ---
 created: 2026-09-06
-updated: 2026-09-06
+updated: 2026-09-09
 title: "Tauri (macOS/WKWebView): ネイティブUIがWeb側のつもりを上書きしてくる"
 description: Tauri v2をmacOSで使うと、WKWebViewというネイティブのブラウザコンポーネントの上でページが動く。
 tags: [tauri, wkwebview, macos, desktop]
@@ -37,11 +37,13 @@ Tauri v2をmacOSで使うと、WKWebViewというネイティブのブラウザ�
 <span style={{ position: 'relative' }}>
   <iframe srcdoc={doc} />
   <div
-    style={{ position: 'absolute', inset: 0 }}
+    style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
     onContextMenu={handleContextMenu}
   />
 </span>
 ```
+
+(`inset: 0` ではなく4つの物理プロパティを使っているのは、このWKWebViewでは`inset`ショートハンド自体が効かないため——詳細は [[wkwebview-css-inset-shorthand]]。)
 
 ## ネイティブのHTML5 drag-and-dropが不安定
 
