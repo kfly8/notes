@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-09-02
+updated: 2026-09-10
 title: GITHUB_TOKEN の操作は他のワークフローを起動しない
 description: ワークフローの中から GITHUB_TOKEN で push・タグ付け・PR 作成をしても、それを契機とする別のワークフローは動かない。
 tags: [github, ci]
@@ -79,6 +79,28 @@ Settings → Actions → General → Workflow permissions の
 
 トークンの `permissions:` とは別の関門で、ワークフロー側で `pull-requests: write` を書いていても、この設定が閉じていれば 403 になる。
 
+## その上に組織の設定がある
+
+Organization 配下のリポジトリでは、この設定にもう1段上の壁がある。**組織 (Settings → Actions → General) 側の Workflow permissions が、配下の全リポジトリの上限になる。** リポジトリ管理者はこれを「より制限する」方向にしか動かせない。
+
+組織側が read-only 相当(「Read repository contents and packages permissions」)になっていると、リポジトリ側で書き込みに変えようとしても API が弾く。
+
+```console
+$ gh api --method PUT repos/OWNER/REPO/actions/permissions/workflow \
+    -f default_workflow_permissions=write -F can_approve_pull_request_reviews=true
+{"message":"Conflict","errors":"Write permissions for workflows are disabled by the organization","status":"409"}
+```
+
+組織側の現在値を読むには `admin:org` スコープが要る。無いと自分がリポジトリ管理者でも見えない。
+
+```console
+$ gh api orgs/ORG/actions/permissions/workflow
+gh: You must be an org admin or have the actions policies fine-grained permission. (HTTP 403)
+```
+
+直すのは組織管理者が Organization settings → Actions → General → Workflow permissions で
+**「Read and write permissions」**を選ぶこと(GitHub の Web UI 側の文言は「Allow GitHub Actions to create and approve pull requests」チェックボックスと並んで表示される)。それをした後であれば、上のリポジトリ側 API 呼び出しが通る。
+
 ## 出典
 
 - [GITHUB_TOKEN | GitHub Docs](https://docs.github.com/en/actions/concepts/security/github_token)
@@ -96,6 +118,12 @@ Settings → Actions → General → Workflow permissions の
 ワークフローに `permissions: pull-requests: write` と書いたのに、PR 作成が 403 になる。
 ---
 リポジトリ設定の「Allow GitHub Actions to create and approve pull requests」が閉じている。トークンの権限とは別の関門。
+```
+
+```quiz
+リポジトリ側で `gh api --method PUT .../actions/permissions/workflow` を write に変えようとしたら 409 Conflict になった。次に見るべきはどこか。
+---
+Organization 側の Workflow permissions。組織の設定がリポジトリの上限になっており、組織管理者がそちらを「Read and write permissions」にしない限り、リポジトリ側では緩められない。
 ```
 
 #github #ci
