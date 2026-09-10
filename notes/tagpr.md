@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-09-10
 title: tagpr
 description: リリース用の PR を維持しておいて、それをマージした瞬間にタグを打つツール。
 tags: [リリース, ci, github]
@@ -28,6 +28,21 @@ tagpr がタグを打ち、GitHub Release も作る
 | `tagpr:major` / `tagpr/major` | major |
 
 両方あれば major が勝つ。Release PR の中の `package.json` を手で書き換えれば、ラベルより優先される。
+
+## 必要な権限: `contents` / `pull-requests` / `issues`
+
+ワークフローの `permissions:` に3つ要る。
+
+```yaml
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+```
+
+`issues: read` を忘れやすい。ラベル(`tagpr:minor` 等)を issue/PR のどちらに付けても拾える設計になっており、その参照に使う。**無くてもワークフローはエラーにならず、静かに機能が落ちるだけ**なので気づきにくい。
+
+PR自体を作れるかどうかはこれとは別の関門で、[[github-token-does-not-trigger-workflows]] にまとめたリポジトリ/組織側の「Allow GitHub Actions to create and approve pull requests」設定が閉じていると、`permissions:` を正しく書いていても 403 になる。
 
 ## `.tagpr` は git-config 形式
 
@@ -62,6 +77,23 @@ npm error code 127
 ```
 
 `--ignore-scripts` を足せば止まる。ロックファイルは問題なく書き換わる。
+
+## `versionFile` 以外にバージョンを持つ場所は全部ずれる
+
+上の `package-lock.json` は一例で、根っこは同じ:**tagpr が書き換えるのは `versionFile` に指定した1ファイルだけ**なので、バージョン文字列を他にも持っているプロジェクトでは、その分だけ `postVersionCommand` で追い書きする必要がある。
+
+Tauri アプリ (Rust + `tauri.conf.json`) が典型: バージョンが `Cargo.toml` と `src-tauri/tauri.conf.json` の2箇所に分かれている。`versionFile = "src-tauri/Cargo.toml"` にして、`postVersionCommand` で `tauri.conf.json` 側に `jq` で書き戻す。
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+version=$(grep -m1 '^version = ' src-tauri/Cargo.toml | sed -E 's/version = "(.*)"/\1/')
+tmp=$(mktemp)
+jq --arg v "$version" '.version = $v' src-tauri/tauri.conf.json > "$tmp"
+mv "$tmp" src-tauri/tauri.conf.json
+```
+
+`Cargo.lock` 内の同じパッケージ自身のバージョン欄も同様にずれるが、こちらは次に `cargo build`/`cargo check` を一度でも走らせれば自動で書き直る(依存解決に使うロックではなく自パッケージの表示上の値なので、ビルドを`--locked`付きでCIに組み込まない限り実害は出にくい)。
 
 ## タグ駆動の別ワークフローは動かない
 
@@ -128,6 +160,18 @@ GitHub の Generate release notes API はマージ済み PR を列挙する。ma
 tagpr が打ったタグを契機に `on: push: tags` のジョブを走らせたい。
 ---
 走らない。`GITHUB_TOKEN` で打ったタグは他のワークフローを起動しないため。同じジョブの中で `steps.<id>.outputs.tag` を見て続ける。
+```
+
+```quiz
+ワークフローの `permissions:` に `issues: read` を書き忘れた。何が起きるか。
+---
+エラーにはならない。ラベルベースの上げ幅判定などに使う参照が静かに機能しなくなるだけで、気づきにくい。
+```
+
+```quiz
+Tauri アプリのように `Cargo.toml` と `tauri.conf.json` の2箇所にバージョンがあるとき、tagpr はどちらも書き換えてくれるか。
+---
+`versionFile` に指定した側(`Cargo.toml`)しか書き換えない。もう一方は `postVersionCommand` で自分で追い書きする必要がある。npm の `package-lock.json` がずれる問題と同じ根っこ。
 ```
 
 #リリース #ci #github
