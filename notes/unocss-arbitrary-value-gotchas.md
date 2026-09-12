@@ -1,6 +1,6 @@
 ---
 created: 2026-08-22
-updated: 2026-09-09
+updated: 2026-09-12
 title: UnoCSS の arbitrary value のハマりどころ
 description: UnoCSS の presetWind4 は、text-[...]・border-[...] などの arbitrary value を見た目どおりに解釈しないことがある。
 tags: [unocss, css]
@@ -92,5 +92,7 @@ export default defineConfig({
 ## 気づきにくさの共通点
 
 いずれも「クラス名は書いた通りに解釈されている」と思い込みやすい。誤解釈（`text-[xx-large]`、`border-[6px]`）も無視（`text-[color:...]`）もビルドは黙って通るので、実際に UnoCSS が生成した CSS ファイル（`public/static/uno.css` など）を `grep` して、目的のセレクタとプロパティ（`font-size:` や `color:`、`border-width:`）が本当に出力されているか確認するのが最短の切り分け方だった。
+
+生成したユーティリティを親セレクタ配下に閉じ込めるときの罠（`@property` まで前置してしまう）は [[unocss-scope-utilities]]。
 
 #unocss #css

@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-09-09
+updated: 2026-09-12
 title: BarefootJS
 description: signal ベースの TSX をビルド時にコンパイルして、バックエンドのネイティブなテンプレートを吐くフレームワーク。
 tags: [barefootjs, signals, jsx, hono]
@@ -74,6 +74,10 @@ expect(button!.events).toContain('click')
 ## Hono アダプタで使う
 
 Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[barefootjs-hono-scaffold]] を参照。クライアント側の `@barefootjs/router` を使う場合、region の外は一切更新されないという契約があり、[[barefootjs-router-region-contract]] にまとめた。`'use client'` コンポーネントをプレーンなサーバーコンポーネントの子に置くと静かにhydrateされない落とし穴もある — [[barefootjs-orphaned-child-hydration]]。
+
+## スライドとサイトで使う
+
+barefootjs.dev の overview デッキは [[peitho]] のスライドに BarefootJS の CSR コンポーネントを載せたもので、1要素1スプライトのシューティングを signal で動かした計測は [[barefootjs-dom-sprite-effects]]。デッキの言語切替（[[peitho-language-toggle]]）とスマホ表示（[[fixed-aspect-canvas-on-phones]]）はビルド側で足した。ロゴのワードマークは Instrument Serif の字形をパス化したもので、手順は [[font-outline-to-svg]]。
 
 ## 出典
 
