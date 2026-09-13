@@ -10,11 +10,9 @@
 
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { parseYamlScalar, parseYamlStringArray } from '../src/lib/frontmatter-yaml'
+import { parseFrontmatter, parseYamlScalar, parseYamlStringArray } from '../src/lib/frontmatter-yaml'
 import { extractTags, extractTitle } from '../src/lib/markdown-text'
 
-const FRONTMATTER = /^---\n([\s\S]*?)\n---\n?/
-const FIELD_LINE = /^([A-Za-z][\w-]*):[ \t]*(.*)$/
 const REQUIRED_KEYS = ['created', 'updated', 'title', 'description', 'tags'] as const
 
 const notesDir = join(process.cwd(), 'notes')
@@ -29,19 +27,13 @@ const fail = (file: string, message: string) => {
 for (const file of files) {
   const slug = file.slice(0, -'.md'.length)
   const source = readFileSync(join(notesDir, file), 'utf8')
-  const match = FRONTMATTER.exec(source)
+  const parsed = parseFrontmatter(source)
 
-  if (!match) {
+  if (!parsed) {
     fail(file, 'frontmatter がありません')
     continue
   }
-  const body = source.slice(match[0].length)
-
-  const fields = new Map<string, string>()
-  for (const line of match[1].split('\n')) {
-    const fieldMatch = FIELD_LINE.exec(line)
-    if (fieldMatch) fields.set(fieldMatch[1], fieldMatch[2])
-  }
+  const { fields, body } = parsed
 
   for (const key of REQUIRED_KEYS) {
     if (!(fields.get(key) ?? '').trim()) {
