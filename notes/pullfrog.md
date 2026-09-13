@@ -1,6 +1,6 @@
 ---
 created: 2026-08-28
-updated: 2026-08-28
+updated: 2026-09-13
 title: Pullfrog
 description: GitHub 上でコーディングエージェントを動かすボット。
 tags: [pullfrog, ai-agent, code-review, github-actions]
@@ -27,6 +27,8 @@ action の入力で実行時の枠を絞れる。
 1. **PR created / ready for review** — 全 PR を自動レビュー
 2. **PR review requested** — Reviewers 欄でアサイン。Copilot と同じ操作感
 3. **`@pullfrog` メンション** — コメントから任意のタイミングで起動
+
+1.は名前の通り2つのイベントをまとめた表記で、**draft状態でPRを作成しただけでは起動しない**([[barefootjs]] で実測、約40分待っても無反応)。`ready_for_review`イベント(draft解除)が発火して初めて「New pull request. Leaping into action...」のコメントが付き、レビューが走り出した。draftのままレビューを走らせたい場合は3.の`@pullfrog`メンションで明示的に起動する必要がある。
 
 実際の挙動（barefootjs で観測、モデルは Claude Sonnet）: 初回は PR 全体の Review、同じ PR への追 push は前回レビューとの差分だけを見る IncrementalReview になる。レビュー本文に「PR 本文を鵜呑みにせず独立検証した」項目を列挙し、リポジトリの CLAUDE.md の表と diff を突き合わせて記載漏れを指摘する程度の精度が出た。footer に使用モデルと workflow run へのリンクが載る。
 
