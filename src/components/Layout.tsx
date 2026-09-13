@@ -117,7 +117,7 @@ export const Layout: FC<LayoutProps> = ({
             </div>
           </footer>
 
-          <script type="module" src={clientScriptUrl}></script>
+          {clientScriptUrl && <script type="module" src={clientScriptUrl}></script>}
 
           <script dangerouslySetInnerHTML={{ __html: THEME_TOGGLE }} />
 
