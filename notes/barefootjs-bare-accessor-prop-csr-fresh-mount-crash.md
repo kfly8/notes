@@ -1,25 +1,32 @@
 ---
 created: 2026-09-13
 updated: 2026-09-13
-title: "BarefootJS: 生のsignal getter/setterをcomponent propに渡すとCSR fresh-mountでReferenceErrorになっていた(2026-09修正)"
-description: "BarefootJS: propsはgetterプロパティにコンパイルされる(SolidJS方式)の通り、<Display value={count} />のように生のgetter(呼び出さないcountそのもの)をcomponent propに渡すのはBF044が発火しない正しい書き方として扱われる。"
+title: "BarefootJS: 生のsignal getter/setterをcomponent propに渡すと、出力形式ごとに違う方法で解決される"
+description: "BarefootJS: propsはgetterプロパティにコンパイルされる(SolidJS方式)の通り、<Display value={count} />のように生のgetter(呼び出さないcountそのもの)をcomponent propに渡すのは正しい書き方として扱われる——子がいつ呼ぶかを自分で決められる、というContext-Providerイディオムと同じ理由。"
 tags: [barefootjs, reactivity, props]
 ---
-# BarefootJS: 生のsignal getter/setterをcomponent propに渡すとCSR fresh-mountでReferenceErrorになっていた(2026-09修正)
+# BarefootJS: 生のsignal getter/setterをcomponent propに渡すと、出力形式ごとに違う方法で解決される
 
-[[barefootjs-props-reactivity]]の通り、`<Display value={count} />`のように**生のgetter**(呼び出さない`count`そのもの)をcomponent propに渡すのは`BF044`が発火しない正しい書き方として扱われる。ただし2026-09の修正が入るまで、これは実行時に別の問題を持っていた——**CSR fresh-mount**(SSR+ハイドレーションを経由しない、クライアント側だけでの新規マウント。新しいループ行、ポータル、条件付きマウントされたサブツリーなど`createComponent(...)`が直接呼ばれる経路)のときだけ`ReferenceError`で落ちる。SSRしてからハイドレーションする通常経路では問題が出ない。[piconic-ai/barefootjs#2924](https://github.com/piconic-ai/barefootjs/issues/2924)として報告し、[#2969](https://github.com/piconic-ai/barefootjs/pull/2969)・[#2970](https://github.com/piconic-ai/barefootjs/pull/2970)で直した。
+[[barefootjs-props-reactivity]]の通り、`<Display value={count} />`のように生のgetter(呼び出さない`count`そのもの)をcomponent propに渡すのは正しい書き方として扱われる——子がいつ呼ぶかを自分で決められる、というContext-Providerイディオムと同じ理由。setterをそのまま渡す`<Display update={setCount} />`も同様。
 
-## 原因: CSRテンプレートのラムダはコンポーネントのクロージャを持たない
+この「生のアクセサをそのまま渡す」書き方は、実行時にどう解決されるかがアダプタによってまったく違う。Honoは本物のJSクロージャで済むが、それ以外の出力形式(CSRの文字列テンプレート、SSRの文字列テンプレート系アダプタ)は、クロージャを持たないコード片の中で同じ状態を人工的に再現する必要がある。
 
-CSRでのマウントは、コンパイルされたクライアントJSの`hydrate(name, { template: (_p) => \`...\` })`が持つ**モジュールスコープの`template`ラムダ**を文字列として評価することで行われる。このラムダは`initCounter`のような各コンポーネントの初期化関数の**外**に置かれるので、そこで宣言される実際の`const [count, setCount] = createSignal(5)`をクロージャとして持てない。
+## Honoアダプタ: 本物のJSクロージャなので何もしなくてよい
 
-`csrSubstitute`(`packages/jsx/src/ir-to-client-js/csr-substitute.ts`)は、この`template`文字列の中に現れるsignal/memo名を、静的に評価できる値に**事前に置換**することでこの問題を解決している。`buildSignalMemoEnv`はgetterとmemoを「`call`種別」の置換エントリとして登録し、`count()`という**呼び出しの形**にマッチしたときだけ`(5)`のような値に展開する。
+Honoは実際のTSXをそのまま実行するアダプタなので、コンパイル後のコードには本物のJSクロージャとして
 
-バグはここにあった——`<Display value={count} />`のように`count`が**呼び出されず生のまま**現れたとき、`csrSubstitute`の「裸の識別子」ブランチと「省略記法のオブジェクトプロパティ」ブランチは`kind === 'identifier'`のエントリしか処理しておらず、`call`種別のエントリに対する裸参照は素通りしていた。結果、ソースコード上の`count`という識別子がそのまま`template`ラムダの中に漏れ、そこはモジュールスコープなので存在しない変数への参照となり`ReferenceError`になる。
+```tsx
+const count = () => 5
+const setCount: (valueOrFn: number | ((prev: number) => number)) => void = () => {}
+```
 
-## 修正: 裸参照はthunkに、setterはnoopに置換する
+という行が、実際の`createSignal`呼び出しの隣にそのまま出力される。`count`という識別子への参照は、ただの変数参照として自然に解決される。この「本物のクロージャがあれば当然そうなる」状態こそが、他のすべての出力形式が人工的に再現しようとしている正解になる。
 
-`call`種別のエントリへの裸参照は、呼び出し形が生成するのと同じ値を返す**thunk**に置換するようにした。
+## CSR側: csrSubstituteによる文字列置換
+
+CSRでのマウント(SSR+ハイドレーションを経由しない、クライアント側だけでの新規マウント。新しいループ行、ポータル、条件付きマウントされたサブツリーなど)は、コンパイルされたクライアントJSの`hydrate(name, { template: (_p) => \`...\` })`が持つ**モジュールスコープの`template`ラムダ**を文字列として評価することで行われる。このラムダは`initCounter`のような各コンポーネントの初期化関数の**外**に置かれるので、そこで宣言される実際の`const [count, setCount] = createSignal(5)`をクロージャとして持てない。
+
+`csrSubstitute`(`packages/jsx/src/ir-to-client-js/csr-substitute.ts`)は、この`template`文字列に現れるsignal/memo名を静的な値へ事前置換することでこれを解決する。裸のgetter参照は、呼び出し形(`count()`)が返すのと同じ値を返す**thunk**に置き換わる。
 
 ```
 count               → (() => (5))
@@ -27,30 +34,21 @@ count               → (() => (5))
 { count }           → { count: (() => (5)) }   // 省略記法
 ```
 
-これはリファレンスアダプタ(Hono)自身のSSR側の出力を模したもの。Honoは実際のTSXをそのまま実行するので、コンパイル後のコードには本物のJSクロージャとして
+setterは値を読むものではなく副作用を起こすただの関数なので、thunkでラップする必要はなく`() => {}`というnoopに置き換わる——これもHono側の`const setCount: (...) => void = () => {}`と同じ形。
 
-```tsx
-const count = () => 5
-const setCount: (valueOrFn: number | ((prev: number) => number)) => void = () => {}
-```
+この置換が漏れると、裸の識別子がテンプレート文字列にそのまま残り、モジュールスコープには存在しない変数への参照になるので`ReferenceError`になる——CSR fresh-mountのときだけ発生し、SSR+ハイドレーション経路(実際の値が静的HTMLに焼き込まれ、`template`ラムダ自体は評価されない)では起きない。2026-09時点では、getter・setterどちらの裸参照もこの置換の対象になっている。
 
-という行が(実際の`createSignal`呼び出しの隣に)そのまま出力される。CSRの`csrSubstitute`は、モジュールスコープの文字列テンプレートというまったく別の実行モデルの中で、この「本物のクロージャがあれば当然そうなる」という状態を**文字列置換で人工的に再現している**、という位置づけになる。
+ローカルconstでのエイリアス(`const c2 = count`のような一段挟んだ参照)は追加実装なしで解決される。`resolveGetterAliases`が使う判定述語が「置換テーブルに載っているか」という汎用のものなので、getter/setterの名前がテーブルに載っている限りエイリアス解決も自動的に効く。
 
-setter側(`<Display update={setCount} />`)は同じ穴を別の形で踏んでいた——修正前は`csrSubstitute`の置換テーブルにsetterの名前を登録する処理自体が**存在しなかった**ので、setterへの参照は常に素通りしていた。setterは「呼び出して値を読む」ものではなく副作用を起こすただの関数なので、getterのようなthunkでラップする必要はなく、`identifier`種別のエントリとして`() => {}`というnoopに置換するだけで十分——これもHono側のSSR shim(`const setCount: (...) => void = () => {}`)と同じ形。
+## SSR側: template-stash系アダプタのstash事前宣言
 
-ローカルconstでのエイリアス(`const c2 = count`のような一段挟んだ参照)は追加の実装なしで解決される。`resolveGetterAliases`が使う判定述語が`substitutions.has(n)`という汎用の「置換テーブルに載っているか」なので、setterの名前がテーブルに載った時点でエイリアス解決も自動的に効くようになる。
+SSRレンダリングを文字列テンプレート(Perlの`Mojo::Template`、ERB、Twig、Jinja、Blade、Xslateなど)で行うアダプタ群——ソースをコンパイルしたテンプレートファイルの中に`<%= $count %>`のような変数参照が直接埋め込まれる——にも、同じ根の問題の別の顔がある。
 
-## SSR側にも対になる問題があった: template-stash系アダプタのstash未宣言
+`extractSsrDefaults`(`packages/jsx/src/ssr-defaults.ts`)は、テンプレートが参照するpropsやsignal/memoの初期値を静的に評価し、レンダリング時にadapterのstash(テンプレート変数の初期値マップ)へ流し込む。Mojoliciousの場合、`Mojo::Template->new(vars => 1)`はstashに渡されたキーだけを`my $x`として自動宣言するので、渡されていない変数への参照はPerlのstrict modeで`Global symbol "$x" requires explicit package name`という致命的エラーになる。2026-09時点では、getterと同じ無条件パターンで、すべてのsignalのsetter名も`{ value: null }`としてstashに種入れされている(値そのものは使われない——SSRテンプレートは`render_child`にそのまま渡すだけで、Perl側で呼び出したり読んだりしないので`null`/`undef`で十分)。
 
-CSR側とは独立に、SSRレンダリングを文字列テンプレート(Perlの`Mojo::Template`、ERB、Twig、Jinja、Blade、Xslateなど)で行うアダプタ群(「template-stash系」——ソースをコンパイルしたテンプレートファイルの中に`<%= $count %>`のような変数参照が直接埋め込まれる)にも、同じ根の問題の別の顔があった。
+このエラーはPerlを実機で動かして初めて検出できる類のもので、ローカルにPerl/Mojoliciousが入っていない開発環境では気づけない——CIの`ci-mojolicious.yml`のようなワークフローだけが検出できる。
 
-`extractSsrDefaults`(`packages/jsx/src/ssr-defaults.ts`)は、テンプレートが参照するpropsやsignal/memoの初期値を静的に評価し、レンダリング時にadapterのstash(テンプレート変数の初期値マップ)へ流し込む。Mojoliciousの場合、`Mojo::Template->new(vars => 1)`はstashに渡されたキーだけを`my $x`として自動宣言するので、渡されていない変数への参照はPerlのstrict modeで`Global symbol "$x" requires explicit package name`という致命的エラーになる。
-
-修正前の`extractSsrDefaults`はgetterの名前だけをstashに種として入れ(`out[sig.getter] = ...`)、setterは一切入れていなかった。`<Display update={setCount} />`をコンパイルすると、生成されたMojoliciousテンプレートには`bf->render_child('display', update => $setCount, ...)`という行が出るが、`$setCount`はstashに存在しないため実際にMojoliciousで動かすと落ちる——このエラーはCIの`ci-mojolicious.yml`が実際にPerlでレンダリングして初めて検出できるもので、ローカルにPerl/Mojoliciousが入っていない環境のテストは静かにスキップされ気づけない。
-
-修正: getterと同じ無条件パターンで、すべてのsignalのsetter名を`{ value: null }`としてstashに種入れするようにした(値そのものは使われない——SSRテンプレートは`render_child`にそのまま渡すだけで、Perl側で呼び出したり読んだりしないので`null`/`undef`で十分)。
-
-エイリアス(`const alias = setCount`)の解決だけは別対応が必要だった。SSR側のエイリアス解決に使う`collectAliasableGetterNames`はGoアダプタの`rootFieldRef`ルーティングとも共有されているヘルパーで、そこに直接setterの名前を足すとGo側の(まったく無関係な)意味づけを壊すおそれがある。そのため共有ヘルパー自体は広げず、`ssr-defaults.ts`のエイリアス解決呼び出しの**その場だけ**でsetter名を局所的に合算する、という設計にした——CSR側の`substitutions.has`が既に汎用述語だったのとは対照的に、SSR側は「同じ判定関数を複数の無関係な用途で共有している」という別の事情があったため、素直に同じ形には寄せられなかった。
+setterのローカルconstエイリアスの解決だけは、CSR側のように「無料」にはならない。SSR側のエイリアス解決に使う`collectAliasableGetterNames`はGoアダプタの`rootFieldRef`ルーティングとも共有されているヘルパーで、そこに直接setterの名前を足すとGo側の無関係な意味づけを壊すおそれがある。そのため共有ヘルパー自体は広げず、`ssr-defaults.ts`のエイリアス解決呼び出しの箇所だけでローカルにsetter名を合算する形になっている。
 
 ## 理解度チェック
 
@@ -61,20 +59,19 @@ CSR側とは独立に、SSRレンダリングを文字列テンプレート(Perl
 ```
 
 ```quiz
-getterの裸参照は`(() => (5))`というthunkに置換されるのに対し、setterの裸参照は`() => {}`というnoopに置換される。なぜ形が違うのか?
+getterの裸参照はCSR側で`(() => (5))`というthunkに置換されるのに対し、setterの裸参照は`() => {}`というnoopに置換される。なぜ形が違うのか?
 ---
-getterは「呼び出して値を読む」ものなので、呼び出し形(`count()`)が返すのと同じ値を返すthunkでラップする必要がある。setterは値を読むものではなく副作用を起こすただの関数なので、値を包む必要がなく、Hono側のSSR shim(`const setCount: (...) => void = () => {}`)と同じ形のnoopで足りる。
+getterは「呼び出して値を読む」ものなので、呼び出し形(`count()`)が返すのと同じ値を返すthunkでラップする必要がある。setterは値を読むものではなく副作用を起こすただの関数なので、値を包む必要がなく、Hono側の`const setCount: (...) => void = () => {}`と同じ形のnoopで足りる。
 ```
 
 ```quiz
-SSR側(Mojoliciousなどtemplate-stash系アダプタ)の修正で、setterの**ローカルconstエイリアス**(`const alias = setCount`)だけは別途コードを足す必要があった。なぜCSR側のように「無料で」解決されなかったのか?
+SSR側(Mojoliciousなどtemplate-stash系アダプタ)で、setterの**ローカルconstエイリアス**(`const alias = setCount`)の解決だけは、CSR側のように「無料で」は効かない。なぜか?
 ---
-SSR側のエイリアス解決が使う`collectAliasableGetterNames`は、Goアダプタの`rootFieldRef`ルーティングとも共有されているヘルパーで、そこに直接setterの名前を加えるとGo側の無関係な意味づけを壊すおそれがあった。そのため共有ヘルパー自体は広げず、`ssr-defaults.ts`のエイリアス解決呼び出しの箇所だけでローカルにsetter名を合算する形にした。
+SSR側のエイリアス解決が使う`collectAliasableGetterNames`は、Goアダプタの`rootFieldRef`ルーティングとも共有されているヘルパーで、そこに直接setterの名前を加えるとGo側の無関係な意味づけを壊すおそれがある。そのため共有ヘルパー自体は広げず、`ssr-defaults.ts`のエイリアス解決呼び出しの箇所だけでローカルにsetter名を合算する形になっている。
 ```
 
 ## 出典
 
-- [piconic-ai/barefootjs#2924](https://github.com/piconic-ai/barefootjs/issues/2924)、修正PR: [#2969](https://github.com/piconic-ai/barefootjs/pull/2969)(getter側)・[#2970](https://github.com/piconic-ai/barefootjs/pull/2970)(setter側、getter側PRにスタック)。両PRとも`piconic-ai/barefootjs`のissue報告・設計・実装・PR作成・レビュー対応(pullfrogの自動レビューを含む)まで直接携わって確認した。該当コードは`packages/jsx/src/ir-to-client-js/csr-substitute.ts`(`csrSubstitute`・`buildSignalMemoEnv`・`resolveGetterAliases`)と`packages/jsx/src/ssr-defaults.ts`(`extractSsrDefaults`)。
-- SSR側のバグはMojolicious実機(Perl + `Mojolicious`モジュール)での実行で実際に再現・修正確認した。CIの`ci-mojolicious.yml`のみが検出できる類の失敗で、ローカルにPerl/Mojoliciousランタイムがない開発環境では気づけない。
+- [piconic-ai/barefootjs#2924](https://github.com/piconic-ai/barefootjs/issues/2924)、[#2969](https://github.com/piconic-ai/barefootjs/pull/2969)、[#2970](https://github.com/piconic-ai/barefootjs/pull/2970)の実装に直接携わり、Mojolicious実機(Perl + `Mojolicious`モジュール)を含めて動作を確認した。該当コードは`packages/jsx/src/ir-to-client-js/csr-substitute.ts`(`csrSubstitute`・`buildSignalMemoEnv`・`resolveGetterAliases`)と`packages/jsx/src/ssr-defaults.ts`(`extractSsrDefaults`)。
 
 #barefootjs #reactivity #props
