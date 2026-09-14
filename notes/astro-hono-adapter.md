@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-08-30
+updated: 2026-09-14
 title: Astro の Hono アダプタ
 description: Astro 7 は astro/hono から Hono ミドルウェアの一式を公開していて、Astro のリクエスト処理を自分の Hono アプリに組み込める。
 tags: [astro, hono, cloudflare]
@@ -50,6 +50,8 @@ fetch.ts pipeline.
 なお `@astrojs/cloudflare` は出力を `dist/client` と `dist/server` に分けるので、`wrangler.jsonc` の `assets.directory` は `./dist/client` を指す必要がある。`./dist` のままだと `_worker` 側まで配信対象に含めてしまう。
 
 notes.kobaken.co では実際にこの受け皿を使わず終いだった。呼んでいたハンドラのうち意味を持っていたのは `trailingSlash()` だけで、それも assets 側の `html_handling` と重複していたため、後に `main` ごと外して Worker なし構成に変えた。詳細は [[cloudflare-workers-assets]] の「Worker のリダイレクト処理と重複しがち」を参照。
+
+その後 notes.kobaken.co は Astro 自体をやめ、Hono の `toSSG`（ビルド時に静的化し、配信時に Hono が動くことは一度もない）+ [[barefootjs|BarefootJS]] へ丸ごと置き換えた。「Astro の中に Hono を挟む」のではなく逆に「Hono だけでビルドする」方向で、詳細は [[hono-tossg-barefootjs-migration-experiment]] を参照。
 
 ## 参考にした構成
 
