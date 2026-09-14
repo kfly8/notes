@@ -327,20 +327,20 @@ a:hover { text-decoration-style: solid; }
 .wikilink:hover { border-bottom-color: var(--accent); }
 .wikilink.broken { color: var(--fg-faint); border-bottom: 1px dashed var(--fg-faint); cursor: help; }
 
-/* shiki のライト/ダーク両対応。Astro が <pre> に付けるクラスは .astro-code */
-.astro-code { color: var(--shiki-light); background-color: var(--shiki-light-bg); }
-.astro-code span { color: var(--shiki-light); }
-[data-theme='dark'] .astro-code {
+/* shiki のライト/ダーク両対応。素の shiki が <pre> に付けるクラスは .shiki */
+.shiki { color: var(--shiki-light); background-color: var(--shiki-light-bg); }
+.shiki span { color: var(--shiki-light); }
+[data-theme='dark'] .shiki {
   color: var(--shiki-dark);
   background-color: var(--shiki-dark-bg);
 }
-[data-theme='dark'] .astro-code span { color: var(--shiki-dark); }
+[data-theme='dark'] .shiki span { color: var(--shiki-dark); }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .astro-code {
+  :root:not([data-theme='light']) .shiki {
     color: var(--shiki-dark);
     background-color: var(--shiki-dark-bg);
   }
-  :root:not([data-theme='light']) .astro-code span { color: var(--shiki-dark); }
+  :root:not([data-theme='light']) .shiki span { color: var(--shiki-dark); }
 }
 
 .mermaid {
