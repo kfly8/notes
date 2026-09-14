@@ -4,10 +4,10 @@
     "": {
       "name": "notes",
       "dependencies": {
-        "@barefootjs/client": "^0.35.7",
-        "@barefootjs/jsx": "^0.35.7",
-        "@barefootjs/router": "^0.35.7",
-        "@barefootjs/vite": "^0.35.7",
+        "@barefootjs/client": "^0.35.8",
+        "@barefootjs/jsx": "^0.35.8",
+        "@barefootjs/router": "^0.35.8",
+        "@barefootjs/vite": "^0.35.8",
         "github-slugger": "^2.0.0",
         "hono": "^4.13.7",
         "satteri": "^0.9.5",
@@ -23,15 +23,15 @@
     },
   },
   "packages": {
-    "@barefootjs/client": ["@barefootjs/client@0.35.7", "", { "dependencies": { "@barefootjs/shared": "0.35.7" }, "peerDependencies": { "@barefootjs/jsx": ">=0.2.0" }, "optionalPeers": ["@barefootjs/jsx"] }, "sha512-7c6Z7bb/GuL0njDx9JsG6ZOK03+60mDkw4AOA8ZwmFkCoNGvjPEq72KfeeU/n0EsHACEKo1ZUZqvUsIxjxQYkg=="],
+    "@barefootjs/client": ["@barefootjs/client@0.35.8", "", { "dependencies": { "@barefootjs/shared": "0.35.8" }, "peerDependencies": { "@barefootjs/jsx": ">=0.2.0" }, "optionalPeers": ["@barefootjs/jsx"] }, "sha512-Hev12Ea2YtUUdjkxp4wky6X1B0/q+d2MnFPtTjn5GyJdQVKqEE2bAz1r9zFdiSBvhq0natu2eIcxhxvRgnMpKQ=="],
 
-    "@barefootjs/jsx": ["@barefootjs/jsx@0.35.7", "", { "dependencies": { "@barefootjs/shared": "0.35.7" }, "peerDependencies": { "@barefootjs/client": ">=0.2.0", "typescript": "^5.0.0" } }, "sha512-UON4XPrtdyX+ohP/R9Jm7gS9ylfCw9It5Q0XLEJNUqij/AhV9v0QSbWdaWDKbxEi9dV19Yt/o6fPj+LZPxP2gg=="],
+    "@barefootjs/jsx": ["@barefootjs/jsx@0.35.8", "", { "dependencies": { "@barefootjs/shared": "0.35.8" }, "peerDependencies": { "@barefootjs/client": ">=0.2.0", "typescript": "^5.0.0" } }, "sha512-5fzVXXU+4H1sJr4/NAGs96HyrTrbMgtOgqTJ0v6x9/zI7uMWfFzkFSZTPpTiQDnhtLGXDAMU4BUUavMFJ/IufQ=="],
 
-    "@barefootjs/router": ["@barefootjs/router@0.35.7", "", { "dependencies": { "@barefootjs/shared": "0.35.7" }, "peerDependencies": { "@barefootjs/client": ">=0.14.0" }, "optionalPeers": ["@barefootjs/client"] }, "sha512-SV1k87C+j/21NIENbZMhAQ/QuVL6Isk6OHKJG3sLOdiuxPXRnTl5E1mT2ivqy55xkcVffUFZmL0l4GS/pawSaQ=="],
+    "@barefootjs/router": ["@barefootjs/router@0.35.8", "", { "dependencies": { "@barefootjs/shared": "0.35.8" }, "peerDependencies": { "@barefootjs/client": ">=0.14.0" }, "optionalPeers": ["@barefootjs/client"] }, "sha512-TTmDprbapjVnZ04lS5mmMFV8QCsm3xNU3d1MxX99Svf/xcRBpYre/nvwhZrrUpde1rUeJTuiEoHYYWEIJp7Ttg=="],
 
-    "@barefootjs/shared": ["@barefootjs/shared@0.35.7", "", {}, "sha512-qxrZHrFoQZEGP6d2xGIsREQ/BOgOWVzOUyyKHuww8x7DIA4ncmRuNVCZbcOU6zPuDNQUqvjyWzRTSlGJC4Ra7Q=="],
+    "@barefootjs/shared": ["@barefootjs/shared@0.35.8", "", {}, "sha512-Lk+1/c3d4WycKtBXXx0ZMs0LUbGiGzjPQM0rqdYTtREyGkxEMh12QNufy+SALhN+VcgebH8inKlXdsM/3d6W4A=="],
 
-    "@barefootjs/vite": ["@barefootjs/vite@0.35.7", "", { "dependencies": { "@barefootjs/shared": "0.35.7" }, "peerDependencies": { "@barefootjs/jsx": ">=0.2.0", "vite": "^6.0.0" } }, "sha512-eVKP4Y5hCGmGex2m2b4lIXa7zgxEwZSwrZ1mS3bjaPMo9stlKVWVGws/yKxt4KcC+8GH1bSnISEneUXDwKKK8A=="],
+    "@barefootjs/vite": ["@barefootjs/vite@0.35.8", "", { "dependencies": { "@barefootjs/shared": "0.35.8" }, "peerDependencies": { "@barefootjs/jsx": ">=0.2.0", "vite": "^6.0.0" } }, "sha512-qmgfCadKqqCPBZ7SBgGmp1gLv3JFyMKaODVPkDubV1qkwL/9muuWMT//3ONfPsmKcvjR1QKQQjOIF63a9e57rg=="],
 
     "@bruits/satteri-darwin-arm64": ["@bruits/satteri-darwin-arm64@0.9.5", "", { "os": "darwin", "cpu": "arm64" }, "sha512-iw4nZgx9v30lWo/MTngQqi1pI78KI0DnkSm+lVJGYdmPLgAyDNJigVhpG42/Iq55A6c1Ll8q66ljyyRiQUxwow=="],
 
