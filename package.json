@@ -13,10 +13,10 @@
     "notes:check": "bun run scripts/check-notes-frontmatter.ts"
   },
   "dependencies": {
-    "@barefootjs/client": "^0.35.7",
-    "@barefootjs/jsx": "^0.35.7",
-    "@barefootjs/router": "^0.35.7",
-    "@barefootjs/vite": "^0.35.7",
+    "@barefootjs/client": "^0.35.8",
+    "@barefootjs/jsx": "^0.35.8",
+    "@barefootjs/router": "^0.35.8",
+    "@barefootjs/vite": "^0.35.8",
     "github-slugger": "^2.0.0",
     "hono": "^4.13.7",
     "satteri": "^0.9.5",

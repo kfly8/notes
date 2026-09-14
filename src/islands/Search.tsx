@@ -10,25 +10,33 @@ export type SearchDoc = {
   text: string
 }
 
-function Search() {
-  // トップレベルの関数だとコンパイラがインライン展開時に doc のスコープを見失うため、
-  // コンポーネント内のローカル関数として定義する。
-  /** すべての語がどこかに含まれることを要求し、タイトルやタグに当たったものを上位にする。 */
-  const scoreDoc = (doc: SearchDoc, terms: string[]): number => {
-    const title = doc.title.toLowerCase()
-    const tags = doc.tags.join(' ').toLowerCase()
-    const text = doc.text.toLowerCase()
-
-    let score = 0
-    for (const term of terms) {
-      if (title.includes(term)) score += 8
-      else if (tags.includes(term)) score += 4
-      else if (text.includes(term)) score += 1
-      else return 0
-    }
-    return score
+const loadIndex = async (): Promise<SearchDoc[]> => {
+  try {
+    const response = await fetch('/search-index.json')
+    if (!response.ok) return []
+    return (await response.json()) as SearchDoc[]
+  } catch {
+    return []
   }
+}
 
+/** すべての語がどこかに含まれることを要求し、タイトルやタグに当たったものを上位にする。 */
+const scoreDoc = (doc: SearchDoc, terms: string[]): number => {
+  const title = doc.title.toLowerCase()
+  const tags = doc.tags.join(' ').toLowerCase()
+  const text = doc.text.toLowerCase()
+
+  let score = 0
+  for (const term of terms) {
+    if (title.includes(term)) score += 8
+    else if (tags.includes(term)) score += 4
+    else if (text.includes(term)) score += 1
+    else return 0
+  }
+  return score
+}
+
+function Search() {
   const [query, setQuery] = createSignal('')
   const [open, setOpen] = createSignal(false)
   // createResource ではなくマウント時に取得する。CSR のみなので SSR との不整合は起きないが、
@@ -65,10 +73,7 @@ function Search() {
   }
 
   onMount(() => {
-    fetch('/search-index.json')
-      .then((response) => (response.ok ? (response.json() as Promise<SearchDoc[]>) : []))
-      .then(setDocs)
-      .catch(() => setDocs([]))
+    void loadIndex().then(setDocs)
     document.addEventListener('keydown', handleKeyDown)
     root?.addEventListener('focusout', handleFocusOut)
     onCleanup(() => {
