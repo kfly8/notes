@@ -1,2 +1,9 @@
+# Claude-User は Claude Code / Claude.ai がユーザー(自分)の代わりにページを取得する
+# 経路(WebFetch 等)。理解度チェックの出題やノートの調査に使うのでここだけ許可する。
+# ClaudeBot(モデル学習用のデータ収集)・Claude-SearchBot(Claude 内検索のインデックス)は
+# 「自分が使っている」経路ではないので対象外のまま。
+User-agent: Claude-User
+Allow: /
+
 User-agent: *
 Disallow: /
