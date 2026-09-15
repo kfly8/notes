@@ -1,6 +1,6 @@
 ---
 created: 2026-09-14
-updated: 2026-09-14
+updated: 2026-09-15
 title: Tauriアプリをmacosで実ウィンドウのまま自動操作する
 description: Tauriアプリを、実ウィンドウを起動せずにPlaywrightでテストするでカバーできないもの(peitho-coreの実際の出力、WKWebView固有のレンダリング、ネイティブ右クリック・ダイアログ・ドラッグ)を検証するには、実際のTauriウィンドウを動かす必要がある。
 tags: [tauri, macos, webdriver, testing, accessibility]
@@ -26,7 +26,7 @@ macOSでのTauri自動操作の現実的な解は、OSレベルの入力(クリ�
 
 この方式なら**「クリックが別ウィンドウに着弾する」リスクが構造的にゼロになる**——OSの画面座標を一切経由しないため。ただし検証できないものも同じだけ残る: ネイティブ右クリックメニュー、実マウスのhit-test、ネイティブダイアログ、OSレベルのドラッグ。
 
-対象ウィンドウは可視である必要がある点に注意([[macos-accessibility-api-hidden-spaces]]とは別の制限)。完全に隠れた・最小化されたWKWebViewはrAFが0fpsまでthrottleされるという計測報告がある([tophatch/swift-pwa#208](https://github.com/tophatch/swift-pwa/issues/208): "Fully covered by another window: 0 fps / Miniaturized: 0 fps")——フォーカスは不要だが、画面上に見えている必要はある。
+対象ウィンドウは可視である必要がある点に注意([[macos-accessibility-api-hidden-spaces]]とは別の制限)。完全に隠れた・最小化されたWKWebViewはrAFが0fpsまでthrottleされるという計測報告がある([tophatch/swift-pwa#208](https://github.com/tophatch/swift-pwa/issues/208): "Fully covered by another window: 0 fps / Miniaturized: 0 fps")——フォーカスは不要だが、画面上に見えている必要はある。tauri-playwrightの`startRecording`でネイティブフレームを録画して「DOMは変わったが画面は変わらない」ことを確かめるときも、この条件が要る([[tauri-sync-command-blocks-repaint]])。
 
 ## 他に検討した選択肢
 
