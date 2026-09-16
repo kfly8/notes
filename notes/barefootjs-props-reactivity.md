@@ -1,6 +1,6 @@
 ---
 created: 2026-09-09
-updated: 2026-09-11
+updated: 2026-09-13
 title: "BarefootJS: propsはgetterプロパティにコンパイルされる(SolidJS方式)"
 description: BarefootJSのsignalはcountではなくcount()という関数呼び出しで読む——ここまでは本体ノートの通り。
 tags: [barefootjs, signals, reactivity, props]
@@ -35,6 +35,8 @@ tags: [barefootjs, signals, reactivity, props]
 ```
 
 component propは「今のところの値」ではなく「子がいつ呼ぶか決められるアクセサ」を渡すためのオブジェクト経由のContext-Providerイディオム(`value={{ open, ... }}`)とまったく同じ理由で、`x={open}`のように直接渡す形も許容される——両方とも子が読み取りタイミングを決められることに変わりはないため。`isBusy={isBusy}`のように、propsの型を`Memo<boolean>`のような「getterそのものを運ぶ型」で設計するのは今でも意図が伝わりにくいので避けたほうがよいが、`BF044`では止まらない。
+
+ただし2026-09の修正が入るまで、この「正しい書き方」は**CSR fresh-mount**(SSRを経由しない、クライアント側だけでの新規マウント)のときだけ実行時に`ReferenceError`で落ちる別のバグを抱えていた——コンパイラは受理するが、実行すると壊れるという食い違い。setterを同じ形で渡す`<Display update={setCount} />`も同様。原因と修正は[[barefootjs-bare-accessor-prop-csr-fresh-mount-crash]]を参照。
 
 ## `Map`/`Set`/`Function`型のprops制約(BF049)はSSRハイドレーション境界の話であって、CSRアプリには無関係
 

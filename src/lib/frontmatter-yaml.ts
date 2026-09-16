@@ -8,6 +8,29 @@
 
 const UNSAFE_START = /^[-?:,[\]{}#&*!|>'"%@`\s]/
 
+const FRONTMATTER_BLOCK = /^---\n([\s\S]*?)\n---\n?/
+const FIELD_LINE = /^([A-Za-z][\w-]*):[ \t]*(.*)$/
+
+export type ParsedFrontmatter = {
+  /** キー→生の値（YAML としてクォートされたままの文字列）。 */
+  fields: Map<string, string>
+  /** frontmatter ブロックを除いた本文。 */
+  body: string
+}
+
+/** frontmatter ブロックをキー:生の値の Map として取り出す。ブロックがなければ undefined。 */
+export const parseFrontmatter = (source: string): ParsedFrontmatter | undefined => {
+  const match = FRONTMATTER_BLOCK.exec(source)
+  if (!match) return undefined
+
+  const fields = new Map<string, string>()
+  for (const line of match[1].split('\n')) {
+    const fieldMatch = FIELD_LINE.exec(line)
+    if (fieldMatch) fields.set(fieldMatch[1], fieldMatch[2])
+  }
+  return { fields, body: source.slice(match[0].length) }
+}
+
 /**
  * YAML のスカラーとして書き出す。クォートなしで安全に置けるときはそのまま、
  * 曖昧さが残るときは JSON 形式でクォートする。

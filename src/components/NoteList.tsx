@@ -1,17 +1,10 @@
----
+import type { FC } from 'hono/jsx'
 import { notePath, tagPath } from '../lib/markdown-text'
-import type { Note } from '../lib/notes'
+import type { Note } from '../server/notes'
 
-type Props = {
-  notes: Note[]
-}
-
-const { notes } = Astro.props
----
-
-<ul class="note-list">
-  {
-    notes.map((note) => (
+export const NoteList: FC<{ notes: Note[] }> = ({ notes }) => (
+  <ul class="note-list">
+    {notes.map((note) => (
       <li>
         <div class="note-meta">{note.updated || note.created}</div>
         <h2>
@@ -28,6 +21,6 @@ const { notes } = Astro.props
           </div>
         )}
       </li>
-    ))
-  }
-</ul>
+    ))}
+  </ul>
+)

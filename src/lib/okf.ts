@@ -6,7 +6,7 @@
 // ノートを取り込む側が必要としないので載せない。
 
 import { yamlFlowSequence, yamlScalar } from './frontmatter-yaml'
-import type { Note } from './notes'
+import type { Note } from '../server/notes'
 
 export const okfFrontmatter = (note: Note): string => {
   const lines = [`type: ${yamlScalar(note.type)}`, `title: ${yamlScalar(note.title)}`]

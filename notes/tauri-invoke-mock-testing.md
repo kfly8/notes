@@ -1,6 +1,6 @@
 ---
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-09-14
 title: Tauriアプリを、実ウィンドウを起動せずにPlaywrightでテストする
 description: Tauriアプリのフロントエンドはwindow.__TAURI_INTERNALS__.invoke(cmd, args)経由でRust側の#[tauri::command]を呼ぶ。
 tags: [tauri, playwright, testing]
@@ -45,7 +45,7 @@ export async function mockTauri(page: Page, /* テスト用の状態 */): Promis
 
 Tauriアプリの実e2e(実ウィンドウを`tauri-driver`で駆動するもの)を用意するのは、別立てのインフラが要って重い。一方、プレーンな開発サーバー(フロントエンドだけを`vite`などで配信するもの)に対するスモークテストは、「ようこそ画面が表示されるだけ」で止まりがちだった——`invoke()`が呼ばれた瞬間にrejectし、アプリはTauri未検出のフォールバック状態のまま先に進めないため。
 
-このモックを挟むことで、「実ウィンドウは要らないが、ようこそ画面より先の実際のアプリロジック(デッキを開く、スライドを編集する、右クリックメニューを操作する、など)を検証したい」という中間の要求を満たせる。バックエンド側の戻り値は本物のRust実装ではなく自作のスタブなので、peitho-core(Rust)の実際の出力やWKWebView固有の挙動(`adoptedStyleSheets`、フォント登録、ネイティブ右クリックなど)は検証できない——その部分は引き続き実機での確認が必要。
+このモックを挟むことで、「実ウィンドウは要らないが、ようこそ画面より先の実際のアプリロジック(デッキを開く、スライドを編集する、右クリックメニューを操作する、など)を検証したい」という中間の要求を満たせる。バックエンド側の戻り値は本物のRust実装ではなく自作のスタブなので、peitho-core(Rust)の実際の出力やWKWebView固有の挙動(`adoptedStyleSheets`、フォント登録、ネイティブ右クリックなど)は検証できない——その部分は引き続き実機での確認が必要([[tauri-macos-window-automation]]参照。OSレベルのGUI自動化には構造的なブラスト半径の問題があり、macOSでは`tauri-driver`の代わりにアプリ内JSブリッジ方式が現実的な解)。
 
 ## 効果: 実際にバグを発見・修正できた
 

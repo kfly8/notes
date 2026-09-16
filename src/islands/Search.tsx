@@ -1,4 +1,7 @@
-import { For, Show, createSignal, onCleanup, onMount } from 'solid-js'
+/** @jsxImportSource @barefootjs/jsx */
+'use client'
+
+import { createMemo, createSignal, onCleanup, onMount } from '@barefootjs/client'
 
 export type SearchDoc = {
   slug: string
@@ -33,16 +36,22 @@ const scoreDoc = (doc: SearchDoc, terms: string[]): number => {
   return score
 }
 
-export default function Search() {
+function Search() {
   const [query, setQuery] = createSignal('')
   const [open, setOpen] = createSignal(false)
-  // createResource ではなくマウント時に取得する。このアイランドはサーバー側でも描画され、
-  // SSR 中に解決された resource は空のままハイドレートされてしまうため。
+  // createResource ではなくマウント時に取得する。CSR のみなので SSR との不整合は起きないが、
+  // 旧 Solid 版のロジックをそのまま踏襲する。
   const [docs, setDocs] = createSignal<SearchDoc[]>([])
 
+  let root: HTMLDivElement | undefined
   let input: HTMLInputElement | undefined
 
-  const results = () => {
+  const handleFocusOut = (event: FocusEvent) => {
+    const next = event.relatedTarget as Node | null
+    if (root && !root.contains(next)) setOpen(false)
+  }
+
+  const results = createMemo(() => {
     const terms = query().trim().toLowerCase().split(/\s+/).filter(Boolean)
     if (terms.length === 0) return []
     return docs()
@@ -51,7 +60,7 @@ export default function Search() {
       .sort((a, b) => b.score - a.score)
       .slice(0, 8)
       .map((hit) => hit.doc)
-  }
+  })
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === '/' && document.activeElement !== input) {
@@ -66,49 +75,49 @@ export default function Search() {
   onMount(() => {
     void loadIndex().then(setDocs)
     document.addEventListener('keydown', handleKeyDown)
-    onCleanup(() => document.removeEventListener('keydown', handleKeyDown))
+    root?.addEventListener('focusout', handleFocusOut)
+    onCleanup(() => {
+      document.removeEventListener('keydown', handleKeyDown)
+      root?.removeEventListener('focusout', handleFocusOut)
+    })
   })
 
   return (
     <div
-      class="search"
-      onFocusOut={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false)
+      className="search"
+      ref={(element: HTMLElement) => {
+        root = element as HTMLDivElement
       }}
     >
       <input
-        ref={(element) => {
-          input = element
+        ref={(element: HTMLElement) => {
+          input = element as HTMLInputElement
         }}
         type="search"
         placeholder="検索 (/)"
         aria-label="ノートを検索"
         value={query()}
-        onInput={(event) => {
-          setQuery(event.currentTarget.value)
+        onInput={(event: InputEvent) => {
+          setQuery((event.currentTarget as HTMLInputElement).value)
           setOpen(true)
         }}
         onFocus={() => setOpen(true)}
       />
-      <Show when={open() && query().trim().length > 0}>
-        <div class="search-results">
-          <Show
-            when={results().length > 0}
-            fallback={<div class="empty">見つかりませんでした</div>}
-          >
-            <For each={results()}>
-              {(doc) => (
-                <a href={`/${doc.slug}`}>
-                  <div class="hit-title">{doc.title}</div>
-                  <Show when={doc.tags.length > 0}>
-                    <div class="hit-meta">{doc.tags.map((tag) => `#${tag}`).join(' ')}</div>
-                  </Show>
-                </a>
+      {open() && query().trim().length > 0 && (
+        <div className="search-results">
+          {results().length === 0 && <div className="empty">見つかりませんでした</div>}
+          {/* @client */ results().map((doc) => (
+            <a key={doc.slug} href={`/${doc.slug}`}>
+              <div className="hit-title">{doc.title}</div>
+              {doc.tags.length > 0 && (
+                <div className="hit-meta">{doc.tags.map((tag) => `#${tag}`).join(' ')}</div>
               )}
-            </For>
-          </Show>
+            </a>
+          ))}
         </div>
-      </Show>
+      )}
     </div>
   )
 }
+
+export default Search
