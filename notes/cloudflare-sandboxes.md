@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-09-16
 title: Cloudflare Sandboxes
 description: AI エージェント専用の永続的・隔離された実行環境。
 tags: [cloudflare, agents-week-2026, ai-agent, sandbox]
@@ -27,7 +27,7 @@ AI エージェント専用の永続的・隔離された実行環境。シェ�
 - **ファイルシステム監視**: inotify ベースの変更検知ストリーム
 - **スナップショット**: ディスク状態を R2 に保存し、素早く復元(記事の例ではウォームアップに 30秒かかっていたものが 2秒に短縮)
 
-Cloudflare Containers を基盤としつつ、ターミナル・コード実行・バックグラウンドプロセス管理といった、より高レベルな抽象化を提供する製品という位置づけ。
+[[cloudflare-containers|Cloudflare Containers]] を基盤としつつ、ターミナル・コード実行・バックグラウンドプロセス管理といった、より高レベルな抽象化を提供する製品という位置づけ。
 
 ## Outbound Workers for Sandboxes (egress 制御)
 

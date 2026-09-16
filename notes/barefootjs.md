@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-09-13
+updated: 2026-09-16
 title: BarefootJS
 description: signal ベースの TSX をビルド時にコンパイルして、バックエンドのネイティブなテンプレートを吐くフレームワーク。
 tags: [barefootjs, signals, jsx, hono]
@@ -17,13 +17,22 @@ JSX でサーバーレンダリングしようとすると、普通はサーバ�
 JSX → IR (backend-agnostic) → Adapter → Template
 ```
 
-Go なら `html/template` の `.tmpl`、Perl なら Mojolicious の `.html.ep`、Hono なら生成された `.tsx`。Node.js 以外のバックエンドでは、配信時に Node.js は一切動かない。
+Go なら `html/template` の `.tmpl`、Perl なら Mojolicious の `.html.ep`、Hono なら生成された `.tsx`。Node.js 以外のバックエンドでは、配信時に Node.js は一切動かない。2026年9月時点で10個のアダプタがある。
 
-| 言語 | アダプタ |
-| --- | --- |
-| TypeScript | HonoAdapter |
-| Go | GoTemplateAdapter |
-| Perl | MojoliciousAdapter |
+| 言語 | テンプレートエンジン | アダプタ |
+| --- | --- | --- |
+| TypeScript（リファレンス） | JSX（実JS実行） | HonoAdapter |
+| Go | `html/template` | GoTemplateAdapter |
+| Perl | Mojolicious | MojoliciousAdapter |
+| Perl | Text::Xslate | XslateAdapter |
+| Python | Jinja2 | JinjaAdapter |
+| Ruby | ERB | ErbAdapter |
+| Rust | minijinja | RustAdapter |
+| PHP | Twig | TwigAdapter |
+| PHP（Laravel） | Blade | BladeAdapter |
+| Java（Spring Boot） | Pebble | PebbleAdapter |
+
+HonoAdapterは**リファレンスアダプタ**という特別な位置づけを持つ。フィクスチャの期待値はすべてHonoAdapterの実際の出力から生成され、他の9アダプタの出力と比較される。この仕組みが実際にドリフトを検出した例は [[barefootjs-adapter-conformance-drift]] にまとめた。
 
 ## 細粒度のリアクティビティ
 
