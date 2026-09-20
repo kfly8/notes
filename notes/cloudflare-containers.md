@@ -46,6 +46,14 @@ Failed to start container: The container is not listening in the TCP address 10.
 
 [[barefootjs]] の Spring Boot（JVM）統合で実際にこれを踏んだ。`lite` では本番デプロイのたびにこのエラーでコンテナが起動せず、`basic` に上げたところ解消した。他の統合（Rust/axum、Go/gin、Ruby/rails など、いずれも `lite` のまま）はどれも問題なく起動しており、JVMのコールドスタートコストの大きさが `basic` への引き上げが必要だった理由と考えられる。
 
+## 運用して分かったこと
+
+コンテナがいつ起きていつ止まるかを握っているところで問題が起きやすい。踏んだものを別ノートにしてある。
+
+- [[cloudflare-containers-durable-object-duration]] — 請求の主役は Durable Object の稼働時間になる。コンテナが起きている間は DO も課金されるため。無料枠を超えた日だけグラフが跳ねて見える理由も。
+- [[container-pid1-sigterm]] — アイドル停止は SIGTERM で行われるので、PID 1 がハンドラを持たないイメージは止まらず、15 分ぶん余計に動く。tini を置いて直す。
+- [[cloudflare-containers-stuck-running-slot]] — 止まったインスタンスが running 枠を握り続け、500 を返し続けることがある。未解決。
+
 ## [[cloudflare-workers]]の中での位置づけ
 
 Workerからコンテナへリクエストを転送する構成そのものはWorkers側の話だが、コンテナ自身のリソース設定・起動特性は独立した関心事としてこちらにまとめる。
