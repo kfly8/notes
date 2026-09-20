@@ -23,6 +23,8 @@ Cloudflare Containers のインスタンスが、アイドル停止したあと�
 500 Failed to start container: Maximum number of running container instances exceeded.
 ```
 
+紛らわしいが、起動そのものに失敗したときの `Failed to start container: The container is not listening in the TCP address ...` とは別物。あちらは起動を試みた結果で、`lite` の資源が足りずコールドスタートが readiness チェックに間に合わない、といった原因がある（[[cloudflare-containers]]）。こちらは**起動を試みてすらいない**（Durable Object が「もう動いている」と思っているため）ので、メッセージの頭が `Error proxying request to container:` になる。
+
 後者が決め手になった。`max_instances = 1` の設定で、新しい名前の Durable Object から起動しようとすると上限超過で弾かれる。**停止したはずの古いインスタンスが枠を占有している**ということ。実際、新しい名前に切り替えてから最初の約 6 分間は上限超過で起動できず、古いインスタンスが解放された直後に起動して 200 を返すようになった。
 
 `wrangler containers instances <app-id>` の表示は当てにならない。壊れている最中の STATE は `stopped` や `inactive` と出るのに、枠は握られたままだった。
