@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-09-02
+updated: 2026-09-20
 title: Workers Cache
 description: Worker が生成したレスポンス自体を、Cache-Control ヘッダーを見て自動でキャッシュする Cloudflare の機能
 tags: [cloudflare, workers]
@@ -40,6 +40,22 @@ heuristic freshness にフォールバックしたレスポンスには Cache De
 
 - レスポンスに `Set-Cookie` ヘッダーがある。ただし `Cache-Control` に `private="set-cookie"` や `no-cache="set-cookie"` を指定すると、バイパスの代わりにキャッシュされる版から `Set-Cookie` だけが取り除かれる
 - リクエストに `Authorization` ヘッダーがある。ただしレスポンスが明示的に `Cache-Control: public, must-revalidate` や `s-maxage` を付けていれば例外
+
+## リダイレクトもキャッシュしないと毎回オリジンを起こす
+
+`Cache-Control` を決める実装を「2xx だけキャッシュ可、それ以外は `no-store`」と書くと、リダイレクトが毎回オリジンに届く。返すのは `Location` ヘッダー 1 つなのに、オリジンがコンテナなら起動して、応答して、また止まる。
+
+実際、末尾スラッシュ無しの URL（一覧ページからのリンクがその形だった）に 308 を返すアプリが、訪問のたびにコンテナを起こしていた。リンクを踏んでから表示までの実測は 2.7 秒。リダイレクトしない同種のアプリは 0.05 秒だった。
+
+恒久リダイレクト（301 / 308）は行き先が変わらないので、飛んだ先のページと同じだけキャッシュしてよい。一時リダイレクト（302 / 303 / 307）は次のリクエストで別の場所を指してよい定義なので、キャッシュしない。
+
+```ts
+const PERMANENT_REDIRECT_STATUS = new Set([301, 308])
+```
+
+とはいえ**リダイレクトを無くせるなら、そのほうが速い**。上の例は、アプリ側で末尾スラッシュ無しの URL も直接受けるようにしたらリダイレクトごと消えた。Python の Web フレームワークは既定で末尾スラッシュを正規化するものが多い（Werkzeug の `strict_slashes` が 308、Starlette の `redirect_slashes` が 307、Django は `APPEND_SLASH`）ので、同じ URL でも言語ごとに挙動が割れやすい。
+
+リダイレクトを残すなら、`Location` の scheme にも注意する。TLS が手前で終端する構成では、フレームワークが絶対 URL を `http://` で組み立てることがある。ブラウザは http に飛ばされ、そこから https へもう一度リダイレクトされる。`X-Forwarded-Proto` を尊重させる（Werkzeug なら `ProxyFix`、uvicorn なら `forwarded_allow_ips`）か、`Location` を相対パスにする。
 
 ## キャッシュキーは `Cookie` を見ない
 

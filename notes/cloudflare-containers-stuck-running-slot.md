@@ -33,7 +33,8 @@ Cloudflare Containers のインスタンスが、アイドル停止したあと�
 
 - 同じアプリで 3 回続けて再現した。
 - 別のアプリでも起きた。特定のイメージやフレームワークに固有ではない。
-- PID 1 に tini を置いても外しても起きる → [[container-pid1-sigterm]] とは無関係。
+- PID 1 に tini を置いても外しても起きる → [[container-pid1-sigterm]] とは無関係。最初は tini を疑って puma のイメージから外したが、外した状態のデプロイでまた詰まったので、そこで切り離せた。
+- 毎回必ず起きるわけではない。デプロイ 1 回につき、16 個のうち 1 つが詰まる、くらいの頻度だった。詰まらずに何度も止まって起き直すデプロイもある。
 
 Durable Object 側の様子も揃って壊れている。`Container` の状態は `healthy` のまま、`ctx.container.running` は true、そして **alarm が動かなくなる**ので、状態を取り直す機会が来ない。`wrangler tail` にはリクエストのエラーだけが並び、alarm のイベントが出てこない。
 
@@ -73,6 +74,23 @@ export class MyContainer extends Container<Env> {
 | Durable Object の名前を変える（`idFromName` の引数） | 新しいインスタンスに移って復旧する | その場しのぎ。別のアプリでも起きるので、根本的には止まらない |
 | `max_instances` を増やす | 枠を握られていても新しいインスタンスを起動できる | 握られたままのインスタンスが残ると費用が増える恐れ |
 | `containerFetch` の失敗を見て `destroy()` してから起動し直す | 自動で復旧できる | プラットフォーム側の不整合を利用側で拭う形になる |
+
+3 つ目は `Container` のサブクラスにすると、全アプリで同じ扱いにできる。
+
+```ts
+export class SelfHealingContainer<Env = unknown> extends Container<Env> {
+  async fetch(request: Request): Promise<Response> {
+    const replay = request.clone() as typeof request   // 本体を読む前に控えを取る
+    const response = await super.fetch(request)
+    if (response.status !== 500) return response
+    if (!isStuckContainerResponse(response.status, await response.clone().text())) return response
+    try { await this.destroy() } catch {}               // 握られたインスタンスに SIGKILL
+    return super.fetch(replay)
+  }
+}
+```
+
+判定は「500 かつ本文に `The container is not listening` を含む」。`Failed to start container:` の 500 は別物（そちらは起動を試みた結果なので、やり直しても同じ）。判定だけを Workers ランタイムに依存しない関数に切り出しておくと、`bun test` で押さえられる。
 
 ## [[cloudflare-containers|Cloudflare Containers]]の中での位置づけ
 
