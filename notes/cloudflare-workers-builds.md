@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-09-12
+updated: 2026-09-23
 title: Workers Builds
 description: GitHub リポジトリをダッシュボードで接続するだけでpush毎に自動ビルド・デプロイするCloudflare純正のCI/CD
 tags: [cloudflare, workers, ci-cd]
@@ -32,13 +32,13 @@ GitHub アカウントは1つの Cloudflare アカウントにしか紐づけら
 | API token | 任意 |
 | Build variables and secrets | 任意 |
 
-`main` 以外のブランチへのpushは本番デプロイ(`wrangler deploy`)ではなく、既定では `wrangler versions upload` が動く。プルリクエストにはビルド状況のコメントと、`wrangler versions upload` を実行したビルドについてはプレビューURLが付く。
+`main` 以外のブランチへのpushは本番デプロイ(`wrangler deploy`)ではなく、既定では `wrangler versions upload` が動く。2026年9月に [[cloudflare-worker-previews|Worker Previews]] が出てからは、新しい Worker の既定値は Preview command の `npx wrangler preview` になった。既存の Worker は「Switch to Worker Previews」で一度だけ切り替える（元に戻せない）。以下のプレビューURLの節は、`versions upload` 方式のときの話。プルリクエストにはビルド状況のコメントと、`wrangler versions upload` を実行したビルドについてはプレビューURLが付く。
 
 wranglerのバージョンは `package.json` に指定したものが使われる。
 
 自己ホストの GitHub/GitLab インスタンスは非対応(2026年8月時点)。
 
-## プレビューURL
+## プレビューURL（`versions upload` 方式）
 
 `main` 以外のブランチへの `wrangler versions upload` は、`<ブランチ名>-<Worker名>.<サブドメイン>.workers.dev` という固定のプレビューURLを生成する。ブランチ名に含まれる `.` は `-` に置き換わる。バージョンごとに変わる `<hash>-<Worker名>....workers.dev` とは別物で、こちらはそのブランチへの最新pushを常に指す安定したURLになる。
 
@@ -60,6 +60,8 @@ Workers Builds は push トリガーしか持たず、タグ作成やGitHub Rele
 Custom Domain は、そのWorkerの**現在アクティブ（＝昇格済み）なバージョン**に紐づく。1つのWorkerに複数のCustom Domainを設定しても、すべて同じアクティブバージョンを指すため、「ドメインAは本番のバージョン、ドメインBは開発中の最新バージョン」のように、ドメインごとに異なるバージョンを常時出し分けることはできない。
 
 一方、上記のブランチごとのプレビューURLは「昇格されていない特定バージョン」に直接ひも付くため、アクティブバージョンとは独立して存在し続けられる。本番とプレビューを両立したい場合は、本番をCustom Domain、プレビューをプレビューURLの仕組みに任せる、という役割分担になる。
+
+ただしこのバージョンは本番と同じバインディング（本番のDBなど）を使い、`wrangler versions deploy` すれば本番に昇格できてしまう。バインディングを分け、昇格もできない別枠の環境にしたいなら [[cloudflare-worker-previews]] を使う。
 
 ## kobaken.co での実際の設定
 

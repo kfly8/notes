@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-09-16
+updated: 2026-09-23
 title: Cloudflare Workers
 description: Cloudflare Workers のプラットフォーム機能(配信・キャッシュ・デプロイなど)を扱うノートの見取り図
 tags: [cloudflare, workers, moc]
@@ -21,6 +21,7 @@ Cloudflare Workers のランタイム・プラットフォーム機能を扱う�
 ## デプロイ
 
 - [[cloudflare-workers-builds]] — リポジトリをpushしたときの自動ビルド・デプロイ。上3つとは違うレイヤー(実行時ではなくデプロイ時)の話
+- [[cloudflare-worker-previews]] — ブランチごとに本番と切り離した環境を作る仕組み。本番の設定を継承せず、D1などは自動では分かれない
 
 ## コンピュート
 
