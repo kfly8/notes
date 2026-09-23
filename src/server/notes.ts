@@ -6,7 +6,6 @@ import {
   extractTags,
   extractTitle,
   extractWikiLinks,
-  hasMermaid,
   normalizeTag,
   summary,
 } from '../lib/markdown-text'
@@ -28,7 +27,6 @@ export type Note = NoteRef & {
   /** このノートにリンクしているノート。 */
   backlinks: NoteRef[]
   excerpt: string
-  hasMermaid: boolean
   body: string
 
   // 以下は OKF frontmatter 用（`/<slug>.md`）。
@@ -112,7 +110,6 @@ export const loadNotes = async (): Promise<{
       links: extractWikiLinks(entry.body),
       backlinks: [],
       excerpt: excerpt(entry.body, titles),
-      hasMermaid: hasMermaid(entry.body),
       body: entry.body,
       type: entry.type ?? 'Note',
       description: entry.description || summary(entry.body, titles),

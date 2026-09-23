@@ -7,7 +7,6 @@ type LayoutProps = PropsWithChildren<{
   path: string
   title?: string
   description?: string
-  mermaid?: boolean
   /** このページの Markdown ソースの URL。ノートのページだけが持つ。 */
   markdown?: string
   /** 検索アイランド + Router のマウントスクリプト（Vite manifest から解決した実 URL）。 */
@@ -39,19 +38,10 @@ document.getElementById('toggle-theme').addEventListener('click', () => {
 })
 `
 
-const MERMAID_INIT = `
-import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs'
-const root = document.documentElement
-const dark = root.getAttribute('data-theme') === 'dark' ||
-  (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
-mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'default', flowchart: { useMaxWidth: false } })
-`
-
 export const Layout: FC<LayoutProps> = ({
   path,
   title,
   description,
-  mermaid = false,
   markdown,
   clientScriptUrl,
   children,
@@ -120,8 +110,6 @@ export const Layout: FC<LayoutProps> = ({
           {clientScriptUrl && <script type="module" src={clientScriptUrl}></script>}
 
           <script dangerouslySetInnerHTML={{ __html: THEME_TOGGLE }} />
-
-          {mermaid && <script type="module" dangerouslySetInnerHTML={{ __html: MERMAID_INIT }} />}
         </body>
       </html>
     </>

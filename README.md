@@ -42,10 +42,10 @@ BarefootJS(CSR Adapter で検索アイランドを、Router で `bf-region` の�
 | `src/server/notes.ts` | ノートの読み込み・リンク・バックリンク・タグの索引 |
 | `src/server/render-markdown.ts` | Sätteri でノート本文を HTML 化(shiki ハイライト・見出し ID 付与を含む) |
 | `src/server/dev.ts` | 開発用のライブサーバー(`app.fetch` を `Bun.serve` に渡すだけ) |
-| `src/components/Layout.tsx` | HTML の外枠、テーマ切り替え、mermaid のローダ(Hono JSX) |
+| `src/components/Layout.tsx` | HTML の外枠、テーマ切り替え(Hono JSX) |
 | `src/components/NoteList.tsx` | ノート一覧の `<li>` 描画(Hono JSX) |
 | `src/islands/Search.tsx` | 検索アイランド本体(BarefootJS コンポーネント) |
-| `src/islands/mount.ts` | 検索アイランドのマウントと Router(`startRouter()`)の起動をまとめたエントリ |
+| `src/islands/mount.ts` | 検索アイランドのマウント、Router(`startRouter()`)の起動、mermaid の描画をまとめたエントリ |
 | `src/lib/markdown-text.ts` | プラグインと索引で共有するプレーンテキスト処理 |
 | `src/lib/okf.ts` | `/<slug>.md` が返す OKF frontmatter の組み立て |
 | `src/lib/frontmatter-yaml.ts` | frontmatter の値の読み書きと、frontmatter ブロックのパース |

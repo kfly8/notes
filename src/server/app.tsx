@@ -169,7 +169,6 @@ app.get(
         path={notePath(note.slug)}
         title={note.title}
         description={note.excerpt}
-        mermaid={note.hasMermaid}
         markdown={`/${note.slug}.md`}
         clientScriptUrl={clientScriptUrl}
       >

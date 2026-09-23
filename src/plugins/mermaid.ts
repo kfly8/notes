@@ -3,7 +3,7 @@ import { escapeHtml } from '../lib/markdown-text'
 
 /**
  * ```mermaid のブロックはシンタックスハイライトではなく mermaid.js に渡す。ローダを
- * 読み込むのは図を含むページだけ（Layout.astro を参照）。
+ * 読み込むのは図を含むページだけ（src/islands/mount.ts を参照）。
  */
 export const mermaid = defineMdastPlugin({
   name: 'mermaid',
