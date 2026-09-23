@@ -1,6 +1,6 @@
 ---
 created: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-23
 title: 非同期状態の「値の軸」と「決着の軸」
 description: 非同期データを値として持つとき、「値があるか」と「最後のリクエストが決着したか」は独立した軸で、1 つの直和に押し込むと prev や idle が要る。TanStack Query v4 の status / fetchStatus と同じ分け方。
 tags: [signals, async, types]
@@ -27,6 +27,7 @@ tags: [signals, async, types]
 
 - **TanStack Query v4** は `status`（データがあるか。`loading` / `error` / `success`）と `fetchStatus`（queryFn が走っているか。`fetching` / `paused` / `idle`）に分けた。v3 までの単一 `status` では「データ無しかつ fetch していない」状態が表せず、`idle` という不正な組み合わせを生む状態を持っていたのが理由。
 - **Solid 2.0** は `<Loading>`（値が無いときだけ fallback）と `isPending`（再取得中。古い値は見えたまま）に分けている。
+- **React の `useDeferredValue`** は、古い値でのレンダーを先に出し、新しい値でのレンダーを裏で準備する。「値あり × pending」を、元の値と遅延させた値の 2 つを見比べて作る（[[react-transitions-in-value-model]]）。
 - **Angular の `resource()`** は 1 つの `status`（`idle` / `loading` / `reloading` / `resolved` / `error` / `local`）に押し込んでいて、`loading` 中は `value()` が `undefined` になる。前の値を残したい用途では `reloading` を使い分ける必要がある。
 
 ## 型による保証はできない
@@ -51,6 +52,7 @@ TanStack Query が v4 で `fetchStatus` を分けた理由は何か。
 
 - [TanStack Query v4: Queries（status と fetchStatus）](https://tanstack.com/query/v4/docs/framework/react/guides/queries)
 - [Solid 2.0 v2.0.0-rc.0 リリースノート](https://github.com/solidjs/solid/releases/tag/v2.0.0-rc.0)
+- [useDeferredValue – React](https://react.dev/reference/react/useDeferredValue)
 - Angular の `packages/core/src/resource/api.ts`（`ResourceStatus` の定義。GitHub の main ブランチ）
 
 #signals #async #types
