@@ -53,7 +53,7 @@ Cloudflare Access はこのワイルドカードドメインに対してポリ�
 
 Workers Builds は push トリガーしか持たず、タグ作成やGitHub Releaseのようなイベントでは発火しない。「実際にリリースが確定した時だけ本番へ反映したい」場合は、Production branch に専用のブランチ（例: `release`）を指定し、CI側でリリースが確定した瞬間だけそのブランチを進める構成にする。通常の開発ブランチ（`main` 含む）へのpushはこの専用ブランチに触れないので、本番デプロイの引き金にならない。
 
-このブランチを進める操作自体を安全に実装する方法は [[github-api-ref-update]] を参照。
+このブランチを進める操作自体を安全に実装する方法は [[github-api-ref-update]] を参照。[[tagpr]] と組み合わせた全体の構成は [[tagpr-workers-builds-release-flow]]。
 
 ## 本番とプレビューを1つのWorkerで共存させる制約
 

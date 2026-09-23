@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-09-10
+updated: 2026-09-23
 title: tagpr
 description: リリース用の PR を維持しておいて、それをマージした瞬間にタグを打つツール。
 tags: [リリース, ci, github]
@@ -114,6 +114,8 @@ README に明記がある。
 ```
 
 出力は3つ。`tag`（打っていなければ空）、`pull_request`（JSON）、`base_tag`。
+
+この `tag` 出力を条件に `release` ブランチを進め、push でしか動かない Workers Builds に本番デプロイをさせる構成は [[tagpr-workers-builds-release-flow]]。
 
 ## 下書きで作ってから公開する
 
