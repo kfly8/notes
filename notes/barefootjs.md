@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-09-21
+updated: 2026-09-23
 title: BarefootJS
 description: signal ベースの TSX をビルド時にコンパイルして、バックエンドのネイティブなテンプレートを吐くフレームワーク。
 tags: [barefootjs, signals, jsx, hono]
@@ -53,6 +53,8 @@ getter が関数呼び出し（`count` ではなく `count()`）なのがポイ�
 
 コンパイラは「どの DOM ノードがどの signal に依存するか」を解析し、ハイドレーション時にそれらを繋ぐコードを生成する。状態が変わると該当の DOM ノードだけが更新され、ツリーの diff は走らない。
 
+伝播は書き込みの中で購読順に同期で行われ、依存の高さ順の実行はない。そのためひし形の依存では effect が中間状態を見る（[[reactive-glitch]]）。実測と fixture 化の記録は [[barefootjs-reactive-consistency-experiment]]。
+
 ## MPA に島を足す方向
 
 既存のサーバーレンダリングされたページに、アーキテクチャを変えずにインタラクティブな部品を足す、という立ち位置。比較されているのは次の3つ。
@@ -82,7 +84,7 @@ expect(button!.events).toContain('click')
 
 ## 非同期データ層の設計
 
-`spec/async.md` の層 0 は、Solid 2.0 が `createResource` を捨てて memo に非同期を載せたのを受けて検討し直し、`createQuery` / `createMutation` と `http.get` 等の純粋なリクエスト記述に落ち着いた。設計と捨てた案は [[barefootjs-async-layer0-design]]、候補をコンパイラに通して何が起きるかを見た記録は [[barefootjs-async-api-compile-experiment]]。背景になる一般論として、非同期の「まだ無い」を値に置くかグラフのノードの状態に置くかは [[async-state-as-value-vs-graph-node]]、値の有無と決着を別の軸に分ける整理は [[async-value-and-settlement-axes]]。
+`spec/async.md` の層 0 は、Solid 2.0 が `createResource` を捨てて memo に非同期を載せたのを受けて検討し直し、`createQuery` / `createMutation` と `http.get` 等の純粋なリクエスト記述に落ち着いた。設計と捨てた案は [[barefootjs-async-layer0-design]]、候補をコンパイラに通して何が起きるかを見た記録は [[barefootjs-async-api-compile-experiment]]。背景になる一般論として、非同期の「まだ無い」を値に置くかグラフのノードの状態に置くかは [[async-state-as-value-vs-graph-node]]、値の有無と決着を別の軸に分ける整理は [[async-value-and-settlement-axes]]。React の `useDeferredValue` / `useTransition` がこの設計で何に対応し何が残るかは [[react-transitions-in-value-model]]。
 
 ## Hono アダプタで使う
 

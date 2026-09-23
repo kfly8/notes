@@ -1,6 +1,6 @@
 ---
 created: 2026-09-21
-updated: 2026-09-21
+updated: 2026-09-23
 title: BarefootJS の非同期 API は createQuery / createMutation と http の記述に落ち着いた
 description: BarefootJS の非同期データ層（spec/async.md の層 0）の設計。
 tags: [barefootjs, async, signals, api-design]
@@ -63,10 +63,11 @@ BarefootJS は SSR を Go や ERB など 9 つの非 JS テンプレートで行
 
 ## 記述を純粋にしたことで得たもの
 
-`http.get(url, params)` は `{ url, method, params }` を返すだけで IO をしない。この純粋さが 3 箇所で効く。
+`http.get(url, params)` は `{ url, method, params }` を返すだけで IO をしない。この純粋さが 4 箇所で効く。
 
 - **キー**は `method + url + body の安定直列化` で、送る前に同期で決まる。定義側の `query('posts', fn)` のようなキー登録の API が要らない。
 - **mount 時に取り直さない。** init 中に関数を評価してもリクエストが飛ばないので、初回キーを得て `initial` をキャッシュに fresh として入れられる。SSR が描いた値をクライアントが即座に取り直す、という React の `useEffect` フェッチの問題は、この規則で消える。規則は SSR に依存せず、「props が先、fetch が後」の順序だけで決まる。
+- **中間状態で評価されても送らずに済む。** リクエスト関数は effect の本体なので、ひし形の依存があると中間状態で 1 回余計に評価される（[[reactive-glitch]]）。評価しても IO が起きないので、runtime は各評価の記述を記録し、tick の末尾に最後の 1 つだけを送ればよい。2026-09-23 に「1 tick に 1 回送る」として spec に追加した。
 - **batch や prefetch が runtime の方針になる。** 同じ tick の記述を集めて 1 つの HTTP にする DataLoader 的な処理が、コンポーネントのコードを変えずに書ける。
 
 ## 再利用は記述の側で
@@ -101,6 +102,7 @@ init 中に関数を評価してもリクエストが飛ばないので、初回
 
 - [piconic-ai/barefootjs `spec/async.md`](https://github.com/piconic-ai/barefootjs/blob/main/spec/async.md)
 - [piconic-ai/barefootjs#3112](https://github.com/piconic-ai/barefootjs/pull/3112) — spec の書き直し
+- [piconic-ai/barefootjs#3140](https://github.com/piconic-ai/barefootjs/pull/3140) — 「1 tick に 1 回送る」の追加
 - [Solid 2.0 v2.0.0-rc.0 リリースノート](https://github.com/solidjs/solid/releases/tag/v2.0.0-rc.0)
 - Angular の `packages/core/src/resource/api.ts`（`params` / `loader` / `defaultValue` の定義）
 
