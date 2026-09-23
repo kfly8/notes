@@ -22,6 +22,7 @@ Cloudflare Workers のランタイム・プラットフォーム機能を扱う�
 
 - [[cloudflare-workers-builds]] — リポジトリをpushしたときの自動ビルド・デプロイ。上3つとは違うレイヤー(実行時ではなくデプロイ時)の話
 - [[cloudflare-worker-previews]] — ブランチごとに本番と切り離した環境を作る仕組み。本番の設定を継承せず、D1などは自動では分かれない
+- [[tagpr-workers-builds-release-flow]] — 上の2つと [[tagpr]] を組み合わせた、本番（Release PR のマージ時だけ）とプレビュー（それ以外の全ブランチ）のデプロイ構成
 
 ## コンピュート
 
