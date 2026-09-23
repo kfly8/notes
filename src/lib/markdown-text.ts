@@ -59,8 +59,6 @@ export const extractWikiLinks = (body: string): string[] => {
   return [...found]
 }
 
-export const hasMermaid = (body: string): boolean => /^```mermaid\b/m.test(body)
-
 /** 検索用に本文をプレーンテキスト化したもの。フェンスはノイズなので落とす。 */
 export const plainText = (body: string, limit = 2000): string =>
   withoutFences(body)
