@@ -1,6 +1,6 @@
 ---
 created: 2026-09-23
-updated: 2026-09-23
+updated: 2026-09-24
 title: tagpr と Workers Builds で組む、本番とプレビューのデプロイ構成
 description: 1つの Worker で、本番は「Release PR のマージ時だけ release ブランチを進めて Workers Builds にデプロイさせる」、プレビューは「release 以外の全ブランチを Worker Previews にする」構成。
 tags: [cloudflare, workers, ci-cd, github, リリース]
@@ -18,34 +18,17 @@ GitHub には Cloudflare の認証情報を一切置かない。デプロイは�
 
 ```mermaid
 flowchart TD
-  subgraph GH[GitHub]
-    feat[機能ブランチ]
-    main[main]
-    rpr[Release PR のブランチ<br/>tagpr-from-vX.Y.Z]
-    rel[release]
-  end
-  subgraph ACT[GitHub Actions]
-    ci[ci.yml<br/>build / test / E2E]
-    tagpr[tagpr.yml<br/>Release PR 更新・タグ付け]
-    adv[release を API で進める]
-  end
-  subgraph CF[Cloudflare Workers Builds]
-    pv[Preview Build<br/>npx wrangler preview]
-    prod[Production Build<br/>npx wrangler deploy]
-  end
-  feat -->|PR| ci
-  feat -->|push| pv
-  feat -->|マージ| main
-  main -->|push| ci
-  main -->|push| pv
-  main -->|push| tagpr
-  tagpr -->|作成・更新| rpr
-  rpr -->|push| pv
-  rpr -->|マージ| tagpr
-  tagpr -->|タグを出力した時だけ| adv
-  adv --> rel
-  rel -->|push| prod
+  feat[機能ブランチ] -->|マージ| main[main]
+  main -->|tagpr が作成・更新| rpr[Release PR]
+  rpr -->|マージ| tag[tagpr がタグを出力]
+  tag -->|API で進める| rel[release]
+  rel -->|Workers Builds| prod[(本番)]
+
+  classDef hot fill:#2f6f5b,color:#fff,stroke:#2f6f5b
+  class rpr,prod hot
 ```
+
+本番への経路はこの一本だけで、main にマージしても本番には出ない。プレビューは `release` 以外のブランチへの push ごとに作られる（下の表）。
 
 | ブランチ | Workers Builds の動き | 行き先 |
 | --- | --- | --- |
