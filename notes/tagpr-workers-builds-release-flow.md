@@ -17,11 +17,16 @@ GitHub には Cloudflare の認証情報を一切置かない。デプロイは�
 ## 全体像
 
 ```mermaid
+---
+config:
+  flowchart:
+    curve: stepAfter
+---
 block-beta
   columns 4
-  feat["機能ブランチの PR"] space:2 pv["プレビュー"]
+  feat["機能ブランチの PR"] space:3
   space:4
-  main["main"] space:3
+  main["main"] space:2 pv["プレビュー"]
   space:4
   rpr["Release PR"] space:3
   space:4

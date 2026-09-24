@@ -126,6 +126,8 @@ Map of Content にあたる。ハブノート自身は深掘りせず、配下�
 - 色は固定値で書かない（テーマに追従しないため）。強調は `class <id> accent` の1種類だけにして、何を
   強調しているかを図の直後の本文で説明する。
 - 一本道の流れは `block-beta`（`columns 1`）で書くと、箱の幅と間隔がそろう。
+- 本線から枝分かれする矢印は、図の先頭に `config: flowchart: curve: stepAfter` の frontmatter を置くと
+  折れ線になり、本線と同じ上から下への流れに乗る（`block-beta` でも `block:` ではなく `flowchart:` の下に書く）。
 
 ## 理解度チェック
 
