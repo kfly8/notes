@@ -17,6 +17,7 @@
     "@barefootjs/jsx": "^0.35.8",
     "@barefootjs/router": "^0.35.8",
     "@barefootjs/vite": "^0.35.8",
+    "@barefootjs/xyflow": "^0.37.1",
     "github-slugger": "^2.0.0",
     "hono": "^4.13.7",
     "satteri": "^0.9.5",
