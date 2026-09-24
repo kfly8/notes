@@ -1,13 +1,13 @@
 ---
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-09-24
 title: peitho
 description: Markdown からスライドの静的サイトを組むツール。
 tags: [peitho, slides]
 ---
 # peitho
 
-Markdown からスライドの静的サイトを組むツール。`deck.md` に `<!-- {"key":"…","layout":"…"} -->` で区切ったスライドを書き、`layouts/*.html` のレイアウトと `css/*.css` を当てて、`index.html` + `manifest.json` + `slides/*.html` を吐く。ここに書くのは v1.26.0 のリリースバイナリで BarefootJS の overview デッキを組んだときに観察した範囲。
+Markdown からスライドの静的サイトを組むツール。`deck.md` に `<!-- {"key":"…","layout":"…"} -->` で区切ったスライドを書き、`layouts/*.html` のレイアウトと `css/*.css` を当てて、`index.html` + `manifest.json` + `slides/*.html` を吐く。ここに書くのは、BarefootJS の overview デッキを v1.26.0 のリリースバイナリで組んだときに観察した範囲（レイアウトの JavaScript とアセットの節だけは v1.34.0）。
 
 ## レイアウトとスロット
 
@@ -29,6 +29,11 @@ Error: line 148: showcase.css: unknown slot class '.slot-body-wrap' in override 
 - キャンバスは 1280x720 固定で、`transform: translate() scale()` で画面に収める。`.peitho-slide` の高さは `var(--peitho-canvas-height, 720px)`
 - `css/*.css` はファイル名順に連結される。上書きの優先順位はファイル名で決まる
 - 自前の CSS があってもテーマフォント（`theme-fonts/`）はコピーされる。使っていなければ消す
+
+## レイアウトの JavaScript とアセット（v1.34.0〜）
+
+- レイアウトに書いた `<script>` は、v1.34.0 からどのビューアでも実行される。スクリプトが Shadow DOM の中の自分のスライドを見つける仕組み — [[peitho-layout-scripts]]
+- レイアウトが直接参照するファイルはハッシュ付きの名前に書き換えられ、名指ししたものだけがコピー・配信される — [[peitho-layout-assets]]
 
 ## 足りなくて足したもの
 
