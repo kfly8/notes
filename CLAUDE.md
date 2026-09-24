@@ -131,7 +131,7 @@ Map of Content にあたる。ハブノート自身は深掘りせず、配下�
   矢印は `<path class="edge">`、線上のラベルは `<text class="label">` にし、色は書かない（`global.css` が
   CSS 変数で塗るのでテーマに追従する）。HTML ブロックが途切れないよう空行を入れない。`aria-label` に図の
   内容を文章で書く（`/<slug>.md` を読む AI やスクリーンリーダー向け）。例は
-  [[tagpr-workers-builds-release-flow]] の全体像。
+  `notes/tagpr-workers-builds-release-flow.md` の全体像。
 
 ## 理解度チェック
 
