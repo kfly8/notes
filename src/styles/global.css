@@ -351,6 +351,10 @@ a:hover { text-decoration-style: solid; }
   border-radius: 6px;
 }
 .mermaid svg { display: block; margin: 0 auto; }
+/* 図の中で強調するノード。ノート側で `class <id> accent` と書く。色はテーマに追従させたい
+   ので classDef ではなくここで塗る。 */
+.mermaid .accent rect { stroke: var(--accent) !important; stroke-width: 2px !important; }
+.mermaid .accent .nodeLabel { color: var(--accent) !important; }
 
 /* ---- 理解度チェック ---- */
 

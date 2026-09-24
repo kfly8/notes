@@ -21,11 +21,31 @@ const renderMermaid = async () => {
   const nodes = document.querySelectorAll<HTMLElement>('.mermaid:not([data-processed])')
   if (nodes.length === 0) return
   const { default: mermaid } = await import(/* @vite-ignore */ MERMAID_URL)
-  const html = document.documentElement
-  const dark =
-    html.getAttribute('data-theme') === 'dark' ||
-    (!html.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
-  mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'default', flowchart: { useMaxWidth: false } })
+  // 図の色はサイトの配色トークンから取る。mermaid の組み込みテーマ（default / dark）は
+  // サイトの配色と合わず、ノードやラベルの背景が浮いて見えるため。
+  const style = getComputedStyle(document.documentElement)
+  const token = (name: string) => style.getPropertyValue(name).trim()
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    fontFamily: getComputedStyle(document.body).fontFamily,
+    themeVariables: {
+      background: token('--bg'),
+      mainBkg: token('--surface'),
+      primaryColor: token('--surface'),
+      primaryTextColor: token('--fg'),
+      primaryBorderColor: token('--fg-faint'),
+      lineColor: token('--fg-faint'),
+      textColor: token('--fg-sub'),
+      edgeLabelBackground: token('--bg'),
+      clusterBkg: 'transparent',
+      clusterBorder: token('--border'),
+      noteBkgColor: token('--surface'),
+      noteBorderColor: token('--fg-faint'),
+      noteTextColor: token('--fg'),
+    },
+    flowchart: { useMaxWidth: false },
+  })
   await mermaid.run({ nodes })
 }
 

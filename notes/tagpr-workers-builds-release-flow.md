@@ -17,18 +17,29 @@ GitHub には Cloudflare の認証情報を一切置かない。デプロイは�
 ## 全体像
 
 ```mermaid
-flowchart TD
-  feat[機能ブランチ] -->|マージ| main[main]
-  main -->|tagpr が作成・更新| rpr[Release PR]
-  rpr -->|マージ| tag[tagpr がタグを出力]
-  tag -->|API で進める| rel[release]
-  rel -->|Workers Builds| prod[(本番)]
-
-  classDef hot fill:#2f6f5b,color:#fff,stroke:#2f6f5b
-  class rpr,prod hot
+block-beta
+  columns 1
+  feat["機能ブランチの PR"]
+  space
+  main["main"]
+  space
+  rpr["Release PR"]
+  space
+  tag["タグ vX.Y.Z"]
+  space
+  rel["release ブランチ"]
+  space
+  prod["本番"]
+  feat -- "人がマージ" --> main
+  main -- "tagpr が作成・更新" --> rpr
+  rpr -- "人がマージ" --> tag
+  tag -- "Actions が進める" --> rel
+  rel -- "Workers Builds がデプロイ" --> prod
+  classDef accent stroke-width:2px
+  class feat,rpr accent
 ```
 
-本番への経路はこの一本だけで、main にマージしても本番には出ない。プレビューは `release` 以外のブランチへの push ごとに作られる（下の表）。
+本番への経路はこの一本だけ。人が手を動かすのは色の付いた2つの PR のマージだけで、main にマージしても本番には出ない。プレビューは `release` 以外のブランチへの push ごとに作られる（下の表）。
 
 | ブランチ | Workers Builds の動き | 行き先 |
 | --- | --- | --- |
