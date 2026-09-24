@@ -27,7 +27,7 @@ block-beta
   space
   tag["タグ vX.Y.Z"]
   space
-  rel["release ブランチ"]
+  rel["release"]
   space
   prod["本番"]
   feat -- "人がマージ" --> main
