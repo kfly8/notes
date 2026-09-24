@@ -1,3 +1,4 @@
+import { computeEdgePosition, getEdgePath, Position } from '@barefootjs/xyflow'
 import { defineMdastPlugin } from 'satteri'
 import { escapeHtml } from '../lib/markdown-text'
 
@@ -8,6 +9,10 @@ import { escapeHtml } from '../lib/markdown-text'
  *
  * 色は SVG に書かず、クラスだけ付けて global.css の `.diagram` から CSS 変数で塗る（テーマに
  * 追従させるため）。プリセット色 `"1"`〜`"6"` は `color-<n>` クラスになる。
+ *
+ * 線の経路は @barefootjs/xyflow（中身は @xyflow/system）の `step` エッジで計算する。JSON Canvas の
+ * ノードを xyflow の内部ノードに変換し、線が付く位置にハンドルを置いて、ハンドルからハンドルへ
+ * 直角に折れる経路を引かせる。
  *
  * rawHtml は Markdown の HTML ブロックとして埋め込まれ、空行でブロックが終わるので、出力には
  * 空行を入れない。
@@ -49,8 +54,6 @@ type Point = { x: number; y: number }
 
 /** 外枠の余白。 */
 const MARGIN = 20
-/** 同じ辺から出入りする線（コの字）が、箱から外へ張り出す距離。 */
-const OUTSET = 28
 const LABEL_FONT = 13
 
 /** SVG の id はページ内で一意にする必要があるので、描画のたびに振る。 */
@@ -100,49 +103,73 @@ const defaultSides = (from: CanvasNode, to: CanvasNode): [Side, Side] => {
 
 const isVertical = (side: Side) => side === 'top' || side === 'bottom'
 
+const POSITION: Record<Side, Position> = {
+  top: Position.Top,
+  right: Position.Right,
+  bottom: Position.Bottom,
+  left: Position.Left,
+}
+
+type Handle = { id: string; side: Side; at: Point }
+
 /**
- * 辺から辺へ、直角に折れる線の頂点を返す。出る辺と入る辺の向きが違えば一度だけ折れ（L 字）、
- * 向きが同じなら中間で二度折れる。同じ辺どうし（例: 下から下）は、外へ張り出してコの字に回る。
+ * JSON Canvas のノードを、xyflow が経路の計算に使う内部ノードの形にする。ハンドルは線が付く
+ * 位置ごとに1つ置き、座標はノードの左上からの相対位置で持たせる。
  */
-const route = (p: Point, fromSide: Side, q: Point, toSide: Side): Point[] => {
-  if (fromSide === toSide) {
-    switch (fromSide) {
-      case 'top': {
-        const y = Math.min(p.y, q.y) - OUTSET
-        return [p, { x: p.x, y }, { x: q.x, y }, q]
-      }
-      case 'bottom': {
-        const y = Math.max(p.y, q.y) + OUTSET
-        return [p, { x: p.x, y }, { x: q.x, y }, q]
-      }
-      case 'left': {
-        const x = Math.min(p.x, q.x) - OUTSET
-        return [p, { x, y: p.y }, { x, y: q.y }, q]
-      }
-      case 'right': {
-        const x = Math.max(p.x, q.x) + OUTSET
-        return [p, { x, y: p.y }, { x, y: q.y }, q]
-      }
+const toInternalNode = (node: CanvasNode, handles: Handle[]) => {
+  const bounds = handles.map((h) => ({
+    id: h.id,
+    position: POSITION[h.side],
+    x: h.at.x - node.x,
+    y: h.at.y - node.y,
+    width: 0,
+    height: 0,
+  }))
+  return {
+    id: node.id,
+    position: { x: node.x, y: node.y },
+    data: {},
+    width: node.width,
+    height: node.height,
+    measured: { width: node.width, height: node.height },
+    internals: {
+      positionAbsolute: { x: node.x, y: node.y },
+      z: 0,
+      userNode: {},
+      handleBounds: {
+        source: bounds.map((b) => ({ ...b, type: 'source' as const })),
+        target: bounds.map((b) => ({ ...b, type: 'target' as const })),
+      },
+    },
+  }
+}
+
+/**
+ * xyflow が返すパス（角を丸めない `Q` や長さ 0 の線分を含む）から、線が折れる点だけを取り出す。
+ * ラベルの位置と図の大きさの計算に使う。
+ */
+const corners = (d: string): Point[] => {
+  const nums = (d.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number)
+  const points: Point[] = []
+  for (let i = 0; i + 1 < nums.length; i += 2) {
+    const p = { x: nums[i], y: nums[i + 1] }
+    const last = points[points.length - 1]
+    if (last && last.x === p.x && last.y === p.y) continue
+    const prev = points[points.length - 2]
+    // 直前の2点と一直線に並ぶなら、真ん中の点は角ではないので捨てる。
+    if (prev && last && (prev.x === last.x) === (last.x === p.x) && (prev.y === last.y) === (last.y === p.y)) {
+      points[points.length - 1] = p
+    } else {
+      points.push(p)
     }
   }
-  const fromV = isVertical(fromSide)
-  const toV = isVertical(toSide)
-  if (fromV && toV) {
-    if (p.x === q.x) return [p, q]
-    const midY = (p.y + q.y) / 2
-    return [p, { x: p.x, y: midY }, { x: q.x, y: midY }, q]
-  }
-  if (!fromV && !toV) {
-    if (p.y === q.y) return [p, q]
-    const midX = (p.x + q.x) / 2
-    return [p, { x: midX, y: p.y }, { x: midX, y: q.y }, q]
-  }
-  return fromV ? [p, { x: p.x, y: q.y }, q] : [p, { x: q.x, y: p.y }, q]
+  return points
 }
 
 /**
  * ラベルを置く位置。L 字なら相手のノードに入っていく側の線、二度折れる線やコの字なら中央の線、
- * 直線ならその中点に置く。
+ * 直線ならその中点に置く。xyflow もラベルの位置を返すが、L 字では出ていく側の線の中点になり、
+ * 流れに沿って読みにくいので使わない。
  */
 const labelPoint = (points: Point[]): Point => {
   const i = points.length === 4 ? 1 : points.length - 2
@@ -247,10 +274,39 @@ export const renderCanvas = (canvas: Canvas): string => {
     )
   }
 
-  routed.forEach(({ edge, from, to, fromSide, toSide }, index) => {
-    const points = route(attach.get(`${index}:from`)!, fromSide, attach.get(`${index}:to`)!, toSide)
+  const handles = new Map<string, Handle[]>()
+  routed.forEach(({ from, to, fromSide, toSide }, index) => {
+    for (const [node, side, end] of [
+      [from, fromSide, 'from'],
+      [to, toSide, 'to'],
+    ] as const) {
+      const list = handles.get(node.id) ?? []
+      list.push({ id: `${index}:${end}`, side, at: attach.get(`${index}:${end}`)! })
+      handles.set(node.id, list)
+    }
+  })
+  const internal = new Map(nodes.map((node) => [node.id, toInternalNode(node, handles.get(node.id) ?? [])]))
+
+  routed.forEach(({ edge, from, to }, index) => {
+    const flowEdge = {
+      id: edge.id,
+      source: from.id,
+      target: to.id,
+      sourceHandle: `${index}:from`,
+      targetHandle: `${index}:to`,
+      type: 'step',
+    }
+    // 型は xyflow の内部ノードの一部だけを満たしている（経路の計算に使うフィールドだけ）。
+    const position = computeEdgePosition(
+      flowEdge,
+      internal.get(from.id) as never,
+      internal.get(to.id) as never
+    )
+    const path = position && getEdgePath(flowEdge, position)
+    if (!path) return
+    const d = path[0]
+    const points = corners(d)
     for (const p of points) include(p.x, p.y)
-    const d = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${fmt(p.x)} ${fmt(p.y)}`).join(' ')
     const markers =
       ((edge.toEnd ?? 'arrow') === 'arrow' ? ` marker-end="url(#${id})"` : '') +
       (edge.fromEnd === 'arrow' ? ` marker-start="url(#${id})"` : '')
