@@ -33,7 +33,7 @@ block-beta
   feat -- "人がマージ" --> main
   main -- "tagpr が作成・更新" --> rpr
   rpr -- "人がマージ" --> tag
-  tag -- "Actions が進める" --> rel
+  tag -- "Actions が release に push" --> rel
   rel -- "Workers Builds がデプロイ" --> prod
   classDef accent stroke-width:2px
   class feat,rpr accent
