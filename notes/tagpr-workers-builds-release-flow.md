@@ -18,18 +18,19 @@ GitHub には Cloudflare の認証情報を一切置かない。デプロイは�
 
 ```mermaid
 block-beta
-  columns 1
-  feat["機能ブランチの PR"]
-  space
-  main["main"]
-  space
-  rpr["Release PR"]
-  space
-  tag["タグ vX.Y.Z"]
-  space
-  rel["release"]
-  space
-  prod["本番"]
+  columns 4
+  feat["機能ブランチの PR"] space:2 pv["プレビュー"]
+  space:4
+  main["main"] space:3
+  space:4
+  rpr["Release PR"] space:3
+  space:4
+  tag["タグ vX.Y.Z"] space:3
+  space:4
+  rel["release"] space:3
+  space:4
+  prod["本番"] space:3
+  feat -- "Workers Builds が作成" --> pv
   feat -- "人がマージ" --> main
   main -- "tagpr が作成・更新" --> rpr
   rpr -- "人がマージ" --> tag
@@ -39,7 +40,7 @@ block-beta
   class feat,rpr accent
 ```
 
-本番への経路はこの一本だけ。人が手を動かすのは色の付いた2つの PR のマージだけで、main にマージしても本番には出ない。プレビューは `release` 以外のブランチへの push ごとに作られる（下の表）。
+本番への経路はこの一本だけ。人が手を動かすのは色の付いた2つの PR のマージだけで、main にマージしても本番には出ない。図には機能ブランチのプレビューだけを描いたが、プレビューは `release` 以外のすべてのブランチに、push のたびに作られる（下の表）。
 
 | ブランチ | Workers Builds の動き | 行き先 |
 | --- | --- | --- |
