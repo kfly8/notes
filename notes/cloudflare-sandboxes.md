@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-09-16
+updated: 2026-09-24
 title: Cloudflare Sandboxes
 description: AI エージェント専用の永続的・隔離された実行環境。
 tags: [cloudflare, agents-week-2026, ai-agent, sandbox]
@@ -33,11 +33,19 @@ AI エージェント専用の永続的・隔離された実行環境。シェ�
 
 Sandboxes と同じタイミングで発表された、サンドボックスの outbound 通信を制御する仕組み。プログラマブルな egress プロキシが、ネットワークレイヤーで認証情報を注入する。エージェント自身は認証情報を一切持たず、代わりにプロキシ側のカスタムロジックでアクセスを制御できる。ゼロトラストな出力プロキシ、という説明がされている。
 
-```mermaid
-flowchart LR
-  agent["エージェント<br/>(サンドボックス内)"] -->|outboundリクエスト| proxy["Outbound Workers<br/>(egressプロキシ)"]
-  proxy -->|認証情報を注入・ポリシー適用| target["プライベートサービス / API"]
-  agent -. 認証情報は持たない .- proxy
+```canvas
+{
+  "nodes": [
+    {"id": "agent", "type": "text", "x": 0, "y": 0, "width": 220, "height": 56, "text": "エージェント\n(サンドボックス内)"},
+    {"id": "proxy", "type": "text", "x": 0, "y": 136, "width": 220, "height": 56, "text": "Outbound Workers\n(egressプロキシ)"},
+    {"id": "target", "type": "text", "x": 0, "y": 272, "width": 220, "height": 56, "text": "プライベートサービス / API"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "agent", "toNode": "proxy", "label": "outboundリクエスト"},
+    {"id": "e2", "fromNode": "proxy", "toNode": "target", "label": "認証情報を注入・ポリシー適用"},
+    {"id": "e3", "fromNode": "agent", "toNode": "proxy", "fromSide": "right", "toSide": "right", "toEnd": "none", "style": "dashed", "label": "認証情報は持たない"}
+  ]
+}
 ```
 
 ## 料金モデル

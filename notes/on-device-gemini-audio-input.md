@@ -1,6 +1,6 @@
 ---
 created: 2026-08-28
-updated: 2026-08-28
+updated: 2026-09-24
 title: オンデバイス Gemini / Gemma の音声入力対応状況
 description: Google のオンデバイス系モデルで音声入力を受けられるのは、Chrome 内蔵の Gemini Nano(Prompt API 経由)と、オープンウェイトの Gemma 3n の2系統。
 tags: [chrome, llm, 音声]
@@ -29,11 +29,20 @@ Prompt API は仕様上テキスト・画像・音声のマルチモーダル入
 
 音声で数式入力をやるなら、LLM に音声を直接食わせる必要はなく、音声認識と数式変換を分離した方が今は堅い。
 
-```mermaid
-flowchart LR
-  mic["マイク"] --> stt["Web Speech API<br/>(音声→テキスト)"]
-  stt --> llm["ローカルLLM<br/>(発話→LaTeX変換)"]
-  llm --> render["KaTeX / MathJax<br/>(描画)"]
+```canvas
+{
+  "nodes": [
+    {"id": "mic", "type": "text", "x": 0, "y": 0, "width": 240, "height": 56, "text": "マイク"},
+    {"id": "stt", "type": "text", "x": 0, "y": 96, "width": 240, "height": 56, "text": "Web Speech API\n(音声→テキスト)"},
+    {"id": "llm", "type": "text", "x": 0, "y": 192, "width": 240, "height": 56, "text": "ローカルLLM\n(発話→LaTeX変換)"},
+    {"id": "render", "type": "text", "x": 0, "y": 288, "width": 240, "height": 56, "text": "KaTeX / MathJax\n(描画)"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "mic", "toNode": "stt"},
+    {"id": "e2", "fromNode": "stt", "toNode": "llm"},
+    {"id": "e3", "fromNode": "llm", "toNode": "render"}
+  ]
+}
 ```
 
 この構成なら音声対応が不安定な Gemini Nano でもテキスト専用として使える。将来 Prompt API の音声入力が安定したら、前段2つを統合して発話ニュアンス(「ぶんの」の区切りなど)を音声ごと解釈させる進化パスも取れる。

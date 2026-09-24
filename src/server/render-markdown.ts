@@ -2,7 +2,6 @@ import Slugger from 'github-slugger'
 import { codeToHast } from 'shiki'
 import { defineHastPlugin, markdownToHtml } from 'satteri'
 import { canvas } from '../plugins/canvas'
-import { mermaid } from '../plugins/mermaid'
 import { noteLinks } from '../plugins/note-links'
 import { noteTitle } from '../plugins/note-title'
 import { quiz } from '../plugins/quiz'
@@ -49,7 +48,7 @@ const headingIdsPlugin = () => {
 /** ノート本文を HTML 化する。旧 astro:content の render() 相当。 */
 export const renderMarkdown = async (body: string): Promise<string> => {
   const { html } = await markdownToHtml(body, {
-    mdastPlugins: [noteTitle, mermaid, canvas, quiz, noteLinks],
+    mdastPlugins: [noteTitle, canvas, quiz, noteLinks],
     hastPlugins: [highlightPlugin, headingIdsPlugin],
   })
   return html

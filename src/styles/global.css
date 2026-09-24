@@ -343,19 +343,6 @@ a:hover { text-decoration-style: solid; }
   :root:not([data-theme='light']) .shiki span { color: var(--shiki-dark); }
 }
 
-.mermaid {
-  margin: 1.75rem 0;
-  padding: 1rem;
-  overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-}
-.mermaid svg { display: block; margin: 0 auto; }
-/* 図の中で強調するノード。ノート側で `class <id> accent` と書く。色はテーマに追従させたい
-   ので classDef ではなくここで塗る。 */
-.mermaid .accent rect { stroke: var(--accent) !important; stroke-width: 2px !important; }
-.mermaid .accent .nodeLabel { color: var(--accent) !important; }
-
 /* ---- JSON Canvas の図 ----
    ```canvas のブロックから src/plugins/canvas.ts が SVG を作る。SVG 側には色を書かず、ここで
    CSS 変数から塗るので、テーマを切り替えるとそのまま追従する。 */
@@ -378,8 +365,10 @@ a:hover { text-decoration-style: solid; }
 .diagram .group rect { fill: none; stroke: var(--border); }
 .diagram .group-label { fill: var(--fg-sub); font-size: 13px; text-anchor: start; }
 .diagram .edge { fill: none; stroke: var(--fg-faint); }
+.diagram .edge.dashed { stroke-dasharray: 5 4; }
 .diagram .arrowhead { fill: var(--fg-faint); }
-/* 線の上に載せるラベル。背景色の縁取りで下の線を消す。 */
+/* 線の上に載せるラベル。背景色の下地と縁取りで下の線を消す。 */
+.diagram .label-bg { fill: var(--bg); }
 .diagram .label {
   fill: var(--fg-sub);
   font-size: 13px;

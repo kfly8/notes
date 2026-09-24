@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-09-02
+updated: 2026-09-24
 title: agent-koans
 description: AI エージェント実装のためのコンフォーマンステストスイート。
 tags: [ai-agent, testing, conformance]
@@ -19,13 +19,22 @@ AI エージェント実装のためのコンフォーマンステストスイ�
 
 テスト対象のエージェントは HTTP サーバーとして実装する。ランナーは koan ごとにエージェントを起動し、両側から観察する。
 
-```mermaid
-flowchart LR
-  runner["runner"] -->|"POST /runs"| agent["agent under test<br/>(black box)"]
-  agent -->|"chat/completions"| llm["mock LLM server"]
-  agent -->|"invoke/{tool}"| tools["mock tool server"]
-  llm -.->|"台本どおりに応答 + 記録"| runner
-  tools -.->|"台本どおりに応答 + 記録"| runner
+```canvas
+{
+  "nodes": [
+    {"id": "runner", "type": "text", "x": 260, "y": 0, "width": 200, "height": 56, "text": "runner"},
+    {"id": "agent", "type": "text", "x": 260, "y": 136, "width": 200, "height": 56, "text": "agent under test\n(black box)"},
+    {"id": "llm", "type": "text", "x": 0, "y": 272, "width": 200, "height": 56, "text": "mock LLM server"},
+    {"id": "tools", "type": "text", "x": 520, "y": 272, "width": 200, "height": 56, "text": "mock tool server"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "runner", "toNode": "agent", "label": "POST /runs"},
+    {"id": "e2", "fromNode": "agent", "toNode": "llm", "fromSide": "left", "toSide": "top", "label": "chat/completions"},
+    {"id": "e3", "fromNode": "agent", "toNode": "tools", "fromSide": "right", "toSide": "top", "label": "invoke/{tool}"},
+    {"id": "e4", "fromNode": "llm", "toNode": "runner", "fromSide": "left", "toSide": "left", "style": "dashed", "label": "台本どおりに応答 + 記録"},
+    {"id": "e5", "fromNode": "tools", "toNode": "runner", "fromSide": "right", "toSide": "right", "style": "dashed", "label": "台本どおりに応答 + 記録"}
+  ]
+}
 ```
 
 モックは koan が書いた台本どおりに応答しつつ、エージェントが何を送ってきたかを記録する。検査の大半はこの記録に対して行われる。モデルへのリクエストを何回投げたか、ツールにどんな引数が届いたか、各ステップで会話に何が載っていたか。

@@ -1,6 +1,6 @@
 ---
 created: 2026-08-25
-updated: 2026-08-24
+updated: 2026-09-24
 title: Cloudflare CI/CD (@cloudflare/ci)
 description: Cloudflare Workflows 上に構築された、コードで書く CI/CD パイプライン。@cloudflare/ci として提供される
 tags: [cloudflare, agents-week-2026, ai-agent]
@@ -79,13 +79,24 @@ try {
 }
 ```
 
-```mermaid
-flowchart LR
-  push["リポジトリへの push<br/>(Artifacts)"] --> ci["CI Workflow<br/>lint/test/typecheck/build"]
-  ci -->|成功| done["CI 成功"]
-  ci -->|失敗| healer["Healer エージェント<br/>(Think, HealingAgent)"]
-  healer -->|修復コミットを作成| branch["Fix Branch"]
-  branch -->|人間がレビュー| human["開発者による確認・マージ"]
+```canvas
+{
+  "nodes": [
+    {"id": "push", "type": "text", "x": 0, "y": 0, "width": 220, "height": 56, "text": "リポジトリへの push\n(Artifacts)"},
+    {"id": "ci", "type": "text", "x": 0, "y": 136, "width": 220, "height": 56, "text": "CI Workflow\nlint/test/typecheck/build"},
+    {"id": "done", "type": "text", "x": 280, "y": 272, "width": 220, "height": 56, "text": "CI 成功"},
+    {"id": "healer", "type": "text", "x": 0, "y": 272, "width": 220, "height": 56, "text": "Healer エージェント\n(Think, HealingAgent)"},
+    {"id": "branch", "type": "text", "x": 0, "y": 408, "width": 220, "height": 56, "text": "Fix Branch"},
+    {"id": "human", "type": "text", "x": 0, "y": 544, "width": 220, "height": 56, "text": "開発者による確認・マージ"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "push", "toNode": "ci"},
+    {"id": "e2", "fromNode": "ci", "toNode": "done", "fromSide": "right", "toSide": "top", "label": "成功"},
+    {"id": "e3", "fromNode": "ci", "toNode": "healer", "label": "失敗"},
+    {"id": "e4", "fromNode": "healer", "toNode": "branch", "label": "修復コミットを作成"},
+    {"id": "e5", "fromNode": "branch", "toNode": "human", "label": "人間がレビュー"}
+  ]
+}
 ```
 
 ## 発表時点での提供状況

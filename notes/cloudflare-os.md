@@ -1,6 +1,6 @@
 ---
 created: 2026-08-25
-updated: 2026-08-24
+updated: 2026-09-24
 title: Cloudflare OS
 description: 組織のコンテキスト・システムに接続したエージェントワークスペースを、社内向けアプリ基盤ごとオープンソースで提供するプラットフォーム
 tags: [cloudflare, agents-week-2026, ai-agent]
@@ -31,11 +31,20 @@ tags: [cloudflare, agents-week-2026, ai-agent]
 - **観察ログに基づくポリシー伝播** — エージェントが見たリソースは記録され、その後の共有・外部リクエストにも制約が伝播する。たとえば機密テーブルを読んだエージェントが作ったダッシュボードを他人と共有しようとすると、その人がテーブルへのアクセス権を持っているかを Gatekeeper が確認する
 - **実行環境の分離** — サーバーコードは outbound ネットワークを無効化した Dynamic Worker 上で、クライアントコードはブラウザのサンドボックス化されたフレーム内で動く。明示的に付与されたケイパビリティ以外でインターネットに出られない
 
-```mermaid
-flowchart LR
-  agent["エージェント<br/>(初期状態:アクセス権なし)"] -->|"型付きバインディングで要求<br/>env.PROJECT"| gatekeeper["Gatekeeper<br/>(サービスごとのWorker)"]
-  gatekeeper -->|OAuth資格情報を保持<br/>ポリシー適用・読み取り記録| service["外部サービス<br/>(GitHubなど)"]
-  gatekeeper -.観察ログ.-> policy["共有時のアクセス確認<br/>(誰が何を見たかに基づく)"]
+```canvas
+{
+  "nodes": [
+    {"id": "agent", "type": "text", "x": 0, "y": 0, "width": 240, "height": 56, "text": "エージェント\n(初期状態:アクセス権なし)"},
+    {"id": "gatekeeper", "type": "text", "x": 0, "y": 146, "width": 240, "height": 56, "text": "Gatekeeper\n(サービスごとのWorker)"},
+    {"id": "service", "type": "text", "x": 0, "y": 292, "width": 240, "height": 56, "text": "外部サービス\n(GitHubなど)"},
+    {"id": "policy", "type": "text", "x": 300, "y": 292, "width": 240, "height": 56, "text": "共有時のアクセス確認\n(誰が何を見たかに基づく)"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "agent", "toNode": "gatekeeper", "label": "型付きバインディングで要求\nenv.PROJECT"},
+    {"id": "e2", "fromNode": "gatekeeper", "toNode": "service", "label": "OAuth資格情報を保持\nポリシー適用・読み取り記録"},
+    {"id": "e3", "fromNode": "gatekeeper", "toNode": "policy", "fromSide": "right", "toSide": "top", "style": "dashed", "label": "観察ログ"}
+  ]
+}
 ```
 
 ## アプリ基盤
