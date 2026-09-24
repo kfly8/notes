@@ -20,6 +20,8 @@ const MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.mi
 const renderMermaid = async () => {
   const nodes = document.querySelectorAll<HTMLElement>('.mermaid:not([data-processed])')
   if (nodes.length === 0) return
+  // テーマを切り替えたときに描き直せるよう、SVG に置き換わる前のソースを取っておく。
+  for (const node of nodes) node.dataset.src ??= node.textContent ?? ''
   const { default: mermaid } = await import(/* @vite-ignore */ MERMAID_URL)
   // 図の色はサイトの配色トークンから取る。mermaid の組み込みテーマ（default / dark）は
   // サイトの配色と合わず、ノードやラベルの背景が浮いて見えるため。
@@ -49,7 +51,25 @@ const renderMermaid = async () => {
   await mermaid.run({ nodes })
 }
 
-renderMermaid()
-new MutationObserver(() => {
-  if (!document.documentElement.hasAttribute(NAVIGATING_ATTR)) renderMermaid()
-}).observe(document.documentElement, { attributes: true, attributeFilter: [NAVIGATING_ATTR] })
+// 描画は非同期なので、遷移とテーマ切り替えが重なっても順番に処理する。
+let queue = Promise.resolve()
+const scheduleRender = () => {
+  queue = queue.then(renderMermaid).catch(console.error)
+}
+
+// 配色トークンを描画時に SVG へ焼き込むので、テーマが変わったらソースに戻して描き直す。
+const rerenderMermaid = () => {
+  for (const node of document.querySelectorAll<HTMLElement>('.mermaid[data-src]')) {
+    node.textContent = node.dataset.src ?? ''
+    node.removeAttribute('data-processed')
+  }
+  scheduleRender()
+}
+
+scheduleRender()
+new MutationObserver((records) => {
+  if (records.some((r) => r.attributeName === 'data-theme')) rerenderMermaid()
+  else if (!document.documentElement.hasAttribute(NAVIGATING_ATTR)) scheduleRender()
+}).observe(document.documentElement, { attributes: true, attributeFilter: [NAVIGATING_ATTR, 'data-theme'] })
+// OS の設定でライト/ダークが変わった場合（data-theme が未設定のとき）も描き直す。
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerenderMermaid)
