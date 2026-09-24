@@ -1,11 +1,11 @@
 ---
 created: 2026-09-24
 updated: 2026-09-24
-title: peitho のレイアウトに書いた `<script>` を動かす
+title: peitho のレイアウトに書いた script 要素を動かす
 description: peitho v1.34.0 でレイアウトの <script> が実行されるようになった仕組みと、スクリプトが Shadow DOM の中の自分のスライドを peitho:shadow-mounted とバックログ配列で見つける方法。
 tags: [peitho, shadow-dom, slides]
 ---
-# peitho のレイアウトに書いた `<script>` を動かす
+# peitho のレイアウトに書いた script 要素を動かす
 
 [[peitho]] v1.34.0 から、`layouts/*.html` に書いた `<script>` が present・preview・build（配布ビューア）の各ビューアで実行される。それまでは書いても何も起きなかった。このノートの内容は v1.34.0 と、それに合わせた BarefootJS の overview デッキ・Peitho Studio で動かして確かめた範囲。
 
