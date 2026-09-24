@@ -126,8 +126,12 @@ Map of Content にあたる。ハブノート自身は深掘りせず、配下�
 - 色は固定値で書かない（テーマに追従しないため）。強調は `class <id> accent` の1種類だけにして、何を
   強調しているかを図の直後の本文で説明する。
 - 一本道の流れは `block-beta`（`columns 1`）で書くと、箱の幅と間隔がそろう。
-- 本線から枝分かれする矢印は、図の先頭に `config: flowchart: curve: stepAfter` の frontmatter を置くと
-  折れ線になり、本線と同じ上から下への流れに乗る（`block-beta` でも `block:` ではなく `flowchart:` の下に書く）。
+- mermaid の配置エンジンでは形を決められない図（一度だけ折れる矢印など）は、
+  `<figure class="diagram"><svg …>` を本文に直接書く。箱は `<g class="box">`（強調は `box accent`）、
+  矢印は `<path class="edge">`、線上のラベルは `<text class="label">` にし、色は書かない（`global.css` が
+  CSS 変数で塗るのでテーマに追従する）。HTML ブロックが途切れないよう空行を入れない。`aria-label` に図の
+  内容を文章で書く（`/<slug>.md` を読む AI やスクリーンリーダー向け）。例は
+  [[tagpr-workers-builds-release-flow]] の全体像。
 
 ## 理解度チェック
 
