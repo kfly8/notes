@@ -1,6 +1,6 @@
 ---
 created: 2026-09-23
-updated: 2026-09-23
+updated: 2026-09-24
 title: リアクティブグラフのグリッチ
 description: signal を 1 つ書き換えたとき、それに依存する派生値の一部だけが新しい値になった中間状態を、別の購読者が観測してしまうこと。
 tags: [signals, reactivity, consistency]
@@ -9,13 +9,22 @@ tags: [signals, reactivity, consistency]
 
 signal を 1 つ書き換えたとき、それに依存する派生値の一部だけが新しい値になった中間状態を、別の購読者が観測してしまうこと。典型はひし形（diamond）の依存で、1 つの signal `a` を 2 つの memo `b`、`c` が読み、その両方を 1 つの effect が読む形。
 
-```mermaid
-graph TD
-  a[signal a] --> b[memo b = a*10]
-  a --> c[memo c = a*100]
-  a --> e[effect]
-  b --> e
-  c --> e
+```canvas
+{
+  "nodes": [
+    {"id": "a", "type": "text", "x": 200, "y": 0, "width": 160, "height": 40, "text": "signal a"},
+    {"id": "b", "type": "text", "x": 0, "y": 100, "width": 160, "height": 40, "text": "memo b = a*10"},
+    {"id": "c", "type": "text", "x": 400, "y": 100, "width": 160, "height": 40, "text": "memo c = a*100"},
+    {"id": "e", "type": "text", "x": 200, "y": 200, "width": 160, "height": 40, "text": "effect"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "a", "toNode": "b", "fromSide": "left", "toSide": "top"},
+    {"id": "e2", "fromNode": "a", "toNode": "c", "fromSide": "right", "toSide": "top"},
+    {"id": "e3", "fromNode": "a", "toNode": "e", "fromSide": "bottom", "toSide": "top"},
+    {"id": "e4", "fromNode": "b", "toNode": "e", "fromSide": "bottom", "toSide": "left"},
+    {"id": "e5", "fromNode": "c", "toNode": "e", "fromSide": "bottom", "toSide": "right"}
+  ]
+}
 ```
 
 `a` を 1 → 2 に書き換えたとき、グリッチのない実装では effect は `a=2 b=20 c=200` を 1 回だけ見る。グリッチのある実装では、`b` だけが再計算された時点で effect が走り、`a=2 b=20 c=100` という、どの時点の正しい状態にも対応しない組み合わせを見る。

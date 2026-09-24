@@ -45,11 +45,11 @@ BarefootJS(CSR Adapter で検索アイランドを、Router で `bf-region` の�
 | `src/components/Layout.tsx` | HTML の外枠、テーマ切り替え(Hono JSX) |
 | `src/components/NoteList.tsx` | ノート一覧の `<li>` 描画(Hono JSX) |
 | `src/islands/Search.tsx` | 検索アイランド本体(BarefootJS コンポーネント) |
-| `src/islands/mount.ts` | 検索アイランドのマウント、Router(`startRouter()`)の起動、mermaid の描画をまとめたエントリ |
+| `src/islands/mount.ts` | 検索アイランドのマウントと Router(`startRouter()`)の起動をまとめたエントリ |
 | `src/lib/markdown-text.ts` | プラグインと索引で共有するプレーンテキスト処理 |
 | `src/lib/okf.ts` | `/<slug>.md` が返す OKF frontmatter の組み立て |
 | `src/lib/frontmatter-yaml.ts` | frontmatter の値の読み書きと、frontmatter ブロックのパース |
-| `src/plugins/*.ts` | Sätteri の mdast プラグイン(タイトル、mermaid、ウィキリンク、タグ) |
+| `src/plugins/*.ts` | Sätteri の mdast プラグイン(タイトル、JSON Canvas、ウィキリンク、タグ) |
 | `src/styles/global.css` | CSS |
 | `vite.config.ts` | `@barefootjs/vite` の `barefoot()`(CSR Adapter)で検索アイランドをビルド |
 | `scripts/build-site.ts` | `vite build` → Vite manifest 解決 → `toSSG` → `/<slug>.md` の直接書き出し、を1本で実行 |

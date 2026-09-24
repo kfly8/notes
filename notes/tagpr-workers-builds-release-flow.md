@@ -16,19 +16,29 @@ GitHub には Cloudflare の認証情報を一切置かない。デプロイは�
 
 ## 全体像
 
-```mermaid
-flowchart TD
-  feat[機能ブランチ] -->|マージ| main[main]
-  main -->|tagpr が作成・更新| rpr[Release PR]
-  rpr -->|マージ| tag[tagpr がタグを出力]
-  tag -->|API で進める| rel[release]
-  rel -->|Workers Builds| prod[(本番)]
-
-  classDef hot fill:#2f6f5b,color:#fff,stroke:#2f6f5b
-  class rpr,prod hot
+```canvas
+{
+  "nodes": [
+    {"id": "feat", "type": "text", "x": 0, "y": 0, "width": 180, "height": 40, "text": "機能ブランチの PR", "color": "4"},
+    {"id": "pv", "type": "text", "x": 220, "y": 90, "width": 180, "height": 40, "text": "プレビュー"},
+    {"id": "main", "type": "text", "x": 0, "y": 90, "width": 180, "height": 40, "text": "main"},
+    {"id": "rpr", "type": "text", "x": 0, "y": 180, "width": 180, "height": 40, "text": "Release PR", "color": "4"},
+    {"id": "tag", "type": "text", "x": 0, "y": 270, "width": 180, "height": 40, "text": "タグ vX.Y.Z"},
+    {"id": "rel", "type": "text", "x": 0, "y": 360, "width": 180, "height": 40, "text": "release"},
+    {"id": "prod", "type": "text", "x": 0, "y": 450, "width": 180, "height": 40, "text": "本番"}
+  ],
+  "edges": [
+    {"id": "e-pv", "fromNode": "feat", "fromSide": "right", "toNode": "pv", "toSide": "top", "label": "Workers Builds が作成"},
+    {"id": "e1", "fromNode": "feat", "toNode": "main", "label": "人がマージ"},
+    {"id": "e2", "fromNode": "main", "toNode": "rpr", "label": "tagpr が作成・更新"},
+    {"id": "e3", "fromNode": "rpr", "toNode": "tag", "label": "人がマージ"},
+    {"id": "e4", "fromNode": "tag", "toNode": "rel", "label": "Actions が release に push"},
+    {"id": "e5", "fromNode": "rel", "toNode": "prod", "label": "Workers Builds がデプロイ"}
+  ]
+}
 ```
 
-本番への経路はこの一本だけで、main にマージしても本番には出ない。プレビューは `release` 以外のブランチへの push ごとに作られる（下の表）。
+本番への経路はこの一本だけ。人が手を動かすのは色の付いた2つの PR のマージだけで、main にマージしても本番には出ない。図には機能ブランチのプレビューだけを描いたが、プレビューは `release` 以外のすべてのブランチに、push のたびに作られる（下の表）。
 
 | ブランチ | Workers Builds の動き | 行き先 |
 | --- | --- | --- |

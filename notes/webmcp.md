@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-09-24
 title: WebMCP
 description: ブラウザ内で動く AI エージェントが、サイトを直接操作できるようにするための新しいブラウザ標準。
 tags: [cloudflare, agents-week-2026, mcp]
@@ -23,11 +23,20 @@ Cloudflare は「標準の両端」、つまりサイト側の実装とエージ
 
 有効化する機能は「pack」という単位でまとめられている。pack は「一緒にオンにできる関連ツールのグループ」。発表時点では Content Credentials と Site MCP Server の2種類が提供されている。サイトは redeploy せずに、追加の pack を後からオンにしていける設計。
 
-```mermaid
-flowchart LR
-  origin["オリジンサイト<br/>(コード変更なし)"] -->|HTMLRewriterで1行注入| edge["Cloudflareエッジ"]
-  edge -->|ブリッジスクリプト参照| browser["ブラウザ内のAIエージェント<br/>(WebMCP標準)"]
-  browser -->|pack単位でツール利用| tools["Content Credentials / Site MCP Server"]
+```canvas
+{
+  "nodes": [
+    {"id": "origin", "type": "text", "x": 0, "y": 0, "width": 300, "height": 56, "text": "オリジンサイト\n(コード変更なし)"},
+    {"id": "edge", "type": "text", "x": 0, "y": 136, "width": 300, "height": 56, "text": "Cloudflareエッジ"},
+    {"id": "browser", "type": "text", "x": 0, "y": 272, "width": 300, "height": 56, "text": "ブラウザ内のAIエージェント\n(WebMCP標準)"},
+    {"id": "tools", "type": "text", "x": 0, "y": 408, "width": 300, "height": 56, "text": "Content Credentials / Site MCP Server"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "origin", "toNode": "edge", "label": "HTMLRewriterで1行注入"},
+    {"id": "e2", "fromNode": "edge", "toNode": "browser", "label": "ブリッジスクリプト参照"},
+    {"id": "e3", "fromNode": "browser", "toNode": "tools", "label": "pack単位でツール利用"}
+  ]
+}
 ```
 
 発表時点では developer preview 段階で、一般提供(GA)ではない。

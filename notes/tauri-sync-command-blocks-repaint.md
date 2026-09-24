@@ -1,6 +1,6 @@
 ---
 created: 2026-09-15
-updated: 2026-09-15
+updated: 2026-09-24
 title: Tauriの同期コマンドは実行中ウィンドウの再描画を止める
 description: async でない Tauri コマンドはメインスレッドで動き、実行中はウィンドウが再描画されない。DOM を見るテストでは検出できない。
 tags: [tauri, wkwebview, macos, testing]
@@ -17,16 +17,22 @@ peitho-studio(Tauri v2 + WKWebView)で、Welcome 画面の Recent をクリッ�
 - ネイティブのフレーム録画では、Welcome 画面が約5秒止まったまま映り、プレースホルダーはコマンドが返る直前に一瞬出ただけだった
 - tauri-playwright のソケット越しの `evaluate` も、コマンドが返るまで約5秒ブロックした
 
-```mermaid
-sequenceDiagram
-  participant JS as WebView(JS)
-  participant Main as メインスレッド
-  JS->>JS: DOMをLoadingに書き換え
-  JS->>Main: invoke('open_deck')
-  Note over Main: 同期コマンド実行中(約5秒)<br/>再描画できない
-  Main-->>JS: 結果
-  JS->>JS: DOMをエディタに書き換え
-  Note over JS,Main: ここで初めて画面が更新される
+```canvas
+{
+  "nodes": [
+    {"id": "js", "type": "group", "x": 0, "y": 0, "width": 268, "height": 476, "label": "WebView(JS)"},
+    {"id": "main", "type": "group", "x": 328, "y": 0, "width": 268, "height": 476, "label": "メインスレッド"},
+    {"id": "js0", "type": "text", "x": 24, "y": 48, "width": 220, "height": 56, "text": "DOMをLoadingに書き換え"},
+    {"id": "main1", "type": "text", "x": 352, "y": 164, "width": 220, "height": 56, "text": "同期コマンド実行中(約5秒)\n再描画できない"},
+    {"id": "js2", "type": "text", "x": 24, "y": 280, "width": 220, "height": 56, "text": "DOMをエディタに書き換え"},
+    {"id": "js3", "type": "text", "x": 24, "y": 396, "width": 220, "height": 56, "text": "ここで初めて画面が更新される"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "js0", "toNode": "main1", "fromSide": "right", "toSide": "top", "label": "invoke('open_deck')"},
+    {"id": "e2", "fromNode": "main1", "toNode": "js2", "fromSide": "bottom", "toSide": "right", "style": "dashed", "label": "結果"},
+    {"id": "e3", "fromNode": "js2", "toNode": "js3"}
+  ]
+}
 ```
 
 DOM を見るテストは、この問題を検出できない。IPC をモックしたブラウザ上のテスト([[tauri-invoke-mock-testing]])も、実ウィンドウを tauri-playwright で操作するテスト([[tauri-macos-window-automation]])も、DOM の状態では通る。「実装は正しいのに実機では反応がない」という報告と、テスト結果が食い違う。

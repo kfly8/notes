@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-09-24
 title: Cloudflare Wallets
 description: AI エージェントに支払い手段と検証可能な身元を持たせる仕組み。
 tags: [cloudflare, agents-week-2026, ai-agent]
@@ -24,12 +24,21 @@ Virtual Wallet はエージェントに「動く自由」を与えつつ、使�
 
 Monetization Gateway が x402 プロトコル(HTTP リクエストに支払いを添付できる仕組み)を採用している。Cloudflare Wallets は x402 対応エンドポイントへの支払いを実現するインフラとして動く。
 
-```mermaid
-flowchart LR
-  human["人間<br/>Account Wallet"] -->|上限・許可リストを設定| agent["エージェント<br/>Virtual Wallet"]
-  agent -->|x402で支払いを添付したHTTPリクエスト| service["有料API / MCPツール / コンテンツ"]
-  agent -.->|異常な支出速度を検知| review["人間によるレビュー・承認"]
-  review -.->|上限引き上げ| agent
+```canvas
+{
+  "nodes": [
+    {"id": "human", "type": "text", "x": 0, "y": 0, "width": 240, "height": 72, "text": "人間\nAccount Wallet"},
+    {"id": "agent", "type": "text", "x": 0, "y": 152, "width": 240, "height": 72, "text": "エージェント\nVirtual Wallet"},
+    {"id": "service", "type": "text", "x": 0, "y": 304, "width": 240, "height": 72, "text": "有料API / MCPツール / コンテンツ"},
+    {"id": "review", "type": "text", "x": 420, "y": 152, "width": 240, "height": 72, "text": "人間によるレビュー・承認"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "human", "toNode": "agent", "label": "上限・許可リストを設定"},
+    {"id": "e2", "fromNode": "agent", "toNode": "service", "label": "x402で支払いを添付したHTTPリクエスト"},
+    {"id": "e3", "fromNode": "agent", "toNode": "review", "fromSide": "right", "toSide": "left", "style": "dashed", "label": "異常な支出速度を検知"},
+    {"id": "e4", "fromNode": "review", "toNode": "agent", "fromSide": "left", "toSide": "right", "style": "dashed", "label": "上限引き上げ"}
+  ]
+}
 ```
 
 ## cloudflare.pay ハンドル

@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-09-02
+updated: 2026-09-24
 title: Cloudflare Agent Memory
 description: AI エージェントに永続的な記憶を持たせるマネージドサービス。
 tags: [cloudflare, agents-week-2026, ai-agent]
@@ -35,13 +35,23 @@ profile は名前で指定されるメモリストアで、セッション・エ
 
 抽出パイプラインは、事実・イベント・指示・タスクという分類でメモリを整理する。検索(Recall)は、フルテキスト・キー検索・メッセージ検索・直接ベクトル検索・HyDE という5つのチャネルを並列に実行する構成になっている。
 
-```mermaid
-flowchart LR
-  conv["会話"] -->|Ingest| do["Durable Objects<br/>(生メッセージ+分類済みメモリ)"]
-  do --> vec["Vectorize<br/>(ベクトル検索)"]
-  recall["Recall"] -->|フルテキスト/キー/メッセージ/直接ベクトル/HyDE<br/>を並列実行| do
-  recall --> vec
-  recall --> answer["合成された回答"]
+```canvas
+{
+  "nodes": [
+    {"id": "conv", "type": "text", "x": 0, "y": 0, "width": 240, "height": 56, "text": "会話"},
+    {"id": "do", "type": "text", "x": 0, "y": 136, "width": 240, "height": 56, "text": "Durable Objects\n(生メッセージ+分類済みメモリ)"},
+    {"id": "vec", "type": "text", "x": 0, "y": 272, "width": 240, "height": 56, "text": "Vectorize\n(ベクトル検索)"},
+    {"id": "recall", "type": "text", "x": 440, "y": 0, "width": 240, "height": 56, "text": "Recall"},
+    {"id": "answer", "type": "text", "x": 440, "y": 408, "width": 240, "height": 56, "text": "合成された回答"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "conv", "toNode": "do", "label": "Ingest"},
+    {"id": "e2", "fromNode": "do", "toNode": "vec"},
+    {"id": "e3", "fromNode": "recall", "toNode": "do", "fromSide": "bottom", "toSide": "right", "label": "フルテキスト/キー/メッセージ/\n直接ベクトル/HyDE を並列実行"},
+    {"id": "e4", "fromNode": "recall", "toNode": "vec", "fromSide": "bottom", "toSide": "right"},
+    {"id": "e5", "fromNode": "recall", "toNode": "answer", "fromSide": "bottom", "toSide": "top"}
+  ]
+}
 ```
 
 Cloudflare Agents SDK の Sessions API における、メモリ部分の参照実装として統合される(圧縮・記憶・メモリ検索を担当)。

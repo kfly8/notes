@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-09-02
+updated: 2026-09-24
 title: MCP v2
 description: Model Context Protocol (MCP) の 2026-07-28 仕様で導入された、プロトコルコアのステートレス化。
 tags: [cloudflare, agents-week-2026, mcp]
@@ -19,16 +19,23 @@ Model Context Protocol (MCP) の 2026-07-28 仕様で導入された、プロト
 
 人間の確認が必要な場面は、サーバーが `input_required` という結果を返し、クライアントが再試行する **Multi Round-Trip Requests (MRTR)** という方式に置き換えられている。
 
-```mermaid
-flowchart TB
-  subgraph v1["MCP v1: ステートフル"]
-    c1["Client"] <-->|セッション確立・維持| s1["Server<br/>(Durable Objectsなど<br/>状態保持インフラが必要)"]
-  end
-  subgraph v2["MCP v2: ステートレス"]
-    c2["Client"] -->|自己完結したリクエスト| s2["Server<br/>(Workersだけで動く)"]
-    s2 -.->|input_required| c2
-    c2 -->|MRTRで再試行| s2
-  end
+```canvas
+{
+  "nodes": [
+    {"id": "v1", "type": "group", "x": 0, "y": 0, "width": 628, "height": 140, "label": "MCP v1: ステートフル"},
+    {"id": "v2", "type": "group", "x": 0, "y": 180, "width": 628, "height": 188, "label": "MCP v2: ステートレス"},
+    {"id": "c1", "type": "text", "x": 24, "y": 44, "width": 200, "height": 72, "text": "Client"},
+    {"id": "s1", "type": "text", "x": 404, "y": 44, "width": 200, "height": 72, "text": "Server\n(Durable Objectsなど\n状態保持インフラが必要)"},
+    {"id": "c2", "type": "text", "x": 24, "y": 244, "width": 200, "height": 72, "text": "Client"},
+    {"id": "s2", "type": "text", "x": 404, "y": 244, "width": 200, "height": 72, "text": "Server\n(Workersだけで動く)"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "c1", "toNode": "s1", "fromEnd": "arrow", "label": "セッション確立・維持"},
+    {"id": "e2", "fromNode": "c2", "toNode": "s2", "label": "自己完結したリクエスト"},
+    {"id": "e3", "fromNode": "s2", "toNode": "c2", "fromSide": "bottom", "toSide": "bottom", "style": "dashed", "label": "input_required"},
+    {"id": "e4", "fromNode": "c2", "toNode": "s2", "fromSide": "top", "toSide": "top", "label": "MRTRで再試行"}
+  ]
+}
 ```
 
 この結果、MCP サーバーは Durable Objects のような状態管理インフラなしに、リクエストスコープのインフラ(Cloudflare Workers など)だけで動くようになった。運用がシンプルになり、コストも下がるとされている。
