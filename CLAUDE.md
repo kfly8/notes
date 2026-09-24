@@ -126,12 +126,14 @@ Map of Content にあたる。ハブノート自身は深掘りせず、配下�
 - 色は固定値で書かない（テーマに追従しないため）。強調は `class <id> accent` の1種類だけにして、何を
   強調しているかを図の直後の本文で説明する。
 - 一本道の流れは `block-beta`（`columns 1`）で書くと、箱の幅と間隔がそろう。
-- mermaid の配置エンジンでは形を決められない図（一度だけ折れる矢印など）は、
-  `<figure class="diagram"><svg …>` を本文に直接書く。箱は `<g class="box">`（強調は `box accent`）、
-  矢印は `<path class="edge">`、線上のラベルは `<text class="label">` にし、色は書かない（`global.css` が
-  CSS 変数で塗るのでテーマに追従する）。HTML ブロックが途切れないよう空行を入れない。`aria-label` に図の
-  内容を文章で書く（`/<slug>.md` を読む AI やスクリーンリーダー向け）。例は
-  `notes/tagpr-workers-builds-release-flow.md` の全体像。
+- 形にこだわる図は ` ```canvas ` に [JSON Canvas](https://jsoncanvas.org/spec/1.0/) を書く。ビルド時に
+  `src/plugins/canvas.ts` が SVG にする。mermaid と違って座標と線の出入りする辺（`fromSide` / `toSide`）を
+  自分で決めるので、箱の幅をそろえたり、一度だけ折れる矢印を描いたりできる。
+  - 箱の幅・高さと間隔は、図の中でそろえる。
+  - 色は強調したい箱や線に `"color": "4"` だけを使う（サイトのアクセント色で塗られる）。16進数の色は無視される。
+  - 辺を省略すると、相手の方向の辺から出入りする。出る辺と入る辺の向きが違えば一度だけ折れ、同じなら
+    二度折れる。ラベルは相手に入っていく側の線に載る。
+  - 例は `notes/tagpr-workers-builds-release-flow.md` の全体像。
 
 ## 理解度チェック
 

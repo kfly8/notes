@@ -16,28 +16,27 @@ GitHub には Cloudflare の認証情報を一切置かない。デプロイは�
 
 ## 全体像
 
-<figure class="diagram"><svg viewBox="0 0 440 530" role="img" aria-label="機能ブランチの PR を人がマージすると main に入り、tagpr が Release PR を作成・更新する。Release PR を人がマージするとタグ vX.Y.Z が打たれ、Actions が release に push し、Workers Builds が本番にデプロイする。機能ブランチの PR からは Workers Builds がプレビューを作成する。">
-<defs><marker id="diagram-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrowhead" d="M0 0 L10 5 L0 10 z"/></marker></defs>
-<path class="edge" d="M110 60 V110"/>
-<text class="label" x="110" y="85">人がマージ</text>
-<path class="edge" d="M110 150 V200"/>
-<text class="label" x="110" y="175">tagpr が作成・更新</text>
-<path class="edge" d="M110 240 V290"/>
-<text class="label" x="110" y="265">人がマージ</text>
-<path class="edge" d="M110 330 V380"/>
-<text class="label" x="110" y="355">Actions が release に push</text>
-<path class="edge" d="M110 420 V470"/>
-<text class="label" x="110" y="445">Workers Builds がデプロイ</text>
-<path class="edge" d="M200 40 H330 V110"/>
-<text class="label" x="330" y="75">Workers Builds が作成</text>
-<g class="box accent"><rect x="20" y="20" width="180" height="40"/><text x="110" y="40">機能ブランチの PR</text></g>
-<g class="box"><rect x="20" y="110" width="180" height="40"/><text x="110" y="130">main</text></g>
-<g class="box accent"><rect x="20" y="200" width="180" height="40"/><text x="110" y="220">Release PR</text></g>
-<g class="box"><rect x="20" y="290" width="180" height="40"/><text x="110" y="310">タグ vX.Y.Z</text></g>
-<g class="box"><rect x="20" y="380" width="180" height="40"/><text x="110" y="400">release</text></g>
-<g class="box"><rect x="20" y="470" width="180" height="40"/><text x="110" y="490">本番</text></g>
-<g class="box"><rect x="240" y="110" width="180" height="40"/><text x="330" y="130">プレビュー</text></g>
-</svg></figure>
+```canvas
+{
+  "nodes": [
+    {"id": "feat", "type": "text", "x": 0, "y": 0, "width": 180, "height": 40, "text": "機能ブランチの PR", "color": "4"},
+    {"id": "pv", "type": "text", "x": 220, "y": 90, "width": 180, "height": 40, "text": "プレビュー"},
+    {"id": "main", "type": "text", "x": 0, "y": 90, "width": 180, "height": 40, "text": "main"},
+    {"id": "rpr", "type": "text", "x": 0, "y": 180, "width": 180, "height": 40, "text": "Release PR", "color": "4"},
+    {"id": "tag", "type": "text", "x": 0, "y": 270, "width": 180, "height": 40, "text": "タグ vX.Y.Z"},
+    {"id": "rel", "type": "text", "x": 0, "y": 360, "width": 180, "height": 40, "text": "release"},
+    {"id": "prod", "type": "text", "x": 0, "y": 450, "width": 180, "height": 40, "text": "本番"}
+  ],
+  "edges": [
+    {"id": "e-pv", "fromNode": "feat", "fromSide": "right", "toNode": "pv", "toSide": "top", "label": "Workers Builds が作成"},
+    {"id": "e1", "fromNode": "feat", "toNode": "main", "label": "人がマージ"},
+    {"id": "e2", "fromNode": "main", "toNode": "rpr", "label": "tagpr が作成・更新"},
+    {"id": "e3", "fromNode": "rpr", "toNode": "tag", "label": "人がマージ"},
+    {"id": "e4", "fromNode": "tag", "toNode": "rel", "label": "Actions が release に push"},
+    {"id": "e5", "fromNode": "rel", "toNode": "prod", "label": "Workers Builds がデプロイ"}
+  ]
+}
+```
 
 本番への経路はこの一本だけ。人が手を動かすのは色の付いた2つの PR のマージだけで、main にマージしても本番には出ない。図には機能ブランチのプレビューだけを描いたが、プレビューは `release` 以外のすべてのブランチに、push のたびに作られる（下の表）。
 

@@ -356,17 +356,18 @@ a:hover { text-decoration-style: solid; }
 .mermaid .accent rect { stroke: var(--accent) !important; stroke-width: 2px !important; }
 .mermaid .accent .nodeLabel { color: var(--accent) !important; }
 
-/* ---- 手書きの図 ----
-   mermaid の配置エンジンでは描けない形（一度だけ折れる矢印など）は、ノートに SVG を直接書く。
-   色はここで CSS 変数から塗るので、SVG 側には色を書かない。 */
+/* ---- JSON Canvas の図 ----
+   ```canvas のブロックから src/plugins/canvas.ts が SVG を作る。SVG 側には色を書かず、ここで
+   CSS 変数から塗るので、テーマを切り替えるとそのまま追従する。 */
 
 .diagram {
   margin: 1.75rem 0;
   padding: 1rem;
+  overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: 6px;
 }
-.diagram svg { display: block; width: 100%; max-width: 440px; height: auto; margin: 0 auto; }
+.diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
 .diagram text {
   fill: var(--fg);
   font-size: 14px;
@@ -374,9 +375,9 @@ a:hover { text-decoration-style: solid; }
   dominant-baseline: central;
 }
 .diagram .box rect { fill: var(--surface); stroke: var(--fg-faint); }
-.diagram .box.accent rect { stroke: var(--accent); stroke-width: 2; }
-.diagram .box.accent text { fill: var(--accent); }
-.diagram .edge { fill: none; stroke: var(--fg-faint); marker-end: url(#diagram-arrow); }
+.diagram .group rect { fill: none; stroke: var(--border); }
+.diagram .group-label { fill: var(--fg-sub); font-size: 13px; text-anchor: start; }
+.diagram .edge { fill: none; stroke: var(--fg-faint); }
 .diagram .arrowhead { fill: var(--fg-faint); }
 /* 線の上に載せるラベル。背景色の縁取りで下の線を消す。 */
 .diagram .label {
@@ -387,6 +388,10 @@ a:hover { text-decoration-style: solid; }
   stroke-width: 8px;
   stroke-linejoin: round;
 }
+/* 強調はプリセット色 "4"（緑）だけを使い、サイトのアクセント色で塗る。 */
+.diagram .box.color-4 rect { stroke: var(--accent); stroke-width: 2; }
+.diagram .box.color-4 text { fill: var(--accent); }
+.diagram .edge.color-4 { stroke: var(--accent); }
 
 /* ---- 理解度チェック ---- */
 
