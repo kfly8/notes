@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-09-23
+updated: 2026-09-28
 title: Cloudflare Workers
 description: Cloudflare Workers のプラットフォーム機能(配信・キャッシュ・デプロイなど)を扱うノートの見取り図
 tags: [cloudflare, workers, moc]
@@ -27,6 +27,7 @@ Cloudflare Workers のランタイム・プラットフォーム機能を扱う�
 ## コンピュート
 
 - [[cloudflare-containers]] — Dockerイメージをエッジで動かす仕組み。Worker自身とは別のリソース設定(instance_type)・課金体系を持つ
+- [[durable-objects-await-gap]] — Durable Object は R2 や `fetch()` を待つ間に別のリクエストを受ける。直列化はストレージ操作の間だけ
 
 ## 理解度チェック
 

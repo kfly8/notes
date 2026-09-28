@@ -12,3 +12,4 @@
 /Users/kfly8/src/github.com/piconic-ai/koma
 /Users/kfly8/src/github.com/piconic-ai/sora
 /home/user/barefootjs
+/Users/kfly8/src/github.com/piconic-ai/ima

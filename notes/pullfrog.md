@@ -1,6 +1,6 @@
 ---
 created: 2026-08-28
-updated: 2026-09-13
+updated: 2026-09-28
 title: Pullfrog
 description: GitHub 上でコーディングエージェントを動かすボット。
 tags: [pullfrog, ai-agent, code-review, github-actions]
@@ -39,6 +39,10 @@ action の入力で実行時の枠を絞れる。
 また、組み込みシステムプロンプトに「AGENTS.md か相当ファイルがあれば読んで従え」という指示があるため、`AGENTS.md`（CLAUDE.md への symlink でもよい）はプロンプトレベルで毎回参照される。
 
 レビュー指示をリポジトリ管理したい場合は、指示本文を repo 内のファイル（例: `.github/pullfrog/review.md`）に置き、コンソール欄には `Read .github/pullfrog/review.md in the repository checkout and follow it.` の1行だけ置く方式が取れる。ただし**ファイルを実際に read するかはエージェントの指示追従であって機械的保証はない**。read されたかは footer の workflow run ログで確認できる。
+
+## 指摘の例
+
+ima（Go の CLI と Cloudflare Workers の Web エディタ）の画像添付の PR 5本では、うち3本の初回レビューで IMPORTANT 付きの指摘が出た。どの PR も、追 push ごとに IncrementalReview が前回の指摘の解消を確かめ、スレッドを resolve する流れになった。指摘された内容はそれぞれノートにした: [[durable-objects-await-gap]]、[[jpeg-lossless-metadata-stripping]]、[[lru-eviction-render-feedback-loop]]。
 
 ## 費用
 
