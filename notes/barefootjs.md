@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-09-23
+updated: 2026-09-29
 title: BarefootJS
 description: signal ベースの TSX をビルド時にコンパイルして、バックエンドのネイティブなテンプレートを吐くフレームワーク。
 tags: [barefootjs, signals, jsx, hono]
@@ -89,6 +89,10 @@ expect(button!.events).toContain('click')
 ## Hono アダプタで使う
 
 Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[barefootjs-hono-scaffold]] を参照。クライアント側の `@barefootjs/router` を使う場合、region の外は一切更新されないという契約があり、[[barefootjs-router-region-contract]] にまとめた。`'use client'` コンポーネントをプレーンなサーバーコンポーネントの子に置くと静かにhydrateされない落とし穴もある — [[barefootjs-orphaned-child-hydration]]。SSR ではなく静的サイトジェネレーター(Hono の `toSSG`)と CSR Adapter・Router を組み合わせて、このノートサイト自身を実際に置き換えた実験は [[hono-tossg-barefootjs-migration-experiment]] を参照。
+
+## ノードエディタ（xyflow）
+
+`@barefootjs/xyflow` は、パンやズーム、ドラッグなどのポインタ操作をパッケージ本体が受け持ち、`<Flow>` などの JSX 部品をレジストリからアプリにコピーして使う構成。ブラウザだけで描画する（CSR）アプリで使ったときの抜けと回避は [[barefootjs-xyflow-csr-gaps]] にまとめた。
 
 ## スライドとサイトで使う
 

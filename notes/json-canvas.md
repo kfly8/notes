@@ -1,6 +1,6 @@
 ---
 created: 2026-09-24
-updated: 2026-09-24
+updated: 2026-09-29
 title: JSON Canvas
 description: 無限キャンバスに置いた箱（ノード）と線（エッジ）を JSON で持つ、オープンなファイル形式。
 tags: [json-canvas, obsidian, diagram, file-format]
@@ -101,6 +101,10 @@ JSON Canvas は座標と大きさ、線の出入りする辺をデータとし�
 - **重なり順**: グループを先に、他のノードを後に描く。仕様では配列の順番で決まるので、ここは仕様から外れている。
 
 実際の図は [[tagpr-workers-builds-release-flow]]（分岐）、[[mcp-v2]]（グループと往復）、[[tauri-sync-command-blocks-repaint]]（グループをレーンにしたシーケンス）などにある。
+
+## 共同編集
+
+複数人で同時に編集するなら、ファイルの文字列を共有するか、ノードとエッジを構造として共有するかを選ぶことになる。文字列のまま CRDT でマージすると、別々の人のキャンバス操作だけでも JSON が壊れる組み合わせがある（[[json-canvas-co-editing-text-or-structure]]）。構造から書き戻すときに元の書式を保つ方法は [[json-layout-preserving-rewrite]] にまとめた。
 
 ## 対応しているアプリとライブラリ
 
