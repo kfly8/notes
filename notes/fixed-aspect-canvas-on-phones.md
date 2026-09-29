@@ -1,6 +1,6 @@
 ---
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-09-29
 title: 固定比率キャンバスの UI はスマホで縮尺ごと縮む
 description: "スライドのように「1280x720 の固定キャンバスを transform: scale() で画面に収める」作りは、デスクトップでは1つの座標系で全部が済んで楽だが、スマホではキャンバスごと約 0.3 倍になる。"
 tags: [css, mobile, slides, peitho]
@@ -71,6 +71,8 @@ Playwright で 390x844（縦）、844x390（横）、1024x768（タッチ）、1
 ---
 grid アイテムに `min-width: 0` を付ける。既定の `min-width: auto` は中身の最小幅（折り返せない1行）まで縮まないため。
 ```
+
+キャンバスの形が変わると要素の位置も変わるので、要素に重ねる UI は要素に結びつけて置き直す — [[overlay-pin-follows-reflow]]
 
 ## 出典
 

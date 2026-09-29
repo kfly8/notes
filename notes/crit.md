@@ -1,0 +1,49 @@
+---
+created: 2026-09-29
+updated: 2026-09-29
+title: crit
+description: コーディングエージェントの出力(計画の Markdown、差分、動いている Web アプリ)に人間が行単位でコメントし、そのコメントをエージェントに返すレビューツール。
+tags: [crit, coding-agent, code-review]
+---
+# crit
+
+コーディングエージェントの出力(計画の Markdown、差分、動いている Web アプリ)に人間が行単位でコメントし、そのコメントをエージェントに返すレビューツール。Go の単一バイナリで、ローカルにデーモンを立ててブラウザの UI を出す。MIT ライセンス。[tomasz-tomczyk/crit](https://github.com/tomasz-tomczyk/crit)。以下は v0.21.0 のソースを読んで確かめたこと。
+
+## 往復の形
+
+エージェントが `crit plan.md` を実行すると、デーモンにレビューセッションができ、エージェントのプロセスは人間の「完了」を待ってブロックする。人間がコメントを書いて完了を押すと、未解決のコメントがプロンプトとしてエージェントに返る。エージェントはファイルを直し、返信を付けて、もう一度 `crit plan.md` を実行する。これが次のラウンドになる。
+
+```canvas
+{
+  "nodes": [
+    {"id": "agent", "type": "group", "x": 0, "y": 0, "width": 268, "height": 400, "label": "エージェント"},
+    {"id": "crit", "type": "group", "x": 328, "y": 0, "width": 268, "height": 400, "label": "crit デーモン"},
+    {"id": "a1", "type": "text", "x": 24, "y": 48, "width": 220, "height": 56, "text": "crit plan.md を実行して待つ"},
+    {"id": "c1", "type": "text", "x": 352, "y": 48, "width": 220, "height": 80, "text": "人間がコメントを書き\n「完了」を押す"},
+    {"id": "a2", "type": "text", "x": 24, "y": 192, "width": 220, "height": 80, "text": "未解決のコメントを受け取り\nファイルを直して返信"},
+    {"id": "c2", "type": "text", "x": 352, "y": 312, "width": 220, "height": 64, "text": "次のラウンド\n(コメントの行を付け替える)"}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "a1", "toNode": "c1", "fromSide": "right", "toSide": "left"},
+    {"id": "e2", "fromNode": "c1", "toNode": "a2", "fromSide": "bottom", "toSide": "right", "label": "プロンプト"},
+    {"id": "e3", "fromNode": "a2", "toNode": "c2", "fromSide": "bottom", "toSide": "left", "label": "crit plan.md"}
+  ]
+}
+```
+
+- 完了のたびに、**それまでのラウンドの分も含めて未解決のコメントがすべて**プロンプトに入る(`handleFinish` は `listUnresolvedComments` を渡す)。誰も待っていないときに完了を押して取りこぼしたコメントも、次の完了で届く。
+- ラウンドをまたぐとき、コメントの行番号は新しい内容に合わせて付け替えられる。この仕組みには落とし穴がある([[crit-comment-carry-forward]])。
+
+## デーモンとセッション
+
+- セッションはファイル名のハッシュで識別される。ファイルを渡すモードでは `sha256(cwd + "\0" + 引数...)` の先頭12桁(引数はソートする)、git の差分モードでは `cwd + "\0" + ブランチ`。同じディレクトリで同じファイルを渡せば、プロセスを立て直しても同じセッションに戻る。
+- UI 以外からも HTTP API で操作できる。コメントの追加(`/api/file/comments`)、完了(`/api/finish`)、変更の通知(`/api/events` の SSE)、セッションの情報(`/api/session`。`review_round` を含む)など。
+
+## 外から組み込むときに足りないもの
+
+[[peitho]] のエディタ(peitho-studio)に crit を同梱し、プレビュー上のコメントを crit 経由でエージェントに渡す形で組み込んだときに分かったこと。
+
+- **エージェントが待っているのか作業中なのかを取る口がない。** API から分かるのはラウンド番号くらいで、エージェントのプロセスが生きているかは分からない。peitho-studio では、`review_round` と自分が完了を送ったラウンドを比べて推測し、一定時間なにも起きなければ「接続し直す」を促す形にした。
+- **ラウンドの途中でファイルを外から編集すると、コメントの行がずれる。** crit 自身の UI はファイルを編集しないので想定されていない([[crit-comment-carry-forward]])。
+
+#crit #coding-agent #code-review

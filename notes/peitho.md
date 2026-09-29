@@ -1,6 +1,6 @@
 ---
 created: 2026-09-12
-updated: 2026-09-24
+updated: 2026-09-29
 title: peitho
 description: Markdown からスライドの静的サイトを組むツール。
 tags: [peitho, slides]
@@ -40,6 +40,14 @@ Error: line 148: showcase.css: unknown slot class '.slot-body-wrap' in override 
 - 言語切替 — [[peitho-language-toggle]]
 - スマホ表示 — [[fixed-aspect-canvas-on-phones]]
 - ページ送りボタンと進捗バー — ビューアはキーボードとクリックだけなので、スライドがキー入力やポインタを奪うとき（ゲーム、フォーム）に抜け道が要る。`?slide=N` を `history.pushState` で書いて `popstate` を発火させれば、ビューアの通常経路で遷移する
+
+## エディタ（peitho-studio）からコーディングエージェントに頼む
+
+プレビューの要素をクリックしてコメントを書き、まとめてエージェントに送る。受け渡しには [[crit]] を同梱して使う。
+
+- コメントのピンを要素に追従させる — [[overlay-pin-follows-reflow]]
+- ラウンドの途中の編集でコメントの行がずれる — [[crit-comment-carry-forward]]
+- 画像をスライドにドロップしたときの位置の単位 — [[tauri-macos-drop-position-points]]
 
 ## 理解度チェック
 
