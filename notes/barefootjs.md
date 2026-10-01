@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-09-29
+updated: 2026-10-01
 title: BarefootJS
 description: signal ベースの TSX をビルド時にコンパイルして、バックエンドのネイティブなテンプレートを吐くフレームワーク。
 tags: [barefootjs, signals, jsx, hono]
@@ -85,6 +85,8 @@ expect(button!.events).toContain('click')
 ## 非同期データ層の設計
 
 `spec/async.md` の層 0 は、Solid 2.0 が `createResource` を捨てて memo に非同期を載せたのを受けて検討し直し、`createQuery` / `createMutation` と `http.get` 等の純粋なリクエスト記述に落ち着いた。設計と捨てた案は [[barefootjs-async-layer0-design]]、候補をコンパイラに通して何が起きるかを見た記録は [[barefootjs-async-api-compile-experiment]]。背景になる一般論として、非同期の「まだ無い」を値に置くかグラフのノードの状態に置くかは [[async-state-as-value-vs-graph-node]]、値の有無と決着を別の軸に分ける整理は [[async-value-and-settlement-axes]]。React の `useDeferredValue` / `useTransition` がこの設計で何に対応し何が残るかは [[react-transitions-in-value-model]]。
+
+0.39.1 の具体的な契約は [[barefootjs-query-initial-is-result]]（取得済み初期値）、[[barefootjs-mutation-call-time]]（書き込みの評価タイミング）、[[barefootjs-async-action-template-reads]]（SSR で通信状態を表示できる位置）にまとめた。
 
 ## Hono アダプタで使う
 

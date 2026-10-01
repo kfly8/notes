@@ -1,6 +1,6 @@
 ---
 created: 2026-09-21
-updated: 2026-09-23
+updated: 2026-10-01
 title: BarefootJS の非同期 API は createQuery / createMutation と http の記述に落ち着いた
 description: BarefootJS の非同期データ層（spec/async.md の層 0）の設計。
 tags: [barefootjs, async, signals, api-design]
@@ -74,9 +74,11 @@ BarefootJS は SSR を Go や ERB など 9 つの非 JS テンプレートで行
 
 `createQuery` を helper に包むと、コンパイラは reactive factory の inliner で展開するしかなく、その制約（モジュール定数の参照が BF112 など）が付く。seed が呼び出し側に見えていなければならないからで、これは緩められない。再利用したいのは「どこにどう問い合わせるか」なので、`postsAt = (page) => http.get('/api/posts', { page })` を普通の関数として共有し、`createQuery` は component に直接書く。Solid Router の `query()` が resource ではなく fetch 関数を包むのと同じ切り方。
 
-## まだ確かめていないこと
+## 設計時点で未検証だった範囲
 
 seed の経路（BF101 / BF110、`initial` が落ちる経路）は試験コンパイルで裏が取れているが、`action.isPending()` の各アダプタへの lowering、記述からのキー計算、init 中の prime は紙の上の推論で、実装 PR の fixture で固定する。`createSubscription`（WebSocket / SSE）、batch、prefetch、`<Async>` のクライアント側の畳みは語彙を予約して v0 から外した。
+
+0.39.1 の公開資料で確認できる具体的な契約は、初期値について [[barefootjs-query-initial-is-result]]、書き込みの送信と並行呼び出しについて [[barefootjs-mutation-call-time]]、SSR の状態表示について [[barefootjs-async-action-template-reads]] に分けた。上の未検証事項は設計時点の記録で、現在の実装状況と区別する。
 
 ## 理解度チェック
 
