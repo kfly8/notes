@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-09-23
+updated: 2026-10-01
 title: Workers Builds
 description: GitHub リポジトリをダッシュボードで接続するだけでpush毎に自動ビルド・デプロイするCloudflare純正のCI/CD
 tags: [cloudflare, workers, ci-cd]
@@ -81,6 +81,10 @@ Custom Domain は、そのWorkerの**現在アクティブ（＝昇格済み）�
 ## [[cloudflare-workers]]の中での位置づけ
 
 デプロイ時の自動化を扱う。実行時の配信・キャッシュを扱う他のノート([[cloudflare-workers-assets]]・[[cloudflare-workers-cache]]・[[cloudflare-workers-og-image]])とは別レイヤーの話。
+
+## プレビュービルドの失敗を調べる
+
+設定画面と実行側のコマンド・変数が一致しない場合や、Worker 名が正しいのに名前不一致エラーが出る場合の切り分けは [[cloudflare-workers-builds-preview-troubleshooting]]。環境初期化のタイムアウト、開発サーバーの起動、CI の識別タグ不一致を別の段階として調べる。
 
 ## 理解度チェック
 
