@@ -7,7 +7,7 @@ tags: [pedit, e2ee, yjs, crdt, cloudflare, coding-agent]
 ---
 # pedit
 
-`pedit notes.md` と打つとリンクが1つ出て、それを渡した相手がブラウザからその `notes.md` を一緒に編集できる CLI。編集はホストの手元のファイルにそのまま書き戻される。相手にインストールやアカウントは要らない。Go の単一バイナリと、Cloudflare Workers 上の中継サーバーからなる。MIT ライセンス。[piconic-ai/edit](https://github.com/piconic-ai/edit)（旧称 ima）。
+`pedit notes.md` と打つとリンクが1つ出て、それを渡した相手がブラウザからその `notes.md` を一緒に編集できる CLI。編集はホストの手元のファイルにそのまま書き戻される。相手にインストールやアカウントは要らない。Go の単一バイナリと、Cloudflare Workers 上の中継サーバーからなる。MIT ライセンス。[piconic-ai/edit](https://github.com/piconic-ai/edit)。
 
 書いているのは作者側（kfly8 が piconic-ai で作っているもの）なので、宣伝になりやすい話題だと自覚している。そのぶん、できることと同じ分量で、信頼モデルの前提とまだできないことを書く。以下は v0.0.7（2026-10-02）のソースを読み、Go 側のテストを手元で動かして確かめた範囲。
 
