@@ -1,6 +1,6 @@
 ---
 created: 2026-09-28
-updated: 2026-09-28
+updated: 2026-10-03
 title: E2E 暗号化した共同編集に画像添付を足す設計
 description: "URL の fragment の鍵で E2E 暗号化した共同編集に、画像添付を足す設計。正本はローカルに置き、セッション中だけ暗号文を R2 に置く。blobId を HMAC にする理由。"
 tags: [e2ee, cloudflare, r2, durable-objects, design]
@@ -8,7 +8,7 @@ tags: [e2ee, cloudflare, r2, durable-objects, design]
 # E2E 暗号化した共同編集に画像添付を足す設計
 
 URL の fragment に置いた鍵でエンドツーエンド暗号化している共同編集ツールに、画像の貼り付けを足すときの設計。
-ima（`ima <file>` でローカルファイルをブラウザと共同編集する CLI）で実装した。前提は「ホストのローカル
+ima（`ima <file>` でローカルファイルをブラウザと共同編集する CLI。現在の [[pedit]]）で実装した。前提は「ホストのローカル
 ファイルが正」「サーバーは中身を知らない」の2つ。
 
 ## 検討して捨てた案

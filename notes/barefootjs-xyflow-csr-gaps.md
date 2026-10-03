@@ -1,13 +1,13 @@
 ---
 created: 2026-09-29
-updated: 2026-09-29
+updated: 2026-10-03
 title: "@barefootjs/xyflow をブラウザだけで描画するときの抜け"
 description: "@barefootjs/xyflow をブラウザだけで描画（CSR）したときに見つかった抜けと、ima での回避。"
 tags: [barefootjs, xyflow, csr]
 ---
 # @barefootjs/xyflow をブラウザだけで描画するときの抜け
 
-`@barefootjs/xyflow` は、[[barefootjs]] で書いたノードエディタ部品。パンやズーム、ドラッグ、接続といったポインタ操作はパッケージ本体（`attachFlowSubsystems` など）が受け持ち、`<Flow>` / `<NodeWrapper>` / `<Handle>` / `<SimpleEdge>` などの JSX 部品はレジストリから `bf add xyflow` でアプリにコピーして使う。ima で [[json-canvas]] の編集画面をこれで作ったとき（0.39.0、サーバーを持たずブラウザだけで描画する CSR）、次の抜けがあった。いずれも upstream に報告している。
+`@barefootjs/xyflow` は、[[barefootjs]] で書いたノードエディタ部品。パンやズーム、ドラッグ、接続といったポインタ操作はパッケージ本体（`attachFlowSubsystems` など）が受け持ち、`<Flow>` / `<NodeWrapper>` / `<Handle>` / `<SimpleEdge>` などの JSX 部品はレジストリから `bf add xyflow` でアプリにコピーして使う。ima（現在の [[pedit]]）で [[json-canvas]] の編集画面をこれで作ったとき（0.39.0、サーバーを持たずブラウザだけで描画する CSR）、次の抜けがあった。いずれも upstream に報告している。
 
 ## 描画（CSR）
 

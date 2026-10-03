@@ -1,6 +1,6 @@
 ---
 created: 2026-08-28
-updated: 2026-09-28
+updated: 2026-10-03
 title: Pullfrog
 description: GitHub 上でコーディングエージェントを動かすボット。
 tags: [pullfrog, ai-agent, code-review, github-actions]
@@ -42,7 +42,7 @@ action の入力で実行時の枠を絞れる。
 
 ## 指摘の例
 
-ima（Go の CLI と Cloudflare Workers の Web エディタ）の画像添付の PR 5本では、うち3本の初回レビューで IMPORTANT 付きの指摘が出た。どの PR も、追 push ごとに IncrementalReview が前回の指摘の解消を確かめ、スレッドを resolve する流れになった。指摘された内容はそれぞれノートにした: [[durable-objects-await-gap]]、[[jpeg-lossless-metadata-stripping]]、[[lru-eviction-render-feedback-loop]]。
+ima（Go の CLI と Cloudflare Workers の Web エディタ。現在の [[pedit]]）の画像添付の PR 5本では、うち3本の初回レビューで IMPORTANT 付きの指摘が出た。どの PR も、追 push ごとに IncrementalReview が前回の指摘の解消を確かめ、スレッドを resolve する流れになった。指摘された内容はそれぞれノートにした: [[durable-objects-await-gap]]、[[jpeg-lossless-metadata-stripping]]、[[lru-eviction-render-feedback-loop]]。
 
 ## 費用
 

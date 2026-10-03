@@ -13,3 +13,5 @@
 /Users/kfly8/src/github.com/piconic-ai/sora
 /home/user/barefootjs
 /Users/kfly8/src/github.com/piconic-ai/ima
+/Users/kfly8/src/github.com/piconic-ai/edit
+/home/user/edit

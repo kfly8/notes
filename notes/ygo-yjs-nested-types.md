@@ -1,13 +1,13 @@
 ---
 created: 2026-09-29
-updated: 2026-09-29
+updated: 2026-10-03
 title: ygo と Yjs で入れ子の型をやり取りするときの注意
 description: Go の ygo とブラウザの Yjs で Y.Array・Y.Map・Y.Text の入れ子を同期させるときの注意（prelim、float32、キーの順序、Move、ロック）。
 tags: [yjs, crdt, go]
 ---
 # ygo と Yjs で入れ子の型をやり取りするときの注意
 
-ygo（`github.com/reearth/ygo`）は Go で書かれた Yjs 互換の CRDT ライブラリ。Y.Array の中の Y.Map、その中の Y.Text のような入れ子の型を Go で作り、ブラウザの Yjs（v13）と同期できる。ima で [[json-canvas]] のノードを `nodes: Y.Array<Y.Map>`（本文は Y.Text）として共有したとき（[[json-canvas-co-editing-text-or-structure]]）、ygo 1.50 と Yjs 13 を双方向に同期させて確かめたことをまとめる。
+ygo（`github.com/reearth/ygo`）は Go で書かれた Yjs 互換の CRDT ライブラリ。Y.Array の中の Y.Map、その中の Y.Text のような入れ子の型を Go で作り、ブラウザの Yjs（v13）と同期できる。ima（現在の [[pedit]]）で [[json-canvas]] のノードを `nodes: Y.Array<Y.Map>`（本文は Y.Text）として共有したとき（[[json-canvas-co-editing-text-or-structure]]）、ygo 1.50 と Yjs 13 を双方向に同期させて確かめたことをまとめる。
 
 ## 入れ子の型の作り方
 
