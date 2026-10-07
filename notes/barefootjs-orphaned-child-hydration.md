@@ -1,6 +1,6 @@
 ---
 created: 2026-08-30
-updated: 2026-09-02
+updated: 2026-10-07
 title: "BarefootJS: サーバーコンポーネントの子は孤立してhydrateされない"
 description: サーバーコンポーネントの子として置いたクライアントコンポーネントは、静かにhydrateされない
 tags: [barefootjs, hono, hydration]
@@ -69,7 +69,7 @@ hydrationまわりの落とし穴という意味では [[barefootjs-router-regio
 ```quiz
 同じ子コンポーネントを、クライアントコンポーネントの子として置いた場合はどうなるか。
 ---
-正しくhydrateされる。囲むコンポーネントが`'use client'`であれば、コンパイラはその親の初期化関数内に `initChild("ChildName", scopeEl, {})` の呼び出しを生成する。
+正しくhydrateされる。囲むコンポーネントが `'use client'` であれば、コンパイラはその親の初期化関数内に `initChild("ChildName", scopeEl, {})` の呼び出しを生成する。
 ```
 
 ## 出典

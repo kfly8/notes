@@ -1,6 +1,6 @@
 ---
 created: 2026-09-06
-updated: 2026-09-09
+updated: 2026-10-07
 title: "BarefootJS: コレクション全体を1つのsignalに持たない"
 description: keyedな.map()リストの各行が、他の行とは独立な「自分専用の値」(現在の描画内容、現在の並び順位置、など)を必要とする場面で、Record<key, X>やMap<key, X>を1つのsignal/memoにまとめて持つと、意図しない全行再レンダーを引き起こす。
 tags: [barefootjs, signals, reactivity, performance]
@@ -29,7 +29,7 @@ itemStateByKey().get(item.key)
 
 ## 対処: per-key signal
 
-キーごとに`createSignal`を遅延生成して`Map<key, [getter, setter]>`で管理し、値が実際に変わったキーの setter だけを呼ぶ。
+キーごとに`createSignal`を遅延生成して`Map<key, [getter, setter]>`で管理し、値が実際に変わったキーのsetterだけを呼ぶ。
 
 ```tsx
 const signalsByKey = new Map<string, [() => X, (v: X) => void]>()
@@ -58,7 +58,7 @@ signalFor(item.key)[0]()
 
 ## 追記: index追従はフレームワーク側で直った
 
-上の2番目の例が回避しようとしていた「keyedな`.map()`の生のループindexが並べ替え後に古いまま固まる」問題自体は、[piconic-ai/barefootjs#2860](https://github.com/piconic-ai/barefootjs/pull/2860)でフレームワーク本体が修正した——`mapArray`/`mapArrayLazy`がindexをitemと同じ仕組みでトラッキングするようになったため、この特定のケースについては自前のper-key signalはもう不要。ただし、シグナル読み取りも関数呼び出しも含まない生のindex単体の式は今も未対応([piconic-ai/barefootjs#2861](https://github.com/piconic-ai/barefootjs/issues/2861)、2026-09時点でOPEN)。詳細は[[barefootjs-loop-index-reactivity]]を参照。
+上の2番目の例が回避しようとしていた「keyedな`.map()`の生のループindexが並べ替え後に古いまま固まる」問題自体は、[piconic-ai/barefootjs#2860](https://github.com/piconic-ai/barefootjs/pull/2860)でフレームワーク本体が修正した——`mapArray`/`mapArrayLazy`がindexをitemと同じ仕組みでトラッキングするようになったため、この特定のケースについては自前のper-key signalはもう不要。ただし、signal読み取りも関数呼び出しも含まない生のindex単体の式は今も未対応([piconic-ai/barefootjs#2861](https://github.com/piconic-ai/barefootjs/issues/2861)、2026-09時点でOPEN)。詳細は[[barefootjs-loop-index-reactivity]]を参照。
 
 このper-key signalパターン自体(コレクション全体を1つのsignal/memoに持たない、という設計判断)は、フレームワークが面倒を見ない独自の派生状態全般に今も有効。
 

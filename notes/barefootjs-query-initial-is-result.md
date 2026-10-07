@@ -1,6 +1,6 @@
 ---
 created: 2026-10-01
-updated: 2026-10-01
+updated: 2026-10-07
 title: createQuery の initial は取得済みの結果を意味する
 description: BarefootJS の createQuery に渡す initial は、サーバーが取得済みの結果であり、読み込み前の仮表示ではない。
 tags: [barefootjs, async, signals, ssr]
@@ -16,7 +16,7 @@ BarefootJS の `createQuery` に渡す `initial` は、サーバーが取得済�
 | 取得済みの値 | その値 | 初期値を fresh なキャッシュとして登録し、mount 時には送信しない |
 | undefined、または指定なし | undefined | 初回の取得を送信する |
 
-`ttl` の既定値は 15 秒。必須 prop を `initial` に渡す場合は値の型を `T` として扱え、初期値がない場合は `T | undefined` になる。
+`ttl` の既定値は15秒。必須 prop を `initial` に渡す場合は値の型を `T` として扱え、初期値がない場合は `T | undefined` になる。
 
 ```tsx
 'use client'

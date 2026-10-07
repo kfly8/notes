@@ -1,13 +1,13 @@
 ---
 created: 2026-09-14
-updated: 2026-09-14
+updated: 2026-10-07
 title: BarefootJS が UnoCSS を Vite プラグインではなく CLI で統合する理由
 description: BarefootJS は9アダプタ共通でUnoCSSを@unocss/viteではなく独立CLIとして統合している。stale コピー問題とバックエンド非依存のHTML所有権が理由。
 tags: [barefootjs, unocss, vite]
 ---
 # BarefootJS が UnoCSS を Vite プラグインではなく CLI で統合する理由
 
-[[barefootjs]] の `npm create barefootjs@latest`（UnoCSS 選択時)が生成する `vite.config.ts` には `@unocss/vite` が一切出てこず、UnoCSS は `unocss` / `unocss --watch` という独立 CLI プロセスとして動く。生成される scripts や `uno.config.ts` の具体例は [[barefootjs-hono-scaffold]] を参照。ここでは、なぜ Vite プラグインではなく CLI という構成を選んでいるかをソースコードのコメントから追う。
+[[barefootjs]] の `npm create barefootjs@latest`（UnoCSS 選択時）が生成する `vite.config.ts` には `@unocss/vite` が一切出てこず、UnoCSS は `unocss` / `unocss --watch` という独立 CLI プロセスとして動く。生成される scripts や `uno.config.ts` の具体例は [[barefootjs-hono-scaffold]] を参照。ここでは、なぜ Vite プラグインではなく CLI という構成を選んでいるかをソースコードのコメントから追う。
 
 ## `@barefootjs/vite` の役割は JSX コンパイルだけ
 

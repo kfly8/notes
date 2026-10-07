@@ -1,6 +1,6 @@
 ---
 created: 2026-08-22
-updated: 2026-08-30
+updated: 2026-10-07
 title: BarefootJS Router の region 契約
 description: BarefootJS の @barefootjs/router は部分ナビゲーション（[bf-region] だけを差し替える遷移）の際、region の外にあるものには一切触らない。
 tags: [barefootjs, router, hono, css]
@@ -11,7 +11,7 @@ tags: [barefootjs, router, hono, css]
 
 > swaps only the page **region**, and disposes/re-hydrates just the islands inside it. **The shell stays mounted; everything outside the region keeps its DOM, scroll, and state.**
 
-つまり region の外は「更新されない」のではなく「更新する仕組みがそもそもない」。ここを知らずに、ページごとに変わる値を region の外に置くと、値は遷移前のまま固まる。実際に2種類のハマり方をした: `<head>` に置いた route-scoped なリソース（節「head: メタデータとリソース」）と、`<body>` の region 外に置いたコンポーネントの props（節「body: region の外は state を保持したまま」）。
+つまり region の外は「更新されない」のではなく「更新する仕組みがそもそもない」。ここを知らずに、ページごとに変わる値を region の外に置くと、値は遷移前のまま固まる。実際に2種類のハマり方をした: `<head>` に置いた route-scoped なリソース（節「head: メタデータとリソースは別扱い」）と、`<body>` の region 外に置いたコンポーネントの props（節「body: region の外は state を保持したまま」）。
 
 ## head: メタデータとリソースは別扱い
 
@@ -93,7 +93,7 @@ region が丸ごと作り直される、という性質そのものから来る�
 
 - **フォーカス**: swap 後、ルーターは新しい region の最初の見出しへ `tabindex="-1"` + `focus({ preventScroll: true })` でフォーカスを移す（スクリーンリーダーへのページ変化の告知が目的）。サイト側の CSS がこのプログラム的な focus と、キーボード操作による本物の focus を区別していないと、遷移のたびに触ってもいない見出しに枠が付いて見える——詳細と対処は [[programmatic-focus-and-focus-visible]]。
 - **ちらつき**: region 内の要素は、ページをまたいで見た目が同じでも DOM ノードとしては毎回作り直される。画像などは HTTP キャッシュが効いていても、ノードの破棄・再生成自体がちらついて見えることがある——対処は [[barefootjs-data-bf-permanent]]。
-- **View Transitionのタイムアウト**: 遷移に `document.startViewTransition()` を組み合わせようとすると、「swapがいつ終わったか」を示す公開APIがない（`NAVIGATING_ATTR`はナビゲーション全体の開始〜終了しか示さない）ため、updateCallbackが後処理まで律儀に待ってタイムアウトしやすい——詳細は [[view-transition-update-callback-timeout]]。
+- **View Transition のタイムアウト**: 遷移に `document.startViewTransition()` を組み合わせようとすると、「swap がいつ終わったか」を示す公開 API がない（`NAVIGATING_ATTR` はナビゲーション全体の開始〜終了しか示さない）ため、updateCallback が後処理まで律儀に待ってタイムアウトしやすい——詳細は [[view-transition-update-callback-timeout]]。
 
 ## 出典
 
