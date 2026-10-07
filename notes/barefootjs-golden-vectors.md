@@ -1,13 +1,13 @@
 ---
 created: 2026-09-02
-updated: 2026-09-02
+updated: 2026-10-07
 title: BarefootJS の golden vector コーパス
 description: BarefootJS のリファレンス実装との差分テスト がコンパイル済みテンプレート出力を Hono とライブに突き合わせるのに対し、 golden vector コーパスはその手前——各言語のネイティブランタイム（テンプレートが実際に実行時に呼ぶ ヘルパー関数・式評価器）が、JS の挙動と値として一致するかを検証する。
 tags: [barefootjs, testing]
 ---
 # BarefootJS の golden vector コーパス
 
-[[barefootjs-reference-diff-testing]]がコンパイル済み**テンプレート出力**を Hono とライブに突き合わせるのに対し、
+[[barefootjs-reference-diff-testing]] がコンパイル済み**テンプレート出力**を Hono とライブに突き合わせるのに対し、
 golden vector コーパスはその手前——各言語の**ネイティブランタイム**（テンプレートが実際に実行時に呼ぶ
 ヘルパー関数・式評価器）が、JS の挙動と値として一致するかを検証する。`packages/adapter-tests/vectors/`。
 
@@ -56,7 +56,7 @@ adapter-tests」と明記。中央の `divergences.test.ts` は `packages/` 配�
 という決まった basename のファイルを**発見**する側に回った。新しいバックエンドを足しても、中央側の
 コードは一切変えなくていい。
 
-これは [[barefootjs-reference-diff-testing]] の `render-divergences.ts`（各アダプタが自分の既知の差分を
+つまり、[[barefootjs-reference-diff-testing]] の `render-divergences.ts`（各アダプタが自分の既知の差分を
 所有し、`adapter-tests`/`compat` はそれを名前で発見するだけ）と**全く同じ設計パターン**が、コンパイル
 時（アダプタの IR→テンプレート lowering）と実行時（ランタイムのヘルパー関数・評価器）という独立した
 2つのレイヤーで、それぞれ別個に育っている。
@@ -72,13 +72,6 @@ adapter-tests」と明記。中央の `divergences.test.ts` は `packages/` 配�
 fixture の値・構造を変える5手法とも、コンパイル時の [[barefootjs-reference-diff-testing]] とも別の
 レイヤー。テンプレートの lowering が正しくても、それが呼び出すランタイムのヘルパー関数自体が JS と
 違う値を返せば同じ結果にならない——golden vector コーパスはその土台を担保する。
-
-## 出典
-
-- `packages/adapter-tests/vectors/README.md`（piconic-ai/barefootjs, origin/main）
-- `packages/adapter-tests/vectors/cases.ts`
-- `packages/adapter-go-template/runtime/testdata/vector-divergences.json`
-- コミット `87bf6b43f`（2026-07-03）、`a8dfcda09`（2026-07-04）
 
 ## 理解度チェック
 
@@ -97,12 +90,19 @@ Go の `number/empty string coerces to 0` の divergence は、意図的な設�
 ```
 
 ```quiz
-vector-divergences.json の宣言ファイルが、2026-07-04 に adapter-tests から各バックエンド自身の
+`vector-divergences.json` の宣言ファイルが、2026-07-04 に `adapter-tests` から各バックエンド自身の
 パッケージへ移動したのはなぜか。
 ---
 「アダプタ固有のテスト宣言は adapter-tests に属さない」という依存の向きを保つため。中央側は
 basename でファイルを発見するだけにして、新しいバックエンドを足しても中央のコードを変えずに済むように
-した。[[barefootjs-reference-diff-testing]] の render-divergences.ts と同じ設計パターン。
+した。[[barefootjs-reference-diff-testing]] の `render-divergences.ts` と同じ設計パターン。
 ```
+
+## 出典
+
+- `packages/adapter-tests/vectors/README.md`（piconic-ai/barefootjs, origin/main）
+- `packages/adapter-tests/vectors/cases.ts`
+- `packages/adapter-go-template/runtime/testdata/vector-divergences.json`
+- コミット `87bf6b43f`（2026-07-03）、`a8dfcda09`（2026-07-04）
 
 #barefootjs #testing

@@ -1,13 +1,13 @@
 ---
 created: 2026-09-07
-updated: 2026-09-09
+updated: 2026-10-07
 title: "BarefootJS: keyed .map()の行indexがどう追従するか"
 description: BarefootJSのkeyedな.map()で、行の「現在位置」を指すindexパラメータが、同じkeyのまま並べ替えられたときにどう再評価されるか。mapArray/mapArrayLazyはitemと同じ仕組みでindexを追従させるが、シグナルも関数呼び出しも含まない生のindex単体の式だけは今も未対応。
 tags: [barefootjs, signals, reactivity]
 ---
 # BarefootJS: keyed .map()の行indexがどう追従するか
 
-[[barefootjs]]のkeyedな`.map()`(`items().map((item, i) => <li key={item.id}>...</li>)`)で、配列を同じkeyのまま並べ替えたとき、行のindexパラメータ`i`を使った式がどう追従するかは、式の形によって挙動が変わる。
+[[barefootjs]]のkeyedな`.map()`(`items().map((item, i) => <li key={item.id}>...</li>)`)で、配列を同じkeyのまま並べ替えたとき、行のindexパラメータ`i`を使った式がどう追従するかは、式の形によって変わる。
 
 ## 直っている: itemと同じ仕組みでindexを追従させる
 

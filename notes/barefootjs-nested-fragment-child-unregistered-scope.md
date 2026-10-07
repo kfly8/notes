@@ -1,21 +1,21 @@
 ---
 created: 2026-09-12
-updated: 2026-09-13
+updated: 2026-10-07
 title: "BarefootJS: ネストしたfragmentRootの子コンポーネントの内部条件分岐がDOM更新されない"
 description: BarefootJS で、祖先の三項演算子(cond ?
 tags: [barefootjs, reactivity, hydration]
 ---
 # BarefootJS: ネストしたfragmentRootの子コンポーネントの内部条件分岐がDOM更新されない
 
-[[barefootjs]] で、祖先の三項演算子(`cond ? <A/> : <B/>`)がマウント後に`A`から`B`へ切り替わったとき、`B`の中にある`'use client'`な子コンポーネント(fragmentRoot、つまり単一のラップ要素を持たず`<>...</>`を返すもの)がさらに内部に持つ条件分岐(`{errorMessage ? <div>...</div> : null}`)が、シグナルは正しく変化しているのに一度もDOM更新されないことがある。エラーもワーニングも出ない(ただしランタイム自身が別の警告を出す場合がある。後述)。
+[[barefootjs]]で、祖先の三項演算子(`cond ? <A/> : <B/>`)がマウント後に`A`から`B`へ切り替わったとき、`B`の中にある`'use client'`な子コンポーネント(fragmentRoot、つまり単一のラップ要素を持たず`<>...</>`を返すもの)がさらに内部に持つ条件分岐(`{errorMessage ? <div>...</div> : null}`)が、シグナルは正しく変化しているのに一度もDOM更新されないことがある。エラーもワーニングも出ない(ただしランタイム自身が別の警告を出す場合がある。後述)。
 
-peitho-studioの`StatusBar.tsx`で発生を確認し、その後 [[barefootjs-nested-fragment-child-unregistered-scope-experiment|独立した最小コード]] で`@barefootjs/client@0.35.1`・`0.35.6`(2026-09-12時点の最新)の両方に再現することを確認した。
+peitho-studioの`StatusBar.tsx`で発生を確認し、その後[[barefootjs-nested-fragment-child-unregistered-scope-experiment|独立した最小コード]]で`@barefootjs/client@0.35.1`・`0.35.6`(2026-09-12時点の最新)の両方に再現することを確認した。
 
 ## 原因の当初仮説(→誤りと判明。正しい原因は追記参照)
 
 `@barefootjs/client`の`dist/runtime/index.js`の`insert()`(コンパイルされた三項演算子が降りる先)に`scope`引数をログする1行を仕込んで特定した——**ただしこの節の結論は、後日コンパイラ/ランタイムのソースを直接読んで検証したところ誤りだったと分かった**。当時の推論の記録として残すが、正しい原因は本ノート末尾の「追記」を見ること。
 
-問題の子(`StatusBar`相当)は`fragmentRoot: true`でコンパイルされ、SSR/CSRいずれでも自身の実体を`<!--bf-scope:Name_xxx-->...<!--bf-/scope:Name_xxx-->`という**コメントで囲む**ことで、単一のラップ要素なしに「自分の範囲はここからここまで」を表現する。この子が親の`bindEvents`から`t && initChild("Name", t, props)`という普通の経路でマウントされるとき、`t`(＝`insert()`に渡る`scope`)は親テンプレートの`bf="sN"`属性クエリで見つけた**フラグメント内の何らかの要素**になる——観測した実例では、子コンポーネント自身が持つ`<footer>`要素だった。
+問題の子(`StatusBar`相当)は`fragmentRoot: true`でコンパイルされ、SSR/CSRいずれでも自身の実体を`<!--bf-scope:Name_xxx-->...<!--bf-/scope:Name_xxx-->`という**コメントで囲む**ことで、単一のラップ要素なしに「自分の範囲はここからここまで」を表現する。この子が親の`bindEvents`から`t && initChild("Name", t, props)`という普通の経路でマウントされるとき、`t`(=`insert()`に渡る`scope`)は親テンプレートの`bf="sN"`属性クエリで見つけた**フラグメント内の何らかの要素**になる——観測した実例では、子コンポーネント自身が持つ`<footer>`要素だった。
 
 `t`(=`<footer>`)は`commentScopeRegistry`に登録されていない。`insert()`が呼ぶ`updateFragmentConditional`/`findCondTarget`は、`scope`が`commentScopeRegistry`に載っていない場合、`scope`自身のサブツリー内だけを`querySelectorAll`で探す(`candidatesInScope`)。ところが自分の内部条件分岐のコメントマーカー(`<!--bf-cond-start:s0-->`)は`<footer>`の**外側**、fragment全体の中の兄弟の位置にある。サブツリー限定の探索では絶対に見つからず、`updateFragmentConditional`は`startComment`も`condEl`も`null`のまま何もせず終わる。これが毎回無音で起きる。
 
@@ -23,7 +23,7 @@ peitho-studioの`StatusBar.tsx`で発生を確認し、その後 [[barefootjs-ne
 
 ## 再現条件
 
-[[barefootjs-nested-fragment-child-unregistered-scope-experiment]] に切り出した最小コードで、以下がすべて必要条件だと確認した。
+[[barefootjs-nested-fragment-child-unregistered-scope-experiment]]に切り出した最小コードで、以下がすべて必要条件だと確認した。
 
 1. 祖先の三項演算子の**両方の分岐**が子コンポーネントを描画すること(`Welcome`/`StatusBarCopy`相当)。片方の分岐が単一の生要素(`<div id="welcome">`のような)だと、コンパイラの`isFragmentCond`判定が変わり[[barefootjs-mismatched-branch-shape-drops-siblings|別の、もっと単純なバグ]]を踏んでしまい今回の条件を満たせない。
 2. マウント後に現れる側の分岐が`<>...</>`で、問題の子コンポーネントの**前にも後にも**別の兄弟要素があること。子が分岐の最初か最後の要素だけだと再現しない——境界計算がたまたま親自身の境界と一致してしまうため。

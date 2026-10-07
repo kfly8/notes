@@ -1,13 +1,13 @@
 ---
 created: 2026-09-11
-updated: 2026-09-11
+updated: 2026-10-07
 title: "BarefootJS: keyed .map()の新規行は、refが呼ばれる時点ではまだ本物のドキュメントに属していない"
 description: BarefootJSのkeyedな.map()で新しいkeyの行が追加されると、その行のrefコールバックは、要素がまだ実ページのドキュメントに挿入される前、行のマークアップが解析された別の(detachedな)ドキュメントに属した状態で呼ばれる。
 tags: [barefootjs, dom, shadow-dom]
 ---
 # BarefootJS: keyed .map()の新規行は、refが呼ばれる時点ではまだ本物のドキュメントに属していない
 
-[[barefootjs]]のkeyedな`.map()`で新しいkeyの行が追加されると、その行の`ref`コールバックは、要素が**まだ実ページのドキュメントに挿入される前**、行のマークアップが解析された別の(detachedな)ドキュメントに属した状態で呼ばれる。`ref`の中で`host.isConnected`は`false`、`host.ownerDocument`も実ページの`document`とは別物になっている。実際に挿入される処理(reparent)はこの`ref`が返った直後、同じ同期tick内で起きる——おそらくHTML5の`<template>`要素の"template contents owner document"の仕組み(`template.content`内のノードは、実際にツリーへ追加されるまでownerDocumentが本体のdocumentとは別になる)に類する挙動で、行のマークアップをそう解析しているものと推測される(BarefootJSのソースそのものでこの一点までは確認できていない)。
+[[barefootjs]]のkeyedな`.map()`で新しいkeyの行が追加されると、その行の`ref`コールバックは、要素が**まだ実ページのドキュメントに挿入される前**、行のマークアップが解析された別の(detachedな)ドキュメントに属した状態で呼ばれる。`ref`の中で`host.isConnected`は`false`、`host.ownerDocument`も実ページの`document`とは別物になっている。実際に挿入される処理(reparent)はこの`ref`が返った直後、同じ同期tick内で起きる。おそらくHTML5の`<template>`要素の"template contents owner document"の仕組み(`template.content`内のノードは、実際にツリーへ追加されるまでownerDocumentが本体のdocumentとは別になる)に類する挙動で、行のマークアップをそう解析しているものと推測される(BarefootJSのソースそのものでこの一点までは確認できていない)。
 
 ## 症状: 新規行でだけShadow DOMのマウントが失敗する
 

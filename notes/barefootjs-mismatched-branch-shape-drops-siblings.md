@@ -1,13 +1,13 @@
 ---
 created: 2026-09-12
-updated: 2026-09-13
+updated: 2026-10-07
 title: "BarefootJS: 分岐の形が非対称な三項演算子はDOM更新で兄弟要素を静かに失う"
 description: BarefootJS の三項演算子cond ?
 tags: [barefootjs, reactivity]
 ---
 # BarefootJS: 分岐の形が非対称な三項演算子はDOM更新で兄弟要素を静かに失う
 
-[[barefootjs]] の三項演算子`cond ? A : B`で、`A`が単一の生要素(`<div id="x">...</div>`)、`B`が`<>...</>`で複数のトップレベル要素を返す形になっていると、`cond`が後から`false`(`B`側)に変わったときのDOM更新で、`B`の**最初の要素以外がすべて静かに失われる**。エラーもワーニングもなし。
+[[barefootjs]]の三項演算子`cond ? A : B`で、`A`が単一の生要素(`<div id="x">...</div>`)、`B`が`<>...</>`で複数のトップレベル要素を返す形になっていると、`cond`が後から`false`(`B`側)に変わったときのDOM更新で、`B`の**最初の要素以外がすべて静かに失われる**。エラーもワーニングもなし。
 
 [[barefootjs-nested-fragment-child-unregistered-scope-experiment|別バグの最小再現を作る過程]]で偶然踏んだ。`@barefootjs/client@0.35.6`で確認。
 

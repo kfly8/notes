@@ -1,6 +1,6 @@
 ---
 created: 2026-09-01
-updated: 2026-09-01
+updated: 2026-10-07
 title: BarefootJS の mutation sweep
 description: 意味を保つはずの構造変換をコンポーネントのソースに適用し、変換前後でレンダリング結果が変わらないことを 検証する、メタモルフィックテスト。
 tags: [barefootjs, testing]
@@ -13,7 +13,7 @@ tags: [barefootjs, testing]
 
 名前は「mutation」だが、プロダクトコードにバグを注入してテストの検出力を測る古典的な mutation testing
 ではなく、意味を保つ変換の前後で出力不変性を見る**メタモルフィックテスティング**にあたる。すべて
-`ts.transform` によるTS ASTレベルの変換で、正規表現によるソース書き換えは使わない（このリポジトリの
+`ts.transform` による TS AST レベルの変換で、正規表現によるソース書き換えは使わない（このリポジトリの
 コンパイラ規約）。
 
 ## 3種の変換
@@ -60,11 +60,6 @@ frozen corpus・[[pairwise-testing]]・mutation sweep の3つの sweep が同一
 fixture の中身（props の値）ではなく構造そのものを変える点で、[[barefootjs-adversarial-catalog]]
 （値を変える）や [[pairwise-testing]]（既存の軸の値を組み合わせて新しい fixture を作る）とは別レイヤー。
 
-## 出典
-
-- `packages/adapter-tests/mutation/mutations.ts`（piconic-ai/barefootjs, origin/main, 2026-08-26）
-- `.github/workflows/mutation-sweep.yml`
-
 ## 理解度チェック
 
 ```quiz
@@ -87,5 +82,10 @@ fragment-wrap 変換で、`<jsx/>` を JsxExpression（`{}`）で包まず直接
 プロダクトコードにバグを注入してテストの検出力を測る古典的な mutation testing ではなく、意味を保つ変換
 の前後で出力が変わらないことを見るメタモルフィックテスティングに近い。
 ```
+
+## 出典
+
+- `packages/adapter-tests/mutation/mutations.ts`（piconic-ai/barefootjs, origin/main, 2026-08-26）
+- `.github/workflows/mutation-sweep.yml`
 
 #barefootjs #testing

@@ -1,6 +1,6 @@
 ---
 created: 2026-10-01
-updated: 2026-10-01
+updated: 2026-10-07
 title: createMutation は呼び出し時の値を送り、通信の直列化はしない
 description: BarefootJS の createMutation は action を呼んだときだけリクエスト記述を評価し、その時点の signal の値を送信する。
 tags: [barefootjs, async, signals]
@@ -31,7 +31,7 @@ export function Setting() {
 }
 ```
 
-`http.put` などは通信そのものではなく、純粋なリクエスト記述を返す。`fetch()` の Promise を factory に返す API ではない。
+`http.put` などは通信そのものではなく、純粋なリクエスト記述を返す。factory が `fetch()` の Promise を返す API ではない。
 
 ## 最新呼び出しの状態と、各通信の決着は別
 

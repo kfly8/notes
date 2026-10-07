@@ -1,6 +1,6 @@
 ---
 created: 2026-08-22
-updated: 2026-09-14
+updated: 2026-10-07
 title: BarefootJS Hono アダプタの scaffold 構成
 description: BarefootJS を Hono / Cloudflare Workers 向けに npm create barefootjs@latest でスキャフォールドしたときの実際の構成。
 tags: [barefootjs, unocss, hono, vite]
@@ -40,7 +40,7 @@ export default defineConfig({
 })
 ```
 
-`unocss`/`unocss --watch` という CLI 実行は `content.filesystem` を読まない。`cli.entry.patterns` に**同じ** glob を重複して書く必要がある。ここを一箇所にしか書かないと、CLI ビルドではスキャン対象ゼロで空の CSS が生成される。
+`unocss`/`unocss --watch` という CLI 実行は `content.filesystem` を読まない。`cli.entry.patterns` に**同じ** glob を重複して書く必要がある。glob を `content.filesystem` にしか書かないと、CLI ビルドではスキャン対象ゼロで空の CSS が生成される。
 
 `outputToCssLayers: true` にすると出力は `@layer preflights(-2), components(-1), default(0)` の中に入る。CSS Cascade Layers の仕様上、名前付き `@layer` の中のルールは、layer に属さない素のルールより常に優先度が低い。だから、既存の（layer 化していない）`reset.css`/`style.css` を `<link>` で読み込んでいるプロジェクトに UnoCSS を足しても、UnoCSS の preflight が既存のリセット CSS を上書きすることはない——何もしなくても共存する。
 
@@ -50,7 +50,7 @@ export default defineConfig({
 
 `@barefootjs/client` の `<Region>` はコンパイラ組み込みタグで、実行時に評価されると即バグ扱いになる（`@barefootjs/client/dist/builtins.d.ts` に "If one of these ever executes, the JSX was rendered outside the BarefootJS compiler pipeline — that's a bug." と明記されている）。これを含むファイルは、`vite.config.ts` の `barefoot({ components: [...] })` でスキャン対象に指定したディレクトリの中に置く必要がある。`renderer.tsx` や `server.tsx` のようなエントリポイント側には書けない。
 
-ただしこれは `<Region>` という JSX タグの制約であって、`@barefootjs/router` のランタイムそのものの制約ではない([[barefootjs-router-region-contract]])。`@barefootjs/router` は DOM 上の `[bf-region]` 属性の有無しか見ておらず、コンパイラを一切通さないエントリポイント側でも `<div bf-region>` と属性を直接書けば Router は動く。BarefootJS コンポーネントを使わない素の Hono JSX レイアウトに Router だけ導入した実例は [[hono-tossg-barefootjs-migration-experiment]] を参照。
+ただしこれは `<Region>` という JSX タグの制約であって、`@barefootjs/router` のランタイムそのものの制約ではない（[[barefootjs-router-region-contract]]）。`@barefootjs/router` は DOM 上の `[bf-region]` 属性の有無しか見ておらず、コンパイラを一切通さないエントリポイント側でも `<div bf-region>` と属性を直接書けば Router は動く。BarefootJS コンポーネントを使わない素の Hono JSX レイアウトに Router だけ導入した実例は [[hono-tossg-barefootjs-migration-experiment]] を参照。
 
 `'use client'` + `<Region>` だけのラッパーコンポーネント（レイアウトコンポーネントなど）を作ると、ビルド後のチャンクは事実上ゼロコストになる。実際のビルド出力:
 

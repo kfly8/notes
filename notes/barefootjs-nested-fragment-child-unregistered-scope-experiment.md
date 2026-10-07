@@ -1,6 +1,6 @@
 ---
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-10-07
 title: "[[barefootjs-nested-fragment-child-unregistered-scope]]の最小再現実験"
 description: "peitho-studioの実アプリでしか再現しなかったBarefootJS: ネストしたfragmentRootの子コンポーネントの内部条件分岐がDOM更新されないのバグを、外部から検証・報告できる独立した最小コードに切り出す。"
 tags: [barefootjs, reactivity, hydration]
@@ -116,7 +116,7 @@ export function Repro() {
 
 ## 躓いた点
 
-- 最初、`Welcome`側を`<div id="welcome">Welcome</div>`という生の要素のまま(子コンポーネントにしない)で試したところ再現しなかった。理由は[[barefootjs-mismatched-branch-shape-drops-siblings]]という**別のバグ**を踏んでいたため——`isFragmentCond`判定が偽になり、DOM更新自体が`before`要素だけを残して残り全部を静かに捨てていた(`StatusBarCopy`の出力が丸ごと消えていたので、そもそも子のinsert()が呼ばれることすらなかった)。`Welcome`も子コンポーネントに変えたことで、実アプリ(`WelcomeScreen`も`'use client'`コンポーネント)と同じ`isFragmentCond: true`の経路に乗り、本命のバグを踏めた。
+- 最初、`Welcome`側を`<div id="welcome">Welcome</div>`という生の要素のまま(子コンポーネントにしない)で試したところ再現しなかった。理由は[[barefootjs-mismatched-branch-shape-drops-siblings]]という**別のバグ**を踏んでいたため——`isFragmentCond`判定が偽になり、DOM更新自体が`before`要素だけを残して残り全部を静かに捨てていた(`StatusBarCopy`の出力が丸ごと消えていたので、そもそも子の`insert()`が呼ばれることすらなかった)。`Welcome`も子コンポーネントに変えたことで、実アプリ(`WelcomeScreen`も`'use client'`コンポーネント)と同じ`isFragmentCond: true`の経路に乗り、本命のバグを踏めた。
 - `StatusBarCopy`を分岐内で唯一の要素(前後に兄弟なし)にすると再現しなかった。`before`/`after`という何の変哲もない`<div>`を前後に1個ずつ置いただけで再現するようになった。前だけ、後だけでもダメで、両方必要だった。
 
 ## 実際の出力
