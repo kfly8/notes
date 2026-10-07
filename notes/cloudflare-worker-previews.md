@@ -28,11 +28,11 @@ Preview は本番のデプロイとは別枠の環境で、昇格という操作
 }
 ```
 
-- **Preview は本番の設定を継承しない。** 本番にバインディングを足したら、Preview でも使うものは `previews` にも書く。書き忘れると Preview 側で `env.X` が undefined になり、1101 エラーになる。 Rate Limiting バインディング（[[workers-rate-limiting-binding]]）も同じで、`previews` にも `ratelimits` を書き、`namespace_id` は本番と別にする。
+- **Preview は本番の設定を継承しない。** 本番にバインディングを足したら、Preview でも使うものは `previews` にも書く。書き忘れると Preview 側で `env.X` が undefined になり、1101 エラーになる。Rate Limiting バインディング（[[workers-rate-limiting-binding]]）も同じで、`previews` にも `ratelimits` を書き、`namespace_id` は本番と別にする。
 - `previews` ブロック自体は必須。バインディングが要らない Worker なら空の `{}` でよい。
-- トップレベルにしか置けないもの：`assets`、`compatibility_date`、`compatibility_flags`、`preview_urls`、`routes`。`assets` は Preview ごとにそのブランチのものがアップロードされる。
-- トップレベルでも `previews` でもよいもの：`observability`、`logpush`、`limits`、`placement`。Preview 用に別の値にしたいときだけ `previews` に書く。
-- `previews` に書いてはいけないもの：Cron Triggers、Queue consumers、本番の routes。どれも Preview には向かない。
+- トップレベルにしか置けないもの: `assets`、`compatibility_date`、`compatibility_flags`、`preview_urls`、`routes`。`assets` は Preview ごとにそのブランチのものがアップロードされる。
+- トップレベルでも `previews` でもよいもの: `observability`、`logpush`、`limits`、`placement`。Preview 用に別の値にしたいときだけ `previews` に書く。
+- `previews` に書いてはいけないもの: Cron Triggers、Queue consumers、本番の routes。どれも Preview には向かない。
 - Wrangler の environments と併用するなら `env.<name>.previews` に書き、`wrangler preview --env <name>` で呼ぶ。`--env` を付け忘れると、トップレベルの Worker が対象になる。
 - 設定ファイルは**そのブランチのものが正**。あるブランチだけ別のバインディングにしたいときは、そのブランチで `previews` を書き換える。CLI からバインディングを上書きするフラグはない。
 - secret は `wrangler preview secret put`（Preview ごと）と `wrangler preview base-config secret put`（これから作られる Preview の既定値）で入れる。base-config を後から変えても、すでにある Preview には反映されない。
@@ -107,11 +107,11 @@ workers.dev の URL を出すには、トップレベルの `preview_urls: true`
 
 ## できないこと（2026年9月時点）
 
-- **Cron Triggers**：本番だけが対象。Preview の `scheduled()` は呼ばれない。確かめたいなら、同じ関数を呼ぶテスト用のルートを作る。
-- **Queue consumers**：Preview はキューからメッセージを受け取れない。
-- **Service bindings**：Preview から別の Worker を呼ぶと、相手の本番に行く。自分の Worker 内の呼び出しには `ctx.exports` を使う。
-- **Workflows**：Preview 用の Workflow は作られない。
-- **削除**：`wrangler preview delete --name <name>` はあるが、一覧を出すコマンドはない。上限は Worker あたり Free で 100、Paid で 500 の Preview と、Preview あたり 100 デプロイ。上限に達すると古いものから自動で消える。
+- **Cron Triggers**: 本番だけが対象。Preview の `scheduled()` は呼ばれない。確かめたいなら、同じ関数を呼ぶテスト用のルートを作る。
+- **Queue consumers**: Preview はキューからメッセージを受け取れない。
+- **Service bindings**: Preview から別の Worker を呼ぶと、相手の本番に行く。自分の Worker 内の呼び出しには `ctx.exports` を使う。
+- **Workflows**: Preview 用の Workflow は作られない。
+- **削除**: `wrangler preview delete --name <name>` はあるが、一覧を出すコマンドはない。上限は Worker あたり Free で 100、Paid で 500 の Preview と、Preview あたり 100 デプロイ。上限に達すると古いものから自動で消える。
 
 ## [[cloudflare-workers]]の中での位置づけ
 

@@ -1,6 +1,6 @@
 ---
 created: 2026-09-16
-updated: 2026-09-16
+updated: 2026-10-07
 title: Cloudflare Containers
 description: Dockerイメージをそのまま Cloudflare のエッジで動かす製品。
 tags: [cloudflare, docker]
@@ -44,19 +44,19 @@ Failed to start container: The container is not listening in the TCP address 10.
 
 このエラーメッセージ自体は「起動直後の readiness チェックが起動処理と競合する」という症状のクラスを指すもので、原因は複数ありうる（[cloudflare/containers#139](https://github.com/cloudflare/containers/issues/139) は Laravel/FrankenPHP での報告で、JVMやメモリには触れていない）。ただし、コミュニティでは `lite` のメモリ不足が原因で、`basic` に上げることで解消したという報告がある（[Cloudflare Developers Discord のスレッド](https://www.answeroverflow.com/m/1389089635816439909)）。
 
-[[barefootjs]] の Spring Boot（JVM）統合で実際にこれを踏んだ。`lite` では本番デプロイのたびにこのエラーでコンテナが起動せず、`basic` に上げたところ解消した。他の統合（Rust/axum、Go/gin、Ruby/rails など、いずれも `lite` のまま）はどれも問題なく起動しており、JVMのコールドスタートコストの大きさが `basic` への引き上げが必要だった理由と考えられる。
+[[barefootjs]] の Spring Boot（JVM）統合で実際にこれを踏んだ。`lite` では本番デプロイのたびにこのエラーでコンテナが起動せず、`basic` に上げたところ解消した。他の統合（Rust/axum、Go/gin、Ruby/rails など、いずれも `lite` のまま）はどれも問題なく起動しており、`basic` への引き上げが必要だったのは JVMのコールドスタートコストの大きさのためと考えられる。
 
 ## 運用して分かったこと
 
 コンテナがいつ起きていつ止まるかを握っているところで問題が起きやすい。踏んだものを別ノートにしてある。
 
 - [[cloudflare-containers-durable-object-duration]] — 請求の主役は Durable Object の稼働時間になる。コンテナが起きている間は DO も課金されるため。無料枠を超えた日だけグラフが跳ねて見える理由も。
-- [[container-pid1-sigterm]] — アイドル停止は SIGTERM で行われるので、PID 1 がハンドラを持たないイメージは止まらず、15 分ぶん余計に動く。tini を置いて直す。
+- [[container-pid1-sigterm]] — アイドル停止は SIGTERM で行われるので、PID 1 がハンドラを持たないイメージは止まらず、15分ぶん余計に動く。tini を置いて直す。
 - [[cloudflare-containers-stuck-running-slot]] — 止まったインスタンスが running 枠を握り続け、500 を返し続けることがある。未解決。
 
 ## [[cloudflare-workers]]の中での位置づけ
 
-Workerからコンテナへリクエストを転送する構成そのものはWorkers側の話だが、コンテナ自身のリソース設定・起動特性は独立した関心事としてこちらにまとめる。
+Worker からコンテナへリクエストを転送する構成そのものは Workers 側の話だが、コンテナ自身のリソース設定・起動特性は独立した関心事としてこちらにまとめる。
 
 ## 理解度チェック
 
@@ -69,7 +69,7 @@ Workerからコンテナへリクエストを転送する構成そのものはWo
 ```quiz
 「Failed to start container: not listening in the TCP address」というエラーは何を意味するか。
 ---
-アプリが実際にポートをbindする前に、Cloudflare側のreadinessチェックがタイムアウトしたことを意味する。起動処理そのものが遅い（JVMのコールドスタートなど）ケースの他にも、症状として同じエラーになる原因は複数ありうる。
+アプリが実際にポートを bind する前に、Cloudflare 側の readiness チェックがタイムアウトしたことを意味する。起動処理そのものが遅い（JVMのコールドスタートなど）ケースの他にも、症状として同じエラーになる原因は複数ありうる。
 ```
 
 ## 出典

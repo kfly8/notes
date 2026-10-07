@@ -44,7 +44,7 @@ GitHub アカウントは1つの Cloudflare アカウントにしか紐づけら
 | API token | 任意 |
 | Build variables and secrets | 任意 |
 
-`main` 以外のブランチへのpushは本番デプロイ(`wrangler deploy`)ではなく、既定では `wrangler versions upload` が動く。2026年9月に [[cloudflare-worker-previews|Worker Previews]] が出てからは、新しい Worker の既定値は Preview command の `npx wrangler preview` になった。既存の Worker は「Switch to Worker Previews」で一度だけ切り替える（元に戻せない）。以下のプレビューURLの節は、`versions upload` 方式のときの話。プルリクエストにはビルド状況のコメントと、`wrangler versions upload` を実行したビルドについてはプレビューURLが付く。
+`main` 以外のブランチへのpushは本番デプロイ(`wrangler deploy`)ではなく、既定では `wrangler versions upload` が動く。2026年9月に [[cloudflare-worker-previews|Worker Previews]] が出てからは、新しい Worker の既定値は Preview command の `npx wrangler preview` になった。既存の Worker は「Switch to Worker Previews」で一度だけ切り替える（元に戻せない）。プルリクエストにはビルド状況のコメントと、`wrangler versions upload` を実行したビルドについてはプレビューURLが付く。以下のプレビューURLの節は、`versions upload` 方式のときの話。
 
 wranglerのバージョンは `package.json` に指定したものが使われる。
 
@@ -90,13 +90,13 @@ Custom Domain は、そのWorkerの**現在アクティブ（＝昇格済み）�
 - **Workers Builds**: ダッシュボードで設定する、Workers/Pagesの「pushしたらデプロイ」に特化したシンプルな機能。今回使ったのはこちら
 - **`@cloudflare/ci`**: Workflows / Sandbox SDK / Artifacts の上に構築された、TypeScriptでパイプラインを書く汎用CI/CD製品。自己修復エージェントなど、単純なpushデプロイより高度な機能を持つ
 
-## [[cloudflare-workers]]の中での位置づけ
-
-デプロイ時の自動化を扱う。実行時の配信・キャッシュを扱う他のノート([[cloudflare-workers-assets]]・[[cloudflare-workers-cache]]・[[cloudflare-workers-og-image]])とは別レイヤーの話。
-
 ## プレビュービルドの失敗を調べる
 
 設定画面と実行側のコマンド・変数が一致しない場合や、Worker 名が正しいのに名前不一致エラーが出る場合の切り分けは [[cloudflare-workers-builds-preview-troubleshooting]]。環境初期化のタイムアウト、開発サーバーの起動、CI の識別タグ不一致を別の段階として調べる。
+
+## [[cloudflare-workers]]の中での位置づけ
+
+デプロイ時の自動化を扱う。実行時の配信・キャッシュを扱う他のノート([[cloudflare-workers-assets]]・[[cloudflare-workers-cache]]・[[cloudflare-workers-og-image]])とは別レイヤーの話。
 
 ## 理解度チェック
 
@@ -115,7 +115,7 @@ main以外のブランチにpushすると、既定では何が実行されるか
 ```quiz
 Workers Builds と `@cloudflare/ci`([[cloudflare-ci]])は同じものか。
 ---
-別物。Workers Builds はダッシュボードで設定するWorkers/Pages専用のpushデプロイ機能。`@cloudflare/ci` はWorkflows/Sandboxes/Artifacts上に構築された、TypeScriptでパイプラインを書く汎用CI/CD製品で、自己修復エージェントなどより高度な機能を持つ。
+別物。Workers Builds はダッシュボードで設定するWorkers/Pages専用のpushデプロイ機能。`@cloudflare/ci` はWorkflows / Sandbox SDK / Artifacts上に構築された、TypeScriptでパイプラインを書く汎用CI/CD製品で、自己修復エージェントなどより高度な機能を持つ。
 ```
 
 ```quiz
