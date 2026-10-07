@@ -100,6 +100,20 @@ Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[b
 
 barefootjs.dev の overview デッキは [[peitho]] のスライドに BarefootJS の CSR コンポーネントを載せたもので、1要素1スプライトのシューティングを signal で動かした計測は [[barefootjs-dom-sprite-effects]]。デッキの言語切替（[[peitho-language-toggle]]）とスマホ表示（[[fixed-aspect-canvas-on-phones]]）はビルド側で足した。ロゴのワードマークは Instrument Serif の字形をパス化したもので、手順は [[font-outline-to-svg]]。
 
+## 理解度チェック
+
+```quiz
+HonoAdapter が「リファレンスアダプタ」と呼ばれる理由は何か。
+---
+フィクスチャの期待値がすべて HonoAdapter の実際の出力から生成され、他の9アダプタの出力がそれと比較されるから。
+```
+
+```quiz
+ひし形の依存で effect が中間状態を見るのはなぜか。
+---
+伝播が書き込みの中で購読順に同期で行われ、依存の高さ順の実行がないから。
+```
+
 ## 出典
 
 - [piconic-ai/barefootjs](https://github.com/piconic-ai/barefootjs)

@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-10-07
 title: プログラム的な focus() の outline を消す
 description: SPA ルーターがページ遷移後に JS で element.focus() を呼ぶと、その要素にブラウザ既定の focus outline が付く。
 tags: [css, a11y, barefootjs, router, safari]
@@ -56,6 +56,20 @@ Chromium (Playwright 経由) で `document.activeElement.matches(':focus-visible
 
 - Chromium (Playwright): ルーター `.focus()` 直後は `:focus-visible` に `false`、Tab 移動後は `true`。`[tabindex="-1"]:focus` ルール追加後も Tab 移動した要素の outline (`outline: auto`) は変化なし。
 - 実機 iOS Safari: `:focus-visible` ルールのみでは outline が残った。`[tabindex="-1"]:focus` ルールを足したところ解消（ユーザー報告ベース）。
+
+## 理解度チェック
+
+```quiz
+`:focus:not(:focus-visible) { outline: none }` を置けば、ルーターが `.focus()` した見出しの outline は消えるか。
+---
+Chromium/Firefox では消えるが、実機の iOS Safari では消えない。クリックで別の要素からフォーカスが外れたあとにスクリプトが `.focus()` した要素を、Safari は `:focus-visible` から正しく除外しない(WebKit bug 236782)。
+```
+
+```quiz
+`[tabindex="-1"]:focus { outline: none }` が、キーボードで Tab 移動した要素の outline を消さないと言えるのはなぜか。
+---
+`tabindex="-1"` の要素には Tab キーで到達できないので、そこに乗る focus は常にプログラムによるもの。Tab で届く要素は `tabindex` なしか `0` 以上で、このセレクタに当たらない。
+```
 
 ## 出典
 

@@ -138,4 +138,24 @@ export function Repro() {
 
 `updateFragmentConditional`が`region.anchor`(コメントノード)を持たない場合、`commentsInScope(scope)`/`candidatesInScope(scope, selector)`で`scope`自身のサブツリーだけを探す。`scope`が`commentScopeRegistry`に登録されていない普通の要素(`<footer>`)だと、この探索は子コンポーネント自身のコメントマーカーに絶対に届かない——マーカーは`<footer>`の外、fragment内の兄弟の位置にあるため。
 
+## 理解度チェック
+
+```quiz
+`Welcome` 側を生の `<div id="welcome">` のままにすると再現しなかった。なぜか。
+---
+分岐の形が非対称な三項演算子が兄弟要素を静かに落とす別のバグを踏み、`isFragmentCond` が偽になって `StatusBarCopy` の出力ごと消えていた。子コンポーネントにすると実アプリと同じ `isFragmentCond: true` の経路に乗る。
+```
+
+```quiz
+`StatusBarCopy` を分岐内で唯一の要素にすると再現するか。
+---
+しない。前後に何の変哲もない `<div>` を1個ずつ置く必要があり、前だけ・後だけでも再現しなかった。
+```
+
+```quiz
+再現時のログで、`StatusBarCopy` 内部の条件分岐(`s0`)の scope は何になっていたか。
+---
+`<footer id="footer-copy">`。`commentScopeRegistry` に登録されていない普通の要素なので、そのサブツリーだけを探す探索は `<footer>` の外にある子自身のコメントマーカーに届かない。
+```
+
 #barefootjs #reactivity #hydration

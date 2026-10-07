@@ -95,6 +95,26 @@ region が丸ごと作り直される、という性質そのものから来る�
 - **ちらつき**: region 内の要素は、ページをまたいで見た目が同じでも DOM ノードとしては毎回作り直される。画像などは HTTP キャッシュが効いていても、ノードの破棄・再生成自体がちらついて見えることがある——対処は [[barefootjs-data-bf-permanent]]。
 - **View Transition のタイムアウト**: 遷移に `document.startViewTransition()` を組み合わせようとすると、「swap がいつ終わったか」を示す公開 API がない（`NAVIGATING_ATTR` はナビゲーション全体の開始〜終了しか示さない）ため、updateCallback が後処理まで律儀に待ってタイムアウトしやすい——詳細は [[view-transition-update-callback-timeout]]。
 
+## 理解度チェック
+
+```quiz
+route ごとに内容が変わる `<style>` を `<head>` に置いたルートへ、Router の遷移で入ると何が起きるか。
+---
+`<head>` のリソースは触られないので古いページの `<style>` のままになり、無スタイルで表示される。リロードすれば直るので、原因調査がキャッシュやビルドに向きがち。
+```
+
+```quiz
+`<Region>` の外に置いた `Header` に `showLogo={!isHome}` を渡すと、Router 遷移後のロゴはどうなるか。
+---
+前のページの状態のまま残る。region の外は props を含めて DOM ごと生き続け、更新する仕組みがそもそもない。
+```
+
+```quiz
+`Header` を `'use client'` な `Layout` の中に移したら BF003 が出た。なぜか。
+---
+`"use client"` ファイルは `"use client"` でないファイルを import できない。移した先で `Header` と、その中で使う `ToggleTheme` にも `'use client'` を足す必要があった。
+```
+
 ## 出典
 
 - `node_modules/@barefootjs/router/README.md`（冒頭の概要と `## <head>: metadata is reconciled, resources are not` の節）

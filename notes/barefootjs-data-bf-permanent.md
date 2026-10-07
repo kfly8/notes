@@ -53,6 +53,26 @@ region 内の DOM ノードが swap のたびに作り直されるので、`addE
 
 一般化すると: **DOM ノードに対して直接 `addEventListener` する外部スクリプトに依存する要素は、region 内に置くなら `data-bf-permanent` が要る**。BarefootJS の `'use client'` コンポーネント自身のイベントハンドラ（JSX の `onClick` など）はコンパイラがハイドレーションのたびに再アタッチするので対象外——今回問題になったのは、コンパイラの管理下にない生の `getElementById` + `addEventListener` パターンの方だった。
 
+## 理解度チェック
+
+```quiz
+`data-bf-permanent` を付けた要素が、遷移先のページに同じ値を持つ要素を持たないとき何が起きるか。
+---
+古いノードは普通に破棄される。マッチする要素があるときだけ保持するオプトインの仕組みで、マッチしなければ作り直しにフォールバックする。
+```
+
+```quiz
+素の JS が `getElementById` + `addEventListener` で動かしていたテーマ切り替えボタンを region 内に置いたら、1回ナビゲーションした後はクリックしても何も起きなくなった。なぜか。
+---
+swap のたびに DOM ノードが作り直されるので、リスナーを貼ったそのノードはもう存在しない。`data-bf-permanent` でノードごと生き残らせれば、貼ったリスナーも残る。
+```
+
+```quiz
+BarefootJS の `'use client'` コンポーネントの JSX に書いた `onClick` にも、同じ `data-bf-permanent` の対策が要るか。
+---
+要らない。コンパイラがハイドレーションのたびに再アタッチする。問題になるのはコンパイラの管理下にない生の `addEventListener` の方。
+```
+
 ## 出典
 
 - `node_modules/@barefootjs/router/README.md`（`Persistence (data-bf-permanent)` の節）

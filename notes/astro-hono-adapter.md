@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-09-14
+updated: 2026-10-07
 title: Astro の Hono アダプタ
 description: Astro 7 は astro/hono から Hono ミドルウェアの一式を公開していて、Astro のリクエスト処理を自分の Hono アプリに組み込める。
 tags: [astro, hono, cloudflare]
@@ -56,6 +56,26 @@ notes.kobaken.co では実際にこの受け皿を使わず終いだった。呼
 ## 参考にした構成
 
 Markdown の処理は [[satteri]] 側の話になる。
+
+## 理解度チェック
+
+```quiz
+`src/fetch.ts` で `sessions()` を呼び忘れたまま起動すると何が起きるか。
+---
+エラーにはならず、最初のリクエストの後に Astro が「sessions() handler を呼んでいない」と警告する。セッションを使わないサイトなら `session: false` を設定すればランタイムごと外れて警告も消える。
+```
+
+```quiz
+`output: 'static'` + Cloudflare Workers の構成で、`_headers` のルールが当たらないレスポンスはどれか。
+---
+Hono のパイプラインを通って生成されたレスポンス。`_headers` は静的アセットとして返るレスポンスにしか適用されない。
+```
+
+```quiz
+`wrangler.jsonc` の `assets.directory` を `./dist` のままにすると何が起きるか。
+---
+`@astrojs/cloudflare` は出力を `dist/client` と `dist/server` に分けるので、`_worker` 側まで配信対象に含めてしまう。`./dist/client` を指す必要がある。
+```
 
 ## 出典
 

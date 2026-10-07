@@ -1,6 +1,6 @@
 ---
 created: 2026-09-29
-updated: 2026-09-29
+updated: 2026-10-07
 title: macOS の Tauri はファイルのドロップ位置をポイントで渡す
 description: Tauri v2 の onDragDropEvent が渡すドロップ位置は、型の上では PhysicalPosition(物理ピクセル)だが、macOS では実際にはポイント(CSS ピクセルと同じ単位)で届く。
 tags: [tauri, macos, wkwebview]
@@ -25,5 +25,25 @@ function dropPointToCss(point: Point, scale: number, macOS: boolean): Point {
 ```
 
 [[peitho]] のエディタ(peitho-studio)で、画像をスライドの特定の場所にドロップする機能を作ったときに踏んだ。IPC をモックしたブラウザでのテストでは Tauri のイベントを自分で作るので、この食い違いは出ない([[tauri-invoke-mock-testing]])。実機の Retina ディスプレイで初めて分かった。
+
+## 理解度チェック
+
+```quiz
+macOS で `onDragDropEvent` の位置を `devicePixelRatio` で割ると、Retina ディスプレイでは何が起きるか。
+---
+位置が半分になり、狙った要素より左上に落ちたことになる。macOS では値がすでにポイント(CSS ピクセル)で届くので、割らずにそのまま使う。
+```
+
+```quiz
+なぜ macOS だけ、`PhysicalPosition` 型の値がポイントで届くのか。
+---
+wry が AppKit の `draggingLocation` をそのまま渡しているため。もともとポイント単位の値が、物理ピクセルに変換されないまま `PhysicalPosition` と名付けられている。
+```
+
+```quiz
+IPC をモックしたブラウザでのテストで、この食い違いが出なかったのはなぜか。
+---
+Tauri のイベントを自分で作るので、wry が渡す値の単位は再現されない。実機の Retina ディスプレイで初めて分かった。
+```
 
 #tauri #macos #wkwebview
