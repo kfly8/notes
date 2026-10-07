@@ -1,6 +1,6 @@
 ---
 created: 2026-09-06
-updated: 2026-09-06
+updated: 2026-10-07
 title: "Tauri: 複数ウィンドウとアプリ起動順序にまつわる状態管理"
 description: Tauri v2で、実行時に複数ウィンドウを開けるデスクトップアプリ(それぞれ別のファイルを独立して開ける、比較しながら作業できるもの)を作る際に踏んだ、状態管理と起動順序の落とし穴。
 tags: [tauri, rust, desktop, state-management]
@@ -18,7 +18,7 @@ thread 'main' panicked at .../tauri-2.11.5/src/lib.rs:734:7:
 state() called before manage() for tauri::path::desktop::PathResolver<...>
 ```
 
-このファクトリは、Tauriが自分自身の内部状態(`PathResolver`を含む)を`manage()`し終える**前**に呼ばれる。`.manage(MyState::default())` で自分が登録したstateならこの時点でもう使えるが、Tauri自身が持つ組み込みのstateはこのタイミングではまだ無い。
+このファクトリは、Tauriが自分自身の内部状態(`PathResolver` を含む)を `manage()` し終える**前**に呼ばれる。`.manage(MyState::default())` で自分が登録したstateならこの時点でもう使えるが、Tauri自身が持つ組み込みのstateはこのタイミングではまだ無い。
 
 **対処**: メニュー構築を、実データに依存しない「空データ版」と「実データ版」の2つに分ける。`.menu()` には空データ版を渡してプレースホルダーのメニューバーを出しておき、`.setup()`(ここではTauriの初期化が完了している)の中で実データ版を組み直して `app.set_menu()` で差し替える。
 
@@ -47,7 +47,7 @@ tauri::Builder::default()
 
 「開いているファイルのパス」「そのファイルの監視」「そのファイル用の一時サーバー」のような、ウィンドウごとに独立しているべき状態を、単一のグローバル(`Mutex<Option<SessionState>>` のような形)で持つと、2つ目のウィンドウでファイルを開いた瞬間に1つ目のウィンドウの状態が黙って上書きされる。
 
-**対処**: `Mutex<HashMap<String, SessionState>>` にして、キーを `window.label()` にする。状態を触るTauriコマンドは全部 `window: tauri::WebviewWindow` を引数に取り、`guard.get(window.label())` / `guard.insert(window.label().to_string(), ...)` で読み書きする(Tauriはコマンド呼び出し元のウィンドウを自動でこの引数に注入してくれる)。ウィンドウが閉じたら、`on_window_event` の `WindowEvent::Destroyed` で対応するエントリを`remove`し、監視スレッドやサブプロセスを道連れに片付ける。
+**対処**: `Mutex<HashMap<String, SessionState>>` にして、キーを `window.label()` にする。状態を触るTauriコマンドは全部 `window: tauri::WebviewWindow` を引数に取り、`guard.get(window.label())` / `guard.insert(window.label().to_string(), ...)` で読み書きする(Tauriはコマンド呼び出し元のウィンドウを自動でこの引数に注入してくれる)。ウィンドウが閉じたら、`on_window_event` の `WindowEvent::Destroyed` で対応するエントリを `remove` し、監視スレッドやサブプロセスを道連れに片付ける。
 
 ```rust
 pub struct Session(Mutex<HashMap<String, SessionState>>);
@@ -71,7 +71,7 @@ fn open_file(path: String, window: WebviewWindow, session: State<Session>) -> Re
 
 実行時に新しいウィンドウを作り、そのウィンドウ専用のリソース(開くべきファイルパスなど)を教える必要がある場面で、URLのクエリ文字列にエンコードして渡す方式を検討したが、パスに含まれうる文字のURLエンコード/デコードを自前で面倒見る必要が出てくる(このプロジェクトではエンコード用クレートを新たに足したくなかった)。
 
-**対処**: `Mutex<HashMap<label, T>>` の「pending」レジストリを用意し、ウィンドウを作る**前**にラベルをキーとして登録しておき、新しいウィンドウのフロントエンドが起動時に一度だけ取り出す、というコマンドを1つ用意する。ウィンドウ生成前に同期的に登録が終わっているので、新しいウィンドウがマウントされた時点でレースは起きない。
+**対処**: `Mutex<HashMap<label, T>>` の「pending」レジストリを用意し、ウィンドウを作る**前**にラベルをキーとして登録しておく。新しいウィンドウのフロントエンドが起動時に一度だけ取り出すコマンドを1つ用意する。ウィンドウ生成前に同期的に登録が終わっているので、新しいウィンドウがマウントされた時点でレースは起きない。
 
 ```rust
 #[derive(Default)]

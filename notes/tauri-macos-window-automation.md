@@ -1,11 +1,11 @@
 ---
 created: 2026-09-14
-updated: 2026-09-15
-title: Tauriアプリをmacosで実ウィンドウのまま自動操作する
+updated: 2026-10-07
+title: TauriアプリをmacOSで実ウィンドウのまま自動操作する
 description: Tauriアプリを、実ウィンドウを起動せずにPlaywrightでテストするでカバーできないもの(peitho-coreの実際の出力、WKWebView固有のレンダリング、ネイティブ右クリック・ダイアログ・ドラッグ)を検証するには、実際のTauriウィンドウを動かす必要がある。
 tags: [tauri, macos, webdriver, testing, accessibility]
 ---
-# Tauriアプリをmacosで実ウィンドウのまま自動操作する
+# TauriアプリをmacOSで実ウィンドウのまま自動操作する
 
 [[tauri-invoke-mock-testing]]でカバーできないもの(peitho-coreの実際の出力、WKWebView固有のレンダリング、ネイティブ右クリック・ダイアログ・ドラッグ)を検証するには、実際のTauriウィンドウを動かす必要がある。公式の`tauri-driver`はこれを解決しない——**macOSに対応していない**。代わりに、アプリ自身にWebDriverサーバーを埋め込むプラグイン方式が実用段階にある。
 
@@ -45,15 +45,6 @@ peitho-studio(Tauri v2 + WKWebViewのデスクトップアプリ)で、AIエー�
 
 操作者が会議中で画面を共有していたため、意図しない内容が共有画面上に一瞬映る事故になった——これが本ノートを書くきっかけになった。OSレベルのGUI自動化は、精度を上げても「操作者の他の作業を巻き込みうる」という構造的なブラスト半径の問題が残り、[[tauri-invoke-mock-testing]]のIPCモック(プレーンなブラウザタブで完結する)と違って安全に無人実行できない。
 
-## 出典
-
-- [Tauri v2 WebDriver docs](https://v2.tauri.app/develop/tests/webdriver/)
-- [tauri-apps/tauri#7068](https://github.com/tauri-apps/tauri/issues/7068)
-- [webdriver.io Tauri platform support](https://webdriver.io/docs/desktop-testing/tauri/platform-support/)
-- [Apple: Supporting Fast User Switching](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPMultipleUsers/Concepts/FastUserSwitching.html)
-- [Tart licensing](https://tart.run/licensing/) / [Eclectic Light: Appleの仮想化VM台数制限](https://eclecticlight.co/2022/08/04/virtualisation-on-apple-silicon-macs-8-how-apple-limits-vms/)
-- [tophatch/swift-pwa#208](https://github.com/tophatch/swift-pwa/issues/208)
-
 ## 理解度チェック
 
 ```quiz
@@ -73,5 +64,14 @@ Fast User Switchingで別ユーザーアカウントに切り替えれば、GUI�
 ---
 できない。Apple公式ドキュメントによれば、切り替えられた(バックグラウンドの)セッションはキーボード・マウス入力を受け取らない仕様のため、そのセッション向けにCGEventPost等で送った入力は届かないか、最悪フォアグラウンド側(操作者のセッション)に届いてしまう。
 ```
+
+## 出典
+
+- [Tauri v2 WebDriver docs](https://v2.tauri.app/develop/tests/webdriver/)
+- [tauri-apps/tauri#7068](https://github.com/tauri-apps/tauri/issues/7068)
+- [webdriver.io Tauri platform support](https://webdriver.io/docs/desktop-testing/tauri/platform-support/)
+- [Apple: Supporting Fast User Switching](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPMultipleUsers/Concepts/FastUserSwitching.html)
+- [Tart licensing](https://tart.run/licensing/) / [Eclectic Light: Appleの仮想化VM台数制限](https://eclecticlight.co/2022/08/04/virtualisation-on-apple-silicon-macs-8-how-apple-limits-vms/)
+- [tophatch/swift-pwa#208](https://github.com/tophatch/swift-pwa/issues/208)
 
 #tauri #macos #webdriver #testing #accessibility

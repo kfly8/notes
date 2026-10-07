@@ -1,6 +1,6 @@
 ---
 created: 2026-09-13
-updated: 2026-09-13
+updated: 2026-10-07
 title: nvim-treesitterのハイライトクエリを確実に上書きするには`vim.treesitter.query.set()`を使う
 description: Neovimのtreesitterクエリ(queries/<lang>/<name>.scm)は'runtimepath'上の複数ファイルから解決される。
 tags: [neovim, nvim-treesitter, treesitter, lua]
@@ -11,7 +11,7 @@ Neovimのtreesitterクエリ(`queries/<lang>/<name>.scm`)は`'runtimepath'`上�
 
 しかし実際にNeovimプラグインとして`after/queries/markdown_inline/highlights.scm`を配布し、その上書きに依存したところ、意図通りに勝たないケースがあった。`vim.treesitter.query.get_files('markdown_inline', 'highlights')`で確認すると、こちらの`after/queries`のファイルが結果に含まれず、nvim-treesitter本体のクエリだけが使われていた。
 
-原因は、上書き側のクエリファイルが実際に`'runtimepath'`に乗るタイミングと、treesitterのハイライタがそのクエリを最初に要求してキャッシュするタイミングの**前後関係**に依存すること。上書き元のプラグイン自身をeagerロードにする(`ft = 'markdown'`のような遅延ロードをやめる)といった対策も試したが、それでも解決しなかった。
+原因は、上書き側のクエリファイルが実際に`'runtimepath'`に乗るタイミングと、treesitterのハイライタがそのクエリを最初に要求してキャッシュするタイミングの**前後関係**に依存すること。上書き側のプラグイン自身をeagerロードにする(`ft = 'markdown'`のような遅延ロードをやめる)といった対策も試したが、それでも解決しなかった。
 
 確実に効かせる方法は、ファイルベースの上書きに頼らず、`vim.treesitter.query.set(lang, query_name, query_text)`でLuaから明示的にクエリを注入すること。このAPIは「ライブクエリ編集」向けに用意されているもので、呼び出した時点でそのバッファ/言語の実効クエリを即座に差し替える。プラグインの初期化コード(モジュールのトップレベルなど、`require()`時に一度だけ実行される場所)で、自前の`.scm`ファイルの中身を読み込んで`query.set()`に渡せばよい。
 
