@@ -1,6 +1,6 @@
 ---
 created: 2026-08-23
-updated: 2026-09-02
+updated: 2026-10-07
 title: Chrome ウェブストアへの提出
 description: 掲載情報の一部はZIP の中の manifest から来るので、ダッシュボードだけ整えても反映されない。
 tags: [ブラウザ拡張, chrome, リリース]
@@ -18,7 +18,7 @@ tags: [ブラウザ拡張, chrome, リリース]
 | スクリーンショット・プロモーションタイル | ダッシュボード |
 | カテゴリ・言語・各種 URL | ダッシュボード |
 
-名前と概要はダッシュボードで編集できない。**この2つは `chrome://extensions` の一覧とツールバーのツールチップにも同じ文字列が出る**ので、ストア検索向けに説明的な名前にすると、拡張一覧では少し長く感じる、という緊張がある。
+名前と概要はダッシュボードで編集できない。**この2つは `chrome://extensions` の一覧とツールバーのツールチップにも同じ文字列が出る**ので、ストア検索向けに説明的な名前にすると、拡張一覧では少し長く感じる、という兼ね合いがある。
 
 日本語圏のストアでは `名前 — 説明的なタグライン` の形が主流で、**区切りはハイフンではなく em ダッシュ**が多い。
 
@@ -68,17 +68,11 @@ DSA 対応で、**取引業者（trader）か非取引業者かの申告**が必
 
 無料・広告なし・個人の趣味なら後者。判断基準は「職業としてエンジニアかどうか」ではなく、**その公開が商売に関わる目的で行われているか**。有料機能や広告を入れた時点で切り替えが要る。
 
-なお**トレーダーとして登録した後に住所や氏名を直すには、いったん非取引業者に戻して認証をやり直す**必要があり、面倒。
+なお**取引業者として登録した後に住所や氏名を直すには、いったん非取引業者に戻して認証をやり直す**必要があり、面倒。
 
 ## [[browser-extension-publishing]]の中での位置づけ
 
 Chrome 側の提出そのもの。データ収集の申告だけは AMO と定義が食い違うので [[browser-extension-data-disclosure]] に分けた。
-
-## 出典
-
-- [Prepare your store listing | Chrome for Developers](https://developer.chrome.com/docs/webstore/cws-dashboard-listing)
-- [Chrome Web Store review process](https://developer.chrome.com/docs/webstore/review-process)
-- [Trader FAQ: Chrome Web Store](https://developer.chrome.com/docs/webstore/program-policies/trader-verification-faq)
 
 ## 理解度チェック
 
@@ -93,5 +87,11 @@ Chrome 側の提出そのもの。データ収集の申告だけは AMO と定�
 ---
 審査担当者が触っても画面が変わらず「動作を確認できなかった」と判断されるため。テスト手順の欄に、画面に出るラベルをそのまま引いた手順を書く。
 ```
+
+## 出典
+
+- [Prepare your store listing | Chrome for Developers](https://developer.chrome.com/docs/webstore/cws-dashboard-listing)
+- [Chrome Web Store review process](https://developer.chrome.com/docs/webstore/review-process)
+- [Trader FAQ: Chrome Web Store](https://developer.chrome.com/docs/webstore/program-policies/trader-verification-faq)
 
 #ブラウザ拡張 #chrome #リリース

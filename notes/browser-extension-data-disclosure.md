@@ -1,6 +1,6 @@
 ---
 created: 2026-08-23
-updated: 2026-08-23
+updated: 2026-10-07
 title: ストアによって「データ収集」の定義が違う
 description: 同じ拡張機能を Chrome ウェブストアと AMO の両方に出すとき、データ収集の申告内容は一致しない。
 tags: [ブラウザ拡張, chrome, firefox, プライバシー]
@@ -50,12 +50,6 @@ Chrome の側が広いので、両方に出すなら Chrome の基準に合わ�
 
 提出フォームを埋める段の話。Chrome 側の具体的な記入は [[chrome-web-store-submission]] に、AMO 側の `data_collection_permissions` の書き場所は [[wxt]] に書いた。
 
-## 出典
-
-- [Updated Privacy Policy & Secure Handling Requirements | Chrome Web Store](https://developer.chrome.com/docs/webstore/program-policies/user-data-faq)
-- [Limited Use | Chrome Web Store](https://developer.chrome.com/docs/webstore/program-policies/limited-use)
-- [Add-ons with built-in data collection consent | Firefox Extension Workshop](https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/)
-
 ## 理解度チェック
 
 ```quiz
@@ -69,5 +63,11 @@ Chrome の「取り扱い」は収集・送信・使用・共有を含み、端�
 ---
 `data_collection_permissions` に `"none"`。AMO の「収集」はアドオンやローカルブラウザの外に出ることを指すので、非該当。
 ```
+
+## 出典
+
+- [Updated Privacy Policy & Secure Handling Requirements | Chrome Web Store](https://developer.chrome.com/docs/webstore/program-policies/user-data-faq)
+- [Limited Use | Chrome Web Store](https://developer.chrome.com/docs/webstore/program-policies/limited-use)
+- [Add-ons with built-in data collection consent | Firefox Extension Workshop](https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/)
 
 #ブラウザ拡張 #chrome #firefox #プライバシー

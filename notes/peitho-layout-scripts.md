@@ -1,6 +1,6 @@
 ---
 created: 2026-09-24
-updated: 2026-09-24
+updated: 2026-10-07
 title: peitho のレイアウトに書いた script 要素を動かす
 description: peitho v1.34.0 でレイアウトの <script> が実行されるようになった仕組みと、スクリプトが Shadow DOM の中の自分のスライドを peitho:shadow-mounted とバックログ配列で見つける方法。
 tags: [peitho, shadow-dom, slides]
@@ -16,14 +16,14 @@ tags: [peitho, shadow-dom, slides]
 v1.34.0 のビューアは、差し込んだあとで各 `<script>` を `createElement` で作り直して置き換える（`executeInlineScripts`）。作り直した要素には印が付いていないので実行される。
 
 - 属性はそのままコピーする。
-- `src` のない classic script だけは本文を IIFE で包む。classic script はすべて 1 つのグローバルスコープを共有するので、同じレイアウトのスライドが 2 枚あったり、配布ビューアのようにページ送りのたびに差し込み直したりすると、トップレベルの `let`/`const` が "already declared" で落ちるため。
+- `src` のない classic script だけは本文を IIFE で包む。classic script はすべて1つのグローバルスコープを共有するので、同じレイアウトのスライドが2枚あったり、配布ビューアのようにページ送りのたびに差し込み直したりすると、トップレベルの `let`/`const` が "already declared" で落ちるため。
 - `type="module"`・`src` 付き・`application/json` のような非 JS は包まない。
 
 ## スクリプトが自分のスライドを見つける方法
 
 present と preview は各スライドを別々の Shadow DOM に入れる。`document.querySelectorAll` も `MutationObserver` も shadow root の中には届かないので、スクリプト側からスライドの DOM を探す手段がない。
 
-そこでビューアが、スライドをマウントするたびに次の 2 つを行う。
+そこでビューアが、スライドをマウントするたびに次の2つを行う。
 
 - host から `peitho:shadow-mounted` を発火する。`bubbles: true, composed: true` なので shadow の外の `document` まで届く。`detail` は `{ root, key, index }`。
 - 同じ `detail` を `window.__peithoShadowRoots` という配列に積む。
@@ -36,7 +36,7 @@ document.addEventListener('peitho:shadow-mounted', (e) => mount(e.detail))
 
 ### 配列（バックログ）が要る理由
 
-present は全スライドの host を 1 回の同期処理でまとめて接続する。一方 `<script type="module">` の読み込みは必ず非同期なので、モジュールが評価されてリスナーを登録する頃には最初の dispatch はすべて終わっている。イベントを購読するだけでは初回のマウントを全部取りこぼすので、配列を一度読み出して拾う。
+present は全スライドの host を1回の同期処理でまとめて接続する。一方 `<script type="module">` の読み込みは必ず非同期なので、モジュールが評価されてリスナーを登録する頃には最初の dispatch はすべて終わっている。イベントを購読するだけでは初回のマウントを全部取りこぼすので、配列を一度読み出して拾う。
 
 配列の要素は `{ root, key, index }` で、shadow root そのものではない。v1.34.0 より前に使っていた fork 版は root を直接積んでいたので、要素を root として扱うコード（`for (const r of backlog) r.querySelectorAll(...)`）は v1.34.0 ではモジュールの評価中に例外を投げる。例外はリスナー登録より前に起きるので、何ひとつマウントされない。overview デッキの `mount.js` はこれで全コンポーネントが動かなくなっていた。
 
@@ -47,7 +47,7 @@ present は全スライドの host を 1 回の同期処理でまとめて接続
 | present | スライド窓、発表者ビューの現在・次スライド、リモートのプレビュー | ShadowRoot |
 | preview | ステージのみ（サムネイルでは実行しない） | ShadowRoot |
 | build の配布ビューア | ページ送りのたびに差し込み直して実行 | light DOM なので `document` の `MutationObserver` でも見える |
-| PDF 書き出し・lint | 1 つの文書に連結されたものがそのまま実行される | `.peitho-slide` の section 要素 |
+| PDF 書き出し・lint | 1つの文書に連結されたものがそのまま実行される | `.peitho-slide` の section 要素 |
 
 PDF と lint でも同じイベントが発火するので、`{ root, key, index }` を前提に書いたスクリプトはどのビューアでも動く。
 

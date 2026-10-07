@@ -1,6 +1,6 @@
 ---
 created: 2026-08-23
-updated: 2026-08-23
+updated: 2026-10-07
 title: optional_host_permissions でインストール時の警告を消す
 description: MV3 の拡張機能で host_permissions に <all_urls> を書くと、インストール時に「すべてのウェブサイトのデータを読み取り、変更する」という警告が出る。
 tags: [ブラウザ拡張, chrome, firefox, 権限]
@@ -82,11 +82,6 @@ Firefox では付与の導線が Chrome と違い、about:addons の権限タブ
 
 manifest の書き方の話で、ストアへの提出より手前。ここで採った設計が、[[chrome-web-store-submission]] のテスト手順や権限の理由の書き方に響いてくる。
 
-## 出典
-
-- [optional_host_permissions | MDN](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/optional_host_permissions)
-- [scripting.RegisteredContentScript | MDN](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/scripting/RegisteredContentScript)
-
 ## 理解度チェック
 
 ```quiz
@@ -106,5 +101,10 @@ manifest の書き方の話で、ストアへの提出より手前。ここで�
 ---
 権限付与・設定の保存・UI からの要求がほぼ同時に発火し、それぞれが存在確認を通り抜けて二重に登録するため。無条件の解除と Promise キューによる直列化で防ぐ。
 ```
+
+## 出典
+
+- [optional_host_permissions | MDN](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/optional_host_permissions)
+- [scripting.RegisteredContentScript | MDN](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/scripting/RegisteredContentScript)
 
 #ブラウザ拡張 #chrome #firefox #権限

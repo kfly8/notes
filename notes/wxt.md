@@ -1,6 +1,6 @@
 ---
 created: 2026-08-23
-updated: 2026-08-24
+updated: 2026-10-07
 title: WXT
 description: Vite ベースのブラウザ拡張フレームワーク。
 tags: [ブラウザ拡張, wxt, chrome, firefox]
@@ -9,7 +9,7 @@ tags: [ブラウザ拡張, wxt, chrome, firefox]
 
 Vite ベースのブラウザ拡張フレームワーク。TypeScript が既定で、`manifest.json` をブラウザごとに生成し分ける。Nuxt に影響を受けた構成で、`entrypoints/` に置いたファイルの**名前から役割を推測する**。
 
-2026-08 時点で 0.21.4、週間ダウンロード 63 万、MIT。**まだ 0.x なのでマイナー更新に破壊的変更が入りうる**（実際 `changesets/action` と同様、入力名が変わった前例がある）。バージョンはキャレットなしで固定しておくのが無難。
+2026-08 時点で 0.21.4、週間ダウンロード 63万、MIT。**まだ 0.x なのでマイナー更新に破壊的変更が入りうる**（実際 `changesets/action` と同様、入力名が変わった前例がある）。バージョンはキャレットなしで固定しておくのが無難。
 
 同種のものとの比較は [[browser-extension-publishing]] に書いた。
 
@@ -98,11 +98,6 @@ manifest.version_name → 0.2.0-beta.1
 
 Chrome の manifest は数字とドットしか受け付けないので、これは助かる。ただし `0.2.0-beta.1` と `0.2.0` が同じ `0.2.0` になるため、**ベータを出すとその番号を焼く。** ストアは同じ番号を二度受け付けない。
 
-## 出典
-
-- [WXT](https://wxt.dev/)
-- [publish-browser-extension](https://github.com/aklinker1/publish-browser-extension)
-
 ## 理解度チェック
 
 ```quiz
@@ -122,5 +117,10 @@ manifest からは外れるが、代わりに `matches` が `host_permissions` �
 ---
 `version` は `0.2.0`、`version_name` が `0.2.0-beta.1`。`0.2.0` を正式に出そうとしても番号が焼かれている点に注意。
 ```
+
+## 出典
+
+- [WXT](https://wxt.dev/)
+- [publish-browser-extension](https://github.com/aklinker1/publish-browser-extension)
 
 #ブラウザ拡張 #wxt #chrome #firefox

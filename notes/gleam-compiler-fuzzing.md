@@ -1,6 +1,6 @@
 ---
 created: 2026-09-01
-updated: 2026-09-01
+updated: 2026-10-07
 title: Gleam コンパイラの structure-aware fuzzing
 description: Fuzzing the Gleam Compiler（kurz.net、2026-08-25）が、Gleam コンパイラに structure-aware fuzzing を適用し、9件のバグを見つけた記録。
 tags: [fuzzing, gleam, compiler, testing]
@@ -39,7 +39,7 @@ cargo +nightly fuzz run parse_only --fuzz-dir fuzzing-harness
 
 ## echo 問題
 
-Gleam の `echo` はデバッグ用に値をそのまま標準出力するデバッグプリント。生成したプログラムを Erlang
+Gleam の `echo` は値をそのまま標準出力するデバッグプリント。生成したプログラムを Erlang
 バックエンドと JavaScript バックエンドの両方で実行し、その出力を比較しようとすると、`echo` の表示形式が
 バックエンドごとに違うため、単純な文字列比較では偽陽性（本当はバグではない差分）だらけになる。
 
@@ -54,7 +54,7 @@ Gleam の `echo` はデバッグ用に値をそのまま標準出力するデバ
 書けないときは複数経路の食い違いを検出する」オラクル設計とは逆で、こちらは AST という第三の情報源から
 期待値を機械的に導出できたケース。
 
-## 重複検出と既知issueのフィルタリング
+## 重複検出と既知 issue のフィルタリング
 
 同じ根本原因から大量の類似ケースが見つかるとノイズになるため、エラーメッセージの文字列パターンで既知の
 バグと突き合わせてフィルタリングする。
