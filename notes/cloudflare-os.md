@@ -1,6 +1,6 @@
 ---
 created: 2026-08-25
-updated: 2026-09-24
+updated: 2026-10-07
 title: Cloudflare OS
 description: 組織のコンテキスト・システムに接続したエージェントワークスペースを、社内向けアプリ基盤ごとオープンソースで提供するプラットフォーム
 tags: [cloudflare, agents-week-2026, ai-agent]
@@ -14,7 +14,7 @@ tags: [cloudflare, agents-week-2026, ai-agent]
 - [Cloudflare OS: an open platform for agents, apps, and work](https://blog.cloudflare.com/cloudflare-os/) — プラットフォームそのものの紹介・オープンソース化の発表(Phillip Jones, Dan Carter)
 - [How we're rethinking work at Cloudflare with Cloudflare OS](https://blog.cloudflare.com/how-we-use-ai-with-cloudflare-os/) — 社内でどう作り、どう使われているかの記録(Sam Rhea, Cloudflare CIO)
 
-## 三つの構成要素
+## 3つの構成要素
 
 1. **エージェントワークスペース** — 組織が用意したコンテキスト・スキルに基づいて動く、ブラウザ上のエージェントセッション。コードを書いて実行できる隔離ランタイムを持つ
 2. **セキュリティ・ガバナンスフレームワーク** — Gatekeepers による、外部サービスへのきめ細かいアクセス制御
@@ -24,7 +24,7 @@ tags: [cloudflare, agents-week-2026, ai-agent]
 
 ## セキュリティモデル
 
-課題として挙げられているのは、「AI にAPIキーをそのまま渡す」やり方の限界。キーは範囲が広く長期間有効で、制約・安全な共有・監査が難しい。MCP サーバーは資格情報を隠して定義済みツールだけを公開できるが、それだけでは「エージェントがどのリソースを見たか」までは追跡できない、という限界も指摘されている。
+課題として挙げられているのは、「AI に API キーをそのまま渡す」やり方の限界。キーは範囲が広く長期間有効で、制約・安全な共有・監査が難しい。MCP サーバーは資格情報を隠して定義済みツールだけを公開できるが、それだけでは「エージェントがどのリソースを見たか」までは追跡できない、という限界も指摘されている。
 
 - **エージェントは初期状態でアクセス権を一切持たない**。リソースへのアクセスは `env.PROJECT` のような型付きバインディングとして明示的に付与する
 - **Gatekeepers** — 外部サービスごとに用意される Worker。サービスの API・リソース・操作を理解しており、たとえば GitHub 全体ではなく特定リポジトリだけ、ソースコードは読めないが issue は読める、特定フィールドをマスクする、マージ前に承認を必須にする、といった粒度の制御ができる。OAuth の保持・ポリシー適用・読み取り記録も Gatekeeper が担う

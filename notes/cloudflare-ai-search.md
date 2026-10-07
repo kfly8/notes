@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-10-07
 title: Cloudflare AI Search
 description: 自分のデータに対する検索エンジンを、1コマンドで作れるマネージドサービス。
 tags: [cloudflare, agents-week-2026, ai-agent, rag]
@@ -62,7 +62,7 @@ Worker からは binding で使う。
 ```quiz
 AI Search が登場する前、同じことをするには何を自分で組み合わせる必要があったか。
 ---
-Workers AI・AI Gateway・Vectorize・R2・Browser Runといった複数のCloudflareプリミティブを、自分で組み合わせて検索エンジンを構築する必要があった。
+Workers AI・AI Gateway・Vectorize・R2・Browser Run といった複数の Cloudflare プリミティブを、自分で組み合わせて検索エンジンを構築する必要があった。
 ```
 
 ```quiz

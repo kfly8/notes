@@ -1,6 +1,6 @@
 ---
 created: 2026-08-25
-updated: 2026-09-24
+updated: 2026-10-07
 title: Cloudflare CI/CD (@cloudflare/ci)
 description: Cloudflare Workflows 上に構築された、コードで書く CI/CD パイプライン。@cloudflare/ci として提供される
 tags: [cloudflare, agents-week-2026, ai-agent]
@@ -112,7 +112,7 @@ try {
 
 ## [[agent-development-lifecycle]] との関係
 
-`@cloudflare/ci` は ADLC の記事自身が名指しで導入しているツールで、記事は「本日、エージェントがコード生成を超えて SDLC のより多くを担えるようにする、新しい一連のツールを紹介する」という文脈で、その筆頭に `@cloudflare/ci` を挙げている。記事のメタ説明も「ADLC と、それを支える Cloudflare のプリミティブを紹介する」としており、`@cloudflare/ci` はここでいう「プリミティブ」の一つとして明示的に位置づけられている。ADLC 記事本文からは `@cloudflare/ci` の紹介記事(この記事)への直接リンクが4箇所ある。
+`@cloudflare/ci` は ADLC の記事自身が名指しで導入しているツール。ADLC の記事は「本日、エージェントがコード生成を超えて SDLC のより多くを担えるようにする、新しい一連のツールを紹介する」という文脈で、その筆頭に `@cloudflare/ci` を挙げている。記事のメタ説明も「ADLC と、それを支える Cloudflare のプリミティブを紹介する」としており、`@cloudflare/ci` はここでいう「プリミティブ」の一つとして明示的に位置づけられている。ADLC 記事本文からは `@cloudflare/ci` の紹介記事(この CI/CD 記事)への直接リンクが4箇所ある。
 
 一方、この CI/CD 記事自身の本文には「ADLC」「Agent Development Lifecycle」という語は出てこない。ブログのタグも `Agents` / `Agents Week` / `AI` / `Developer Platform` / `Developers` / `Product News` / `Workflows` であり、`Agent Development Lifecycle` タグは付いていない(ADLC 記事側には `Agent Development Lifecycle` タグが付いている)。関係を明言しているのは ADLC 記事側だけ、という一方向の参照になっている。
 
