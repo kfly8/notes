@@ -1,6 +1,6 @@
 ---
 created: 2026-09-10
-updated: 2026-09-10
+updated: 2026-10-07
 title: gh-stack
 description: スタックドPR(依存関係のある複数ブランチを、それぞれ小さいPRとして積み重ねる運用)を扱う GitHub CLI 拡張。
 tags: [github, ci, git]
@@ -67,7 +67,7 @@ gh stack checkout branch-c   # 元の作業に戻る
 
 ## syncはsquash-mergeを検知してrebase --ontoする
 
-下のPRがGitHub上でsquash-mergeされると、そのブランチのコミットはtrunkの履歴から消える(コミットハッシュが変わる)。`gh stack sync`はこれを検知し、`git rebase --onto`で「消えたブランチをスキップして、その上のブランチをtrunkの続きに繋ぎ直す」処理を自動でやる。手でsquash-merge後の後始末をする必要がない。
+下のPRがGitHub上でsquash-mergeされると、そのブランチのコミットはtrunkの履歴から消える(コミットハッシュが変わる)。`gh stack sync` はこれを検知し、`git rebase --onto` で「消えたブランチをスキップして、その上のブランチをtrunkの続きに繋ぎ直す」処理を自動でやる。手でsquash-merge後の後始末をする必要がない。
 
 ## mergeはスタック全体をまとめて1回の操作で
 
@@ -89,7 +89,7 @@ gh stack checkout branch-c   # 元の作業に戻る
 ```quiz
 2コミットあるブランチを `gh stack submit --auto` した。PRタイトルはどうなるか。
 ---
-コミットメッセージではなく、ブランチ名をハイフンをスペースに変えただけの機械的なタイトルになる。ちゃんとしたタイトルにしたいなら`gh pr edit`で後から上書きする。
+コミットメッセージではなく、ブランチ名をハイフンをスペースに変えただけの機械的なタイトルになる。ちゃんとしたタイトルにしたいなら `gh pr edit` で後から上書きする。
 ```
 
 ```quiz

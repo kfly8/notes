@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-09-23
+updated: 2026-10-07
 title: tagpr
 description: リリース用の PR を維持しておいて、それをマージした瞬間にタグを打つツール。
 tags: [リリース, ci, github]
@@ -42,7 +42,7 @@ permissions:
 
 `issues: read` を忘れやすい。ラベル(`tagpr:minor` 等)を issue/PR のどちらに付けても拾える設計になっており、その参照に使う。**無くてもワークフローはエラーにならず、静かに機能が落ちるだけ**なので気づきにくい。
 
-PR自体を作れるかどうかはこれとは別の関門で、[[github-token-does-not-trigger-workflows]] にまとめたリポジトリ/組織側の「Allow GitHub Actions to create and approve pull requests」設定が閉じていると、`permissions:` を正しく書いていても 403 になる。
+PR 自体を作れるかどうかはこれとは別の関門で、[[github-token-does-not-trigger-workflows]] にまとめたリポジトリ/組織側の「Allow GitHub Actions to create and approve pull requests」設定が閉じていると、`permissions:` を正しく書いていても 403 になる。
 
 ## `.tagpr` は git-config 形式
 
@@ -80,7 +80,7 @@ npm error code 127
 
 ## `versionFile` 以外にバージョンを持つ場所は全部ずれる
 
-上の `package-lock.json` は一例で、根っこは同じ:**tagpr が書き換えるのは `versionFile` に指定した1ファイルだけ**なので、バージョン文字列を他にも持っているプロジェクトでは、その分だけ `postVersionCommand` で追い書きする必要がある。
+上の `package-lock.json` は一例で、根っこは同じ: **tagpr が書き換えるのは `versionFile` に指定した1ファイルだけ**なので、バージョン文字列を他にも持っているプロジェクトでは、その分だけ `postVersionCommand` で追い書きする必要がある。
 
 Tauri アプリ (Rust + `tauri.conf.json`) が典型: バージョンが `Cargo.toml` と `src-tauri/tauri.conf.json` の2箇所に分かれている。`versionFile = "src-tauri/Cargo.toml"` にして、`postVersionCommand` で `tauri.conf.json` 側に `jq` で書き戻す。
 
@@ -93,7 +93,7 @@ jq --arg v "$version" '.version = $v' src-tauri/tauri.conf.json > "$tmp"
 mv "$tmp" src-tauri/tauri.conf.json
 ```
 
-`Cargo.lock` 内の同じパッケージ自身のバージョン欄も同様にずれるが、こちらは次に `cargo build`/`cargo check` を一度でも走らせれば自動で書き直る(依存解決に使うロックではなく自パッケージの表示上の値なので、ビルドを`--locked`付きでCIに組み込まない限り実害は出にくい)。
+`Cargo.lock` 内の同じパッケージ自身のバージョン欄も同様にずれるが、こちらは次に `cargo build`/`cargo check` を一度でも走らせれば自動で書き換わる(依存解決に使うロックではなく自パッケージの表示上の値なので、ビルドを `--locked` 付きで CI に組み込まない限り実害は出にくい)。
 
 ## タグ駆動の別ワークフローは動かない
 
@@ -135,7 +135,7 @@ ListPullRequestsWithCommit returned empty for 9c711c7..., retrying (1/3)
 
 つまり **tagpr を入れるなら PR 運用が前提。** 直接 main に入れる運用のままだと、CHANGELOG が育たない。
 
-分類は `.github/release.yml`（GitHub の生成リリースノート設定）で決まる。tagpr が無ければ生成する。
+分類は `.github/release.yml`（GitHub の生成リリースノート設定）で決まる。このファイルが無ければ tagpr が生成する。
 
 Release PR の CHANGELOG を手で書き足すこともできるが、**後から上書きされない保証は無い。** その版だけ手当てして、次から PR 運用に切り替えるのが現実的。
 

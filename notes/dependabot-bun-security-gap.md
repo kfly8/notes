@@ -1,6 +1,6 @@
 ---
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-10-07
 title: Dependabotのbun.lockには脆弱性アラートが無い
 description: Bunを使うプロジェクトで、Dependabotに脆弱性検知を任せようとすると穴がある。
 tags: [vulnerabilityalerts, bun, dependabot, renovate, security, ci-cd]
@@ -17,7 +17,7 @@ Bunを使うプロジェクトで、Dependabotに脆弱性検知を任せよう�
 
 npm/Yarn/pnpmではバージョン更新とセキュリティ更新の両方が使えるので、Bunだけが取り残されている状態になる。
 
-## 代替: Renovateの`osvVulnerabilityAlerts`
+## 代替: Renovateの `osvVulnerabilityAlerts`
 
 RenovateはGitHubのDependency Graphに頼らず、[OSV](https://osv.dev/)(Open Source Vulnerabilities)データベースを直接参照して脆弱性を検知する機能を持つ(`osvVulnerabilityAlerts: true`)。Renovate自体は `bun.lock` を独立して解析・更新できるので、この経路ならBunプロジェクトでも脆弱性検知が機能する。
 

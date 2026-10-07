@@ -1,6 +1,6 @@
 ---
 created: 2026-09-16
-updated: 2026-09-16
+updated: 2026-10-07
 title: tsconfig extends はファイルシステム相対で解決される
 description: tsconfig.json の extends フィールドは、ビルド時にその tsconfig.json 自身のファイルシステム上の位置から相対パスで解決される。
 tags: [docker, typescript, vite, monorepo]
@@ -17,7 +17,7 @@ tags: [docker, typescript, vite, monorepo]
 }
 ```
 
-この `../../tsconfig.json` は「このファイルを読んでいる環境の、2階層上」を指す。モノレポの一部だけをコピーしてビルドする環境（Dockerのマルチステージビルドなど）では、参照先のファイルも同じ相対位置に存在させないと解決に失敗する。
+この `../../tsconfig.json` は「このファイルを読んでいる環境の、2階層上」を指す。モノレポの一部だけをコピーしてビルドする環境（Docker のマルチステージビルドなど）では、参照先のファイルも同じ相対位置に存在させないと解決に失敗する。
 
 ## Docker のマルチステージビルドで踏んだ実例
 
