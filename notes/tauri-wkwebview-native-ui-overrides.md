@@ -43,7 +43,7 @@ Tauri v2をmacOSで使うと、WKWebViewというネイティブのブラウザ�
 </span>
 ```
 
-(`inset: 0` ではなく4つの物理プロパティを使っているのは、このWKWebViewでは `inset` ショートハンド自体が効かないため——詳細は [[wkwebview-css-inset-shorthand]]。)
+(`inset: 0` ではなく4つの物理プロパティを使っているのは、このWKWebViewの実機で `inset: 0` が効かなかったため(原因は未特定)——詳細は [[wkwebview-css-inset-shorthand]]。)
 
 **その後の展開**: このアプリでは結局、iframeそのものをやめてShadow DOM(`attachShadow`)に置き換えることで、右クリック奪取問題を根本的に回避した——Shadow DOMは `<iframe>` と違って別のブラウジングコンテキストではないため、ネイティブの「フレームを新規ウィンドウで開く」メニューにそもそも奪われようがない。ただしこの置き換えは無償ではなく、`<iframe>` が暗黙に提供していた「埋め込み側のCSSカスケードが一切届かない」という隔離を失う——詳細は [[shadow-dom-inherits-ancestor-styles]]。
 

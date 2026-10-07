@@ -87,12 +87,32 @@ export default defineConfig({
 
 ## `inset-0` が WKWebView で効かないのは UnoCSS の罠ではない
 
-`inset-0` ユーティリティが生成する `inset: calc(var(--spacing) * 0)` が期待通りに効かないことがあるが、これは UnoCSS の誤解釈ではなく、Tauri v2 アプリなどが使う WKWebView 自体が `inset` ショートハンドを無視することが原因——詳細は [[wkwebview-css-inset-shorthand]]。Chromium ベースのブラウザや DevTools では普通に効くため、UnoCSS 側を疑いたくなるが、生成された CSS 自体（`inset: calc(...)`）は正しい。
+`inset-0` ユーティリティが生成する `inset: calc(var(--spacing) * 0)` が期待通りに効かないことがあるが、Tauri v2 アプリなどが使う macOS 実機の WKWebView で観測された（原因は未特定で、資料上 WebKit は `inset` に対応している）——詳細は [[wkwebview-css-inset-shorthand]]。Chromium ベースのブラウザや DevTools では普通に効くため、UnoCSS 側を疑いたくなるが、生成された CSS 自体（`inset: calc(...)`）は正しい。
 
 ## 気づきにくさの共通点
 
 いずれも「クラス名は書いた通りに解釈されている」と思い込みやすい。誤解釈（`text-[xx-large]`、`border-[6px]`）も無視（`text-[color:...]`）もビルドは黙って通るので、実際に UnoCSS が生成した CSS ファイル（`public/static/uno.css` など）を `grep` して、目的のセレクタとプロパティ（`font-size:` や `color:`、`border-width:`）が本当に出力されているか確認するのが最短の切り分け方だった。
 
 生成したユーティリティを親セレクタ配下に閉じ込めるときの罠（`@property` まで前置してしまう）は [[unocss-scope-utilities]]。
+
+## 理解度チェック
+
+```quiz
+presetWind4 で `text-[xx-large]` と書くと、生成される CSS はどうなるか。
+---
+`xx-large` が色として扱われ、`color: color-mix(in oklab, xx-large ...)` という意味をなさない宣言になる。font-size には反映されず、computed style は 16px のまま。
+```
+
+```quiz
+presetWind4 で `text-[color:var(--x)]` と書くと何が起きるか。
+---
+マッチするルールがなく、エラーも警告もなく無視される。`text-color-[var(--x)]`(または `color-[...]`、`c-[...]`)と書く。
+```
+
+```quiz
+`font-family: monospace` の描画幅を前提にサイジングした固定幅カラムを `font-mono` に置き換えると、何が起きるか。
+---
+`font-mono` の既定スタックは `ui-monospace`(macOS では SF Mono 相当)から始まり、素の `monospace` よりグリフが広くなることがある。同じ文字数でもオーバーフローして隣と重なる。
+```
 
 #unocss #css

@@ -19,8 +19,8 @@ tags: [barefootjs, testing]
 - boolean: `true` / `false`
 - array: 空配列（`empty`）
 - optional な prop 全般: 値そのものを省略する `absent` も1点として加わる
-- Date（#2274 で追加）: epoch、1969年のuncrewed pre-1970（`1969-07-20T20:17:40.123Z` — 負エポックの
-  floor-division に罠がある）、うるう日（`2024-02-29`）、9999年（4桁年境界）。実際の `Date` は committed
+- Date（#2274 で追加）: epoch（`epoch`）、1970年より前の時刻（負の epoch。ラベルは `pre-1970`、値は
+  `1969-07-20T20:17:40.123Z`。ミリ秒が非ゼロで、負エポックの floor-division に罠がある）、うるう日（`2024-02-29`）、9999年（4桁年境界）。実際の `Date` は committed
   な JSON に残せないので `{$date: ISO文字列}` というエンベロープで運び、レンダー直前に実体化する。
 - union（#2277 で追加）: リテラルメンバー（string/boolean/null/numeric）1つにつき1点。メンバーが12件
   （`UNION_MEMBER_CAP`）を超える場合は先頭6件+末尾6件にサンプリングする——境界（最初/最後のケースを

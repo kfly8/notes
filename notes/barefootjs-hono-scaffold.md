@@ -36,7 +36,7 @@ export default defineConfig({
   presets: [presetWind4()],
   outputToCssLayers: true,
   content: { filesystem: scanGlobs },
-  cli: { entry: { patterns: scanGlobs, outFile: 'public/static/uno.css' } },
+  cli: { entry: { patterns: scanGlobs, outFile: 'public/uno.css' } },
 })
 ```
 
@@ -66,15 +66,36 @@ import{h as t}from"../index-5Ro-Wc1t.js";function o(){}t("BlogLayout",{init:o,te
 
 ## その他
 
-- `public/uno.css`（生成物）は `.gitignore` 対象。`deploy` スクリプトが `wrangler deploy` 直前に再生成するので、コミットしなくて困らない。
+- `public/uno.css`（生成物）は `.gitignore` 対象（共通ベースの `# UnoCSS output` に入っていて、`outFile` もこのパス）。`deploy` スクリプトが `wrangler deploy` 直前に再生成するので、コミットしなくて困らない。
 - `cssLayerPrefix` オプションは、UI レジストリ経由で `bf add` したコンポーネント（`components/ui/button` など）が、ユーザーの上書きクラスに負けるようにするための機構。自前でマークアップを書くだけのプロジェクトには不要。
 
 [[unocss-arbitrary-value-gotchas]] は、この構成で実際に UnoCSS のクラスを書き始めてから踏んだハマりどころ。
+
+## 理解度チェック
+
+```quiz
+`uno.config.ts` で `content.filesystem` に glob を書いたのに、`unocss` CLI で生成した CSS が空になった。なぜか。
+---
+CLI 実行は `content.filesystem` を読まないため、スキャン対象がゼロになる。`cli.entry.patterns` に同じ glob を重複して書く必要がある。
+```
+
+```quiz
+`outputToCssLayers: true` の UnoCSS 出力を、layer 化していない既存の `reset.css` と並べて読み込むと、どちらが勝つか。
+---
+layer 化していない既存の CSS が勝つ。名前付き `@layer` の中のルールは layer に属さない素のルールより常に優先度が低いので、UnoCSS の preflight がリセット CSS を上書きすることはない。
+```
+
+```quiz
+`<Region>` を `renderer.tsx` に直接書くとどうなるか。
+---
+`<Region>` はコンパイラ組み込みタグなので、コンパイラを通らない `renderer.tsx` で実行時に評価されるとバグ扱いになる。`vite.config.ts` の `barefoot({ components })` でスキャン対象にしたディレクトリ内のファイルに置く。
+```
 
 ## 出典
 
 - `node_modules/@barefootjs/cli/dist/index.js`（`UNOCSS_DEV_DEPENDENCIES`、`unoConfigTs()`、`HONO_ADAPTER.scripts` の各定義）
 - `node_modules/@barefootjs/client/dist/builtins.d.ts`
 - `node_modules/@barefootjs/vite/dist/types.d.ts`（`cssLayerPrefix`）
+- 2026-10-08 に BarefootJS リポジトリ（`afdf77e3c`、`@barefootjs/cli@0.39.1`）の `packages/cli/src/lib/adapters/shared.ts`（`unoConfigTs()` の `outFile: 'public/uno.css'`、共通 `.gitignore` の `public/uno.css`）と `adapters/hono.ts`（`/uno.css` の `<link>`、`HONO_GITIGNORE`）で `outFile` と `.gitignore` を確認した。以前の本文は `outFile` を `public/static/uno.css` と書いていたが誤りで、`/static/uno.css` は Go・Mojolicious 系アダプタが配信する URL パスだった。`outFile` を変えた履歴は `git log -S` で見つからず、導入時（2026-04-28）から `public/uno.css`。
 
 #barefootjs #unocss #hono #vite

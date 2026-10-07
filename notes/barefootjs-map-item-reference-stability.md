@@ -1,6 +1,6 @@
 ---
 created: 2026-09-07
-updated: 2026-09-07
+updated: 2026-10-07
 title: "BarefootJS: keyedな.map()のitemは、内容が同じでも参照が別なら「変わった」扱いになる"
 description: per-key signalパターンで個々のデータをキーごとに分けても、.map()のitem自体が構造的に同じ内容で参照だけ新しくなるオブジェクトだと、それだけでその行の全bindingが再評価される。
 tags: [barefootjs, signals, reactivity, performance]
@@ -15,7 +15,7 @@ APIレスポンス(JSON経由など)を毎回まるごと再構築して`.map()`
 
 ## 原因
 
-`packages/client/src/runtime/reactive.ts`の`createSignal`は、setterで`Object.is(oldValue, newValue)`が真なら**何もせず抜ける**:
+`packages/client/src/reactive.ts`の`createSignal`は、setterで`Object.is(oldValue, newValue)`が真なら**何もせず抜ける**:
 
 ```ts
 const set = (valueOrFn) => {
@@ -77,7 +77,7 @@ per-key signalで個々のデータをキーごとに分けているのに、な
 
 ## 出典
 
-- `packages/client/src/reactive.ts`(`createSignal`の`set`、`Object.is`比較)、`packages/client/src/runtime/map-array.ts`(`mapArray`の`existing.setItem(item)`)——`@barefootjs/client@0.35.0`
+- `packages/client/src/reactive.ts`(`createSignal`の`set`、`Object.is`比較)、`packages/client/src/runtime/map-array.ts`(`mapArray`の`existing.setItem(item)`)——`@barefootjs/client@0.35.0`。`createSignal`のあるファイルは`runtime/`の下ではなく`src/`直下の`reactive.ts`で、本文(原因の節)の旧表記`runtime/reactive.ts`は誤りだった。BarefootJSリポジトリ(`afdf77e3c`時点、`@barefootjs/*@0.39.1`)で`git ls-files`と`git log --all --follow -- packages/client/src/reactive.ts`を確認したところ、`packages/client/src/runtime/reactive.ts`はどのコミットにも存在せず(`git log --all`が空)、`reactive.ts`は2025-12-20の初期コミット以来`packages/client/src/`直下にあり、移動はしていない。`map-array.ts`だけが`runtime/`の下にある。
 - スライド編集GUI(Tauri + BarefootJS CSR)で、ヘッドレスPlaywright + IPCスタブによる`<iframe srcdoc>`のDOM変異回数の直接計測で発見・検証した。
 
 #barefootjs #signals #reactivity #performance
