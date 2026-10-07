@@ -1,6 +1,6 @@
 ---
 created: 2026-09-29
-updated: 2026-10-03
+updated: 2026-10-07
 title: JSON を構造から書き戻しても、元のファイルと1バイトも変えない
 description: パースした JSON を構造として編集し、ファイルに書き戻す場面で、変えていない部分を元のまま保つ方法。
 tags: [json, json-canvas, obsidian, go]
@@ -69,5 +69,7 @@ Y.Map のキーの並びはピアをまたいで保証されず、ygo の `Keys(
 
 - [obsidianmd/jsoncanvas の sample.canvas](https://github.com/obsidianmd/jsoncanvas/blob/main/sample.canvas)
 - [piconic-ai/ima#45](https://github.com/piconic-ai/ima/pull/45)（`internal/canvas` の読み書き）
+
+関連: [[pedit-development-notes]]
 
 #json #json-canvas #obsidian #go

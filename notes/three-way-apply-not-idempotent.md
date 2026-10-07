@@ -1,6 +1,6 @@
 ---
 created: 2026-09-29
-updated: 2026-10-03
+updated: 2026-10-07
 title: base → next の差分を当てる処理は、2回当てると壊れる
 description: base から next への差分を今の状態に当てる取り込み方は冪等ではなく、再送で2回当てたり、同じ base の差分を続けて当てたりすると、テキストの挿入が重なる。
 tags: [crdt, distributed-systems, design]
@@ -63,5 +63,7 @@ B の差分は base から作られているので、A がすでに入れた変�
 
 - [piconic-ai/ima#46](https://github.com/piconic-ai/ima/pull/46)（`canvas.Apply` と、当てた id の記録）
 - [piconic-ai/ima#50](https://github.com/piconic-ai/ima/pull/50)（送る編集を1つにする変更）
+
+関連: [[pedit-development-notes]]
 
 #crdt #distributed-systems #design

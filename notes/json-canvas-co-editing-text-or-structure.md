@@ -1,6 +1,6 @@
 ---
 created: 2026-09-29
-updated: 2026-10-03
+updated: 2026-10-07
 title: JSON Canvas の共同編集は、テキストで持つか構造で持つか
 description: JSON Canvas を Y.Text で共有すると、キャンバスだけの同時編集でも JSON が壊れる組み合わせがある。JSON の直接編集が稀なら、ノードとエッジを構造で共有する方が向く。
 tags: [json-canvas, crdt, yjs, design]
@@ -78,6 +78,6 @@ Yjs は削除された範囲への挿入を残すので、消えたノードの�
 - [piconic-ai/ima#16](https://github.com/piconic-ai/ima/issues/16)（方式の議論と決定）
 - [piconic-ai/ima#45](https://github.com/piconic-ai/ima/pull/45)（構造との相互変換）、[#46](https://github.com/piconic-ai/ima/pull/46)（ホスト側の取り込み）、[#50](https://github.com/piconic-ai/ima/pull/50)（JSON の裏口）
 
-関連: [[e2ee-ephemeral-attachments]]
+関連: [[e2ee-ephemeral-attachments]]、[[pedit-development-notes]]
 
 #json-canvas #crdt #yjs #design

@@ -1,6 +1,6 @@
 ---
 created: 2026-09-28
-updated: 2026-09-28
+updated: 2026-10-07
 title: Durable Object は R2 や fetch を待つ間に別のリクエストを受ける
 description: "Durable Object の input gate が止めるのはストレージ操作の間だけで、R2 や fetch() を待つ間は別のリクエストが入る。容量の予約と後片付けの競合をどう防いだか。"
 tags: [cloudflare, durable-objects, concurrency]
@@ -52,6 +52,6 @@ Durable Object で `await env.BUCKET.put(...)` を待っている間に、同じ
 - [Durable Objects: Easy, Fast, Correct — Choose three](https://blog.cloudflare.com/durable-objects-easy-fast-correct-choose-three/)（input gate の規則）
 - 実装とレビュー: [piconic-ai/ima#40](https://github.com/piconic-ai/ima/pull/40)（競合はどれも [[pullfrog]] のレビューで指摘された）
 
-関連: [[cloudflare-workers]]
+関連: [[cloudflare-workers]]、[[pedit-development-notes]]
 
 #cloudflare #durable-objects #concurrency

@@ -1,6 +1,6 @@
 ---
 created: 2026-09-28
-updated: 2026-09-28
+updated: 2026-10-07
 title: JPEG のメタデータを画質を落とさずに消す
 description: 撮影位置などのメタデータを、再エンコードせずにバイト列の操作だけで JPEG から消すやり方。
 tags: [jpeg, exif, image, privacy]
@@ -67,6 +67,6 @@ JPEG から APP1 を全部消すと、スマホの縦向き写真がどう表示
 - [Ultra HDR Image Format](https://developer.android.com/media/platform/hdr-image-format)（gain map は MPF で主画像の後ろに付く）
 - 実装: [piconic-ai/ima#42](https://github.com/piconic-ai/ima/pull/42)（Orientation と EOI の件は pullfrog のレビューで指摘された）
 
-関連: [[png-webp-metadata-chunks]]、[[pullfrog]]
+関連: [[png-webp-metadata-chunks]]、[[pullfrog]]、[[pedit-development-notes]]
 
 #jpeg #exif #image #privacy

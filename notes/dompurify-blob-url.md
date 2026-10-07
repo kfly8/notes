@@ -1,6 +1,6 @@
 ---
 created: 2026-09-28
-updated: 2026-09-28
+updated: 2026-10-07
 title: "DOMPurify で自分が発行した blob: URL だけを通す"
 description: "DOMPurify は既定で blob: URL を落とす。ALLOWED_URI_REGEXP を広げず、uponSanitizeAttribute フックの forceKeepAttr で自分が発行した URL だけを残す。"
 tags: [dompurify, security, frontend]
@@ -43,6 +43,6 @@ Markdown のプレビューで `blob:` の画像を表示したいとき、`ALLO
 - [DOMPurify README](https://github.com/cure53/DOMPurify/blob/main/README.md)（既定で許すプロトコルと、フックの `forceKeepAttr`）
 - [piconic-ai/ima#43](https://github.com/piconic-ai/ima/pull/43)
 
-関連: [[e2ee-ephemeral-attachments]]
+関連: [[e2ee-ephemeral-attachments]]、[[pedit-development-notes]]
 
 #dompurify #security #frontend

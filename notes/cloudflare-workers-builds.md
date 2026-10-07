@@ -1,6 +1,6 @@
 ---
 created: 2026-08-29
-updated: 2026-10-01
+updated: 2026-10-07
 title: Workers Builds
 description: GitHub リポジトリをダッシュボードで接続するだけでpush毎に自動ビルド・デプロイするCloudflare純正のCI/CD
 tags: [cloudflare, workers, ci-cd]
@@ -17,6 +17,18 @@ GitHub/GitLab リポジトリを Cloudflare ダッシュボードで接続する
 4. 接続するリポジトリ・ブランチを選ぶ
 
 **ダッシュボード上のWorker名と、wrangler設定ファイルの `name` が一致していないとビルドが失敗する。**
+
+ただし 2026-10 に [[pedit]] で観測したのは失敗ではない挙動だった。接続された Worker `edit` に対して `name` が
+`pedit` の設定ファイルでデプロイすると、名前が一致しないと**警告するだけで `edit` としてデプロイされた**。
+本番は配信を続けるが設定ファイル側の値で上書きされるので、`workers_dev` が有効になって `edit.<subdomain>.workers.dev`
+が本番を配信し、ブランチ Preview は URL を失い、Workers Logs が止まり、R2 のバインディングも別のバケットを
+指す。Workers Builds が設定ファイルの `name` を書き換える PR を開くこともある。同じリポジトリに本番用と
+セルフホスト用の設定ファイルが同居しているときは、デプロイコマンドで `--config` を明示する。Wrangler の設定
+探索は意図しない方の `wrangler.json` を拾うことがある。
+
+接続の設定（ブランチ、ビルド・デプロイコマンド、ルートディレクトリ、ビルドトークン、ビルド変数）はダッシュ
+ボードにしかなく、リポジトリを切断すると消える。リポジトリの改名でもつなぎ直しになる
+（[[github-repo-rename-residue]]）ので、設定の表をリポジトリ内のドキュメントに写しておく。
 
 GitHub アカウントは1つの Cloudflare アカウントにしか紐づけられない。
 

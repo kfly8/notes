@@ -1,6 +1,6 @@
 ---
 created: 2026-09-28
-updated: 2026-09-28
+updated: 2026-10-07
 title: LRU キャッシュの追い出しが再描画と噛み合って止まらなくなる
 description: "描画のたびに引き、到着のたびに再描画する LRU キャッシュは、画面が参照する合計が上限を超えると追い出しと再取得を繰り返す。画面に出ているものを追い出さないソフトな上限で止めた。"
 tags: [cache, frontend, design]
@@ -43,6 +43,6 @@ tags: [cache, frontend, design]
 
 - [piconic-ai/ima#43](https://github.com/piconic-ai/ima/pull/43)（指摘と対処、テスト「settles when the document shows more than its budget」）
 
-関連: [[reactive-glitch]]
+関連: [[reactive-glitch]]、[[pedit-development-notes]]
 
 #cache #frontend #design

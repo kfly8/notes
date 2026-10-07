@@ -1,6 +1,6 @@
 ---
 created: 2026-09-28
-updated: 2026-09-28
+updated: 2026-10-07
 title: PNG と WebP のメタデータを持つチャンク
 description: PNG と WebP から、画素に触れずにメタデータだけを消すときにどのチャンクを落とせばよいか。
 tags: [png, webp, image, privacy]
@@ -47,5 +47,7 @@ WebP から `EXIF` チャンクを消すときに、チャンクの削除以外�
 - [PNG Specification (Third Edition)](https://www.w3.org/TR/png-3/)
 - [WebP Container Specification](https://developers.google.com/speed/webp/docs/riff_container)
 - 実装: [piconic-ai/ima#42](https://github.com/piconic-ai/ima/pull/42)
+
+関連: [[pedit]]、[[pedit-development-notes]]
 
 #png #webp #image #privacy

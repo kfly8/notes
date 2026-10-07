@@ -1,6 +1,6 @@
 ---
 created: 2026-09-29
-updated: 2026-10-03
+updated: 2026-10-07
 title: ygo と Yjs で入れ子の型をやり取りするときの注意
 description: Go の ygo とブラウザの Yjs で Y.Array・Y.Map・Y.Text の入れ子を同期させるときの注意（prelim、float32、キーの順序、Move、ロック）。
 tags: [yjs, crdt, go]
@@ -65,5 +65,7 @@ ygo で要素の並べ替えに `YArray.Move` を使わないのはなぜか。
 - [reearth/ygo](https://github.com/reearth/ygo)（`crdt/prelim.go`、`crdt/yarray.go` の doc コメント）
 - [piconic-ai/ima#16 の設計コメント](https://github.com/piconic-ai/ima/issues/16)（ygo 1.50 と Yjs 13 の同期の確認）
 - [piconic-ai/ima#46](https://github.com/piconic-ai/ima/pull/46)（ロックの中で読む変更）
+
+関連: [[pedit-development-notes]]
 
 #yjs #crdt #go

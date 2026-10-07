@@ -1,6 +1,6 @@
 ---
 created: 2026-09-23
-updated: 2026-09-23
+updated: 2026-10-07
 title: Worker Previews
 description: ブランチごとに、本番とは切り離した Worker の実行環境（Preview）を作る仕組み。
 tags: [cloudflare, workers, wrangler, d1, ci-cd]
@@ -28,7 +28,7 @@ Preview は本番のデプロイとは別枠の環境で、昇格という操作
 }
 ```
 
-- **Preview は本番の設定を継承しない。** 本番にバインディングを足したら、Preview でも使うものは `previews` にも書く。書き忘れると Preview 側で `env.X` が undefined になり、1101 エラーになる。
+- **Preview は本番の設定を継承しない。** 本番にバインディングを足したら、Preview でも使うものは `previews` にも書く。書き忘れると Preview 側で `env.X` が undefined になり、1101 エラーになる。 Rate Limiting バインディング（[[workers-rate-limiting-binding]]）も同じで、`previews` にも `ratelimits` を書き、`namespace_id` は本番と別にする。
 - `previews` ブロック自体は必須。バインディングが要らない Worker なら空の `{}` でよい。
 - トップレベルにしか置けないもの：`assets`、`compatibility_date`、`compatibility_flags`、`preview_urls`、`routes`。`assets` は Preview ごとにそのブランチのものがアップロードされる。
 - トップレベルでも `previews` でもよいもの：`observability`、`logpush`、`limits`、`placement`。Preview 用に別の値にしたいときだけ `previews` に書く。

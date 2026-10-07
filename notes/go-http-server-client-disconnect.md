@@ -1,6 +1,6 @@
 ---
 created: 2026-09-28
-updated: 2026-09-28
+updated: 2026-10-07
 title: Go の HTTP サーバーは本文を読み終えるまでクライアントの切断に気づかない
 description: "net/http のサーバーは、本文付きのリクエストでは本文を読み終えるまで切断検知のバックグラウンド読み取りを始めないので、本文を読まずに待つハンドラは r.Context() のキャンセルを受け取らない。"
 tags: [go, http, testing]
@@ -53,5 +53,7 @@ _, _ = io.ReadAll(r.Body)
 - `$(go env GOROOT)/src/net/http/server.go`（go1.27.1）
 - [net/http: http server with broken client connection should cancel http request context with clear explicit cause · golang/go#75939](https://github.com/golang/go/issues/75939)
 - [piconic-ai/ima#41](https://github.com/piconic-ai/ima/pull/41)（`internal/attach` のテストで遭遇）
+
+関連: [[pedit]]、[[pedit-development-notes]]
 
 #go #http #testing

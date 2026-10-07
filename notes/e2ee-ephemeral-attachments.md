@@ -1,6 +1,6 @@
 ---
 created: 2026-09-28
-updated: 2026-10-03
+updated: 2026-10-07
 title: E2E 暗号化した共同編集に画像添付を足す設計
 description: "URL の fragment の鍵で E2E 暗号化した共同編集に、画像添付を足す設計。正本はローカルに置き、セッション中だけ暗号文を R2 に置く。blobId を HMAC にする理由。"
 tags: [e2ee, cloudflare, r2, durable-objects, design]
@@ -66,6 +66,6 @@ blobId を平文の SHA-256 ではなく HMAC にするのはなぜ?
   [#41](https://github.com/piconic-ai/ima/pull/41)（ホスト）、
   [#42](https://github.com/piconic-ai/ima/pull/42)・[#43](https://github.com/piconic-ai/ima/pull/43)（Web）
 
-関連: [[durable-objects-await-gap]]、[[jpeg-lossless-metadata-stripping]]、[[cloudflare-workers]]
+関連: [[durable-objects-await-gap]]、[[jpeg-lossless-metadata-stripping]]、[[cloudflare-workers]]、[[pedit-development-notes]]
 
 #e2ee #cloudflare #r2 #durable-objects #design

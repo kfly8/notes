@@ -1,6 +1,6 @@
 ---
 created: 2026-09-28
-updated: 2026-09-28
+updated: 2026-10-07
 title: Node.js の型ストリップで動かない TypeScript の構文
 description: "Node.js の型ストリップは型を取り除くだけなので、enum・実行時の namespace・parameter property・import alias は ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX になる。"
 tags: [nodejs, typescript]
@@ -57,5 +57,7 @@ export class UnknownMessageTypeError extends Error {
 
 - [Node.js: Modules: TypeScript](https://nodejs.org/api/typescript.html)
 - [piconic-ai/ima#39](https://github.com/piconic-ai/ima/pull/39)（Go と JS の相互運用テストで遭遇）
+
+関連: [[pedit]]、[[pedit-development-notes]]
 
 #nodejs #typescript

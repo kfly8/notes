@@ -15,3 +15,4 @@
 /Users/kfly8/src/github.com/piconic-ai/ima
 /Users/kfly8/src/github.com/piconic-ai/edit
 /home/user/edit
+/Users/kfly8/src/github.com/piconic-ai/pedit

@@ -1,6 +1,6 @@
 ---
 created: 2026-09-29
-updated: 2026-10-03
+updated: 2026-10-07
 title: "@barefootjs/xyflow をブラウザだけで描画するときの抜け"
 description: "@barefootjs/xyflow をブラウザだけで描画（CSR）したときに見つかった抜けと、ima での回避。"
 tags: [barefootjs, xyflow, csr]
@@ -65,5 +65,7 @@ xyflow のノードの上でダブルクリックしても、カードに付け�
 - [piconic-ai/barefootjs#3264](https://github.com/piconic-ai/barefootjs/issues/3264)〜[#3271](https://github.com/piconic-ai/barefootjs/issues/3271)（報告した issue）
 - [piconic-ai/barefootjs#3272](https://github.com/piconic-ai/barefootjs/pull/3272)（ドラッグのコールバック）
 - [piconic-ai/ima#48](https://github.com/piconic-ai/ima/pull/48)（回避の一覧）
+
+関連: [[pedit-development-notes]]
 
 #barefootjs #xyflow #csr
