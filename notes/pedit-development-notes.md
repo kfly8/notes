@@ -2,7 +2,7 @@
 created: 2026-10-07
 updated: 2026-10-07
 title: pedit の開発で調べたことの見取り図
-description: pedit（手元のテキストファイルをその場でブラウザと共同編集する CLI。
+description: pedit の開発で調べたことを、設計・Cloudflare・WebSocket・配布・Go・Web の領域ごとに並べたハブノート。
 tags: [pedit, cloudflare, moc]
 ---
 # pedit の開発で調べたことの見取り図
