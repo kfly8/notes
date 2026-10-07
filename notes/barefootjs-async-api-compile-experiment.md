@@ -1,6 +1,6 @@
 ---
 created: 2026-09-21
-updated: 2026-09-21
+updated: 2026-10-07
 title: BarefootJS の非同期 API 候補を試験コンパイルした記録
 description: BarefootJS の非同期 API の候補（Solid 2.0 型の async memo、createSignal の拡張、helper で包む案）を実装せずにコンパイラに通し、SSR の seed がどう扱われるか、黙って壊れるのか診断が出るのかを Hono と Go の出力で確かめた記録。
 tags: [barefootjs, experiment, compiler, async]
@@ -15,7 +15,7 @@ Solid 2.0 型の async memo、`createSignal` の拡張、helper で包む案の�
 
 ## 材料
 
-`packages/adapter-hono/src/__tests__/` にスクラッチの `.test.ts` を置き、`compileJSX` に候補のソースを渡して、Hono と Go の 2 アダプタの出力（`markedTemplate`、`ssrDefaults`、`clientJs`）とエラーを表示した。実行は `bun src/__tests__/zz-*.test.ts`。終わったらファイルは削除。
+`packages/adapter-hono/src/__tests__/` にスクラッチの `.test.ts` を置き、`compileJSX` に候補のソースを渡して、Hono と Go の2アダプタの出力（`markedTemplate`、`ssrDefaults`、`clientJs`）とエラーを表示した。実行は `bun src/__tests__/zz-*.test.ts`。終わったらファイルは削除。
 
 ```ts
 import { compileJSX } from '@barefootjs/jsx'
@@ -38,7 +38,7 @@ const user = createMemo(() => getUser(id()), props.user)
 ```
 
 - `user.loading()` は **BF044**（`Memo getter 'user' passed without calling it`）で error。effect の配線自体は `() => user.loading()` で生成されていた。
-- 第 2 引数 `props.user` は client JS で**落ちる**。出力は `createMemo(() => getUser(id()))`。DSL 向けの ssr-defaults も `"user": {"value": null}`。
+- 第2引数 `props.user` は client JS で**落ちる**。出力は `createMemo(() => getUser(id()))`。DSL 向けの ssr-defaults も `"user": {"value": null}`。
 - Hono の SSR shim は `const user = () => getUser(id())` で、computation を **verbatim に実行**する。SSR 時に fetcher が呼ばれ、Promise の `?.name` は空、`.loading` は TypeError になる。CSR の template lambda も `getUser(_p.id)?.name` を mount 時に評価する。
 
 ## 結果 2: signal + effect
@@ -62,24 +62,24 @@ createEffect(() => { setUser(getUser(id())) })
 
 ## 結果 4: 認識されない形は黙って prop アクセサに化ける
 
-- `const [user, setUser, userFlight] = createSignal(props.user)` の **3 要素 destructure** は、signal として認識されず、`user` が prop アクセサ `_p.user()` として扱われる。SSR shim も client の宣言も消え、**診断は出ない**。
-- `createSignal(props.user, { from: () => ... })` の第 2 引数は、signal は認識されるが第 2 引数が**黙って落ちる**。
+- `const [user, setUser, userFlight] = createSignal(props.user)` の **3要素 destructure** は、signal として認識されず、`user` が prop アクセサ `_p.user()` として扱われる。SSR shim も client の宣言も消え、**診断は出ない**。
+- `createSignal(props.user, { from: () => ... })` の第2引数は、signal は認識されるが第2引数が**黙って落ちる**。
 
 これは既存の限界エントリ `opaque-local-accessor-call`（[[barefootjs-adapter-conformance-drift]] の文脈で出てくる silent gap の一種）と同じ形で、新しい factory を認識させるときに同時に loud にする、と spec に書いた。
 
 ## 読み取れること
 
-- **seed は `createSignal` の第 1 引数（と、それに準ずる位置）でしか読めない。** 第 2 引数、helper の中、オブジェクトの中に置くと、落ちるか拒まれるか黙って壊れる。設計の側で seed をその位置に置く必要があり、`createQuery(fn, { initial })` の `initial` はその位置に相当する。
+- **seed は `createSignal` の第1引数（と、それに準ずる位置）でしか読めない。** 第2引数、helper の中、オブジェクトの中に置くと、落ちるか拒まれるか黙って壊れる。設計の側で seed をその位置に置く必要があり、`createQuery(fn, { initial })` の `initial` はその位置に相当する。
 - **effect は client-only なので SSR 経路に触らずに済む。** 非同期の配線を effect の形（関数）で書く限り、SSR には seed だけが見える。
-- **文字列比較の分岐はテンプレートに落ちる。** 三層設計で未決だった点は、この 1 回で決まった。
-- **「黙って壊れる」経路が今のコンパイラに 2 つある**（3 要素 destructure、余分な引数）。これは設計とは別に潰す対象。
+- **文字列比較の分岐はテンプレートに落ちる。** 三層設計で未決だった点は、この1回で決まった。
+- **「黙って壊れる」経路が今のコンパイラに2つある**（3要素 destructure、余分な引数）。これは設計とは別に潰す対象。
 
 ## 理解度チェック
 
 ```quiz
 Solid 2.0 型の `createMemo(() => getUser(id()), props.user)` を今の BarefootJS でコンパイルすると、Hono の SSR で何が起きるか。
 ---
-SSR shim が `const user = () => getUser(id())` と computation を verbatim に実行するので、サーバーで fetcher が呼ばれ、Promise に対する `?.name` は空、`.loading` は TypeError になる。第 2 引数の seed は client JS からも落ちる。
+SSR shim が `const user = () => getUser(id())` と computation を verbatim に実行するので、サーバーで fetcher が呼ばれ、Promise に対する `?.name` は空、`.loading` は TypeError になる。第2引数の seed は client JS からも落ちる。
 ```
 
 ```quiz

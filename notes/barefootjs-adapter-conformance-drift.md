@@ -1,6 +1,6 @@
 ---
 created: 2026-09-16
-updated: 2026-09-16
+updated: 2026-10-07
 title: 共有の適合性テストが複数バックエンド実装のドリフトを可視化する
 description: 1つの中間表現（IR）から複数のバックエンド向けにコードを生成するコンパイラでは、各バックエンドの実装が互いに知らないうちに乖離していく。
 tags: [barefootjs, testing]
@@ -27,13 +27,13 @@ Pebbleアダプタは開発時期の関係で別のGitブランチ上にあり�
 
 ## なぜテストがなければ気づけなかったか
 
-Pebbleのコード自体はエラーを出さず、正常にコンパイルが完了する。9個のアダプタそれぞれのemitterコードを人間が横に並べて「どれが最新のリファクタリングに追いついていないか」を目視で見つけるのは、この規模ではほぼ不可能に近い。
+Pebbleのコード自体はエラーを出さず、正常にコンパイルが完了する。9個のアダプタそれぞれのemitterコードを人間が横に並べて「どれが最新のリファクタリングに追いついていないか」を目視で見つけるのは、この規模では不可能に近い。
 
 ここで機能したのは、**全アダプタに同一のフィクスチャ（同じソース・同じ期待値）を流し、答えが一致しない箇所だけを機械的に洗い出す**仕組みだった。8アダプタが新しい挙動へ揃った瞬間、Pebbleだけがそこから外れていることが、レビューを待たずにテスト実行1回で判明した。
 
 ## 明文化された設計哲学
 
-BarefootJSのCLAUDE.mdには、この種の問題をひとつの原則として明記してある一節がある。
+BarefootJSのCLAUDE.mdには、この種の問題をひとつの原則として明記した一節がある。
 
 > One decision, two implementations, no test comparing them is the defect family this repo keeps producing. When you find a decision answered in more than one place, the deliverable is a single shared implementation the sites call — not an Nth copy that happens to agree today. A cross-adapter test pinning both families to the same answer for the same input is what makes the drift visible at all.
 

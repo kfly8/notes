@@ -1,6 +1,6 @@
 ---
 created: 2026-09-01
-updated: 2026-09-02
+updated: 2026-10-07
 title: BarefootJS の adversarial value catalog
 description: 型ごとに壊れやすい代表値をカタログ化し、既存 fixture の props を1プロパティずつ置き換えて壊れないか 検証する仕組み。
 tags: [barefootjs, testing]
@@ -14,13 +14,13 @@ tags: [barefootjs, testing]
 
 ## 型ごとのカタログ
 
-- string: 空文字列(`empty`)、マークアップ混じり(`markup`, `<b>&"'</b>`)、マルチバイト(`multibyte`, 日本語)
-- number: ゼロ(`zero`, 0)、負数(`negative`, -7)、大きい値(`large`, 1234567890)
+- string: 空文字列（`empty`）、マークアップ混じり（`markup`, `<b>&"'</b>`）、マルチバイト（`multibyte`, 日本語）
+- number: ゼロ（`zero`, 0）、負数（`negative`, -7）、大きい値（`large`, 1234567890）
 - boolean: `true` / `false`
-- array: 空配列(`empty`)
+- array: 空配列（`empty`）
 - optional な prop 全般: 値そのものを省略する `absent` も1点として加わる
 - Date（#2274 で追加）: epoch、1969年のuncrewed pre-1970（`1969-07-20T20:17:40.123Z` — 負エポックの
-  floor-division に罠がある）、うるう日(`2024-02-29`)、9999年（4桁年境界）。実際の `Date` は committed
+  floor-division に罠がある）、うるう日（`2024-02-29`）、9999年（4桁年境界）。実際の `Date` は committed
   な JSON に残せないので `{$date: ISO文字列}` というエンベロープで運び、レンダー直前に実体化する。
 - union（#2277 で追加）: リテラルメンバー（string/boolean/null/numeric）1つにつき1点。メンバーが12件
   （`UNION_MEMBER_CAP`）を超える場合は先頭6件+末尾6件にサンプリングする——境界（最初/最後のケースを
@@ -47,21 +47,17 @@ adversarial-catalog の役割とは重ならない。
 非整数 number（bare な `number` prop は他に根拠がなければ Go の `int` に lower されるため、小数値は
 意味的な差異ではなくハーネス側のエラーになってしまう、#2168）、astral-plane 文字列（アダプタごとに手で
 ピン留め済み、#2255）、関数型 prop（合成できる値がない）、非リテラル union・デフォルト値のない
-`unknown` 型必須フィールドはスコープ外として明記されている。将来のカタログ拡張候補。
+`unknown` 型の必須フィールドはスコープ外として明記されている。将来のカタログ拡張候補。
 
 ## [[barefootjs-bug-finding]] の中での位置づけ
 
 既存の249フィクスチャ（IR 適合性の全量コーパス）に対する境界値チェック。構造は変えず、値だけを型ごとの
 既知の壊れやすいパターンに差し替える、という一番浅いレイヤー。
 
-## 出典
-
-- `packages/adapter-tests/src/adversarial-catalog.ts`（piconic-ai/barefootjs, origin/main, 2026-07-13）
-
 ## 理解度チェック
 
 ```quiz
-adversarial-catalog が pairwise のような全組み合わせ（cross-product）を避けているのはなぜか。
+adversarial-catalog が全組み合わせ（cross-product）を避けているのはなぜか。
 ---
 同じ lowering を何度も再テストするだけで組み合わせ爆発するため。既存 fixture の props を1つずつ変える
 OFAT（one-factor-at-a-time）に留めている。
@@ -73,5 +69,9 @@ union 型のカタログで、メンバーが12件を超えるとき先頭6件+�
 `switch` 文などで最初/最後のケースだけ特別扱いされるような境界の不具合が、宣言順の両端で最も出やすい
 という判断から。
 ```
+
+## 出典
+
+- `packages/adapter-tests/src/adversarial-catalog.ts`（piconic-ai/barefootjs, origin/main, 2026-07-13）
 
 #barefootjs #testing

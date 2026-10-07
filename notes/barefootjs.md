@@ -1,6 +1,6 @@
 ---
 created: 2026-08-17
-updated: 2026-10-01
+updated: 2026-10-07
 title: BarefootJS
 description: signal ベースの TSX をビルド時にコンパイルして、バックエンドのネイティブなテンプレートを吐くフレームワーク。
 tags: [barefootjs, signals, jsx, hono]
@@ -32,7 +32,7 @@ Go なら `html/template` の `.tmpl`、Perl なら Mojolicious の `.html.ep`�
 | PHP（Laravel） | Blade | BladeAdapter |
 | Java（Spring Boot） | Pebble | PebbleAdapter |
 
-HonoAdapterは**リファレンスアダプタ**という特別な位置づけを持つ。フィクスチャの期待値はすべてHonoAdapterの実際の出力から生成され、他の9アダプタの出力と比較される。この仕組みが実際にドリフトを検出した例は [[barefootjs-adapter-conformance-drift]] にまとめた。
+HonoAdapter は**リファレンスアダプタ**という特別な位置づけを持つ。フィクスチャの期待値はすべて HonoAdapter の実際の出力から生成され、他の9アダプタの出力と比較される。この仕組みが実際にドリフトを検出した例は [[barefootjs-adapter-conformance-drift]] にまとめた。
 
 ## 細粒度のリアクティビティ
 
@@ -80,7 +80,7 @@ expect(button!.events).toContain('click')
 
 実際の操作や見た目は結局 E2E が要るが、構造の壊れはその手前で捕まえられる。`bf` CLI が全コマンドで `--json` を持っていることと合わせて、AI エージェントがソースを読まずにコンポーネントを組み立て・検証できるように設計されている。
 
-単機能のフィクスチャでは踏めない、機能同士の組み合わせで起きるバグの洗い出しには [[pairwise-testing]] を使っている。問題発見の手法全体の変遷とできていないことの整理は [[barefootjs-bug-finding]] にまとめた。実際にアプリを作りながら踏んだ個別のバグ・パターンとしては、keyedな`.map()`の行indexの追従は [[barefootjs-loop-index-reactivity]]、コレクション全体を1つのsignalに持たない避け方は [[barefootjs-per-key-signal-pattern]]、`.map()`のitem参照churnは [[barefootjs-map-item-reference-stability]]、`.map()`コールバックがブロック本体で書けない制約は [[barefootjs-map-callback-expression-body]] を参照。Goアダプタのテストがローカルの古いGoで黙ってスキップされる罠は [[barefootjs-go-adapter-toolchain-skip]] にまとめた。signalに閉じない**propsの境界**でのリアクティビティ規約(コンパイラがgetterプロパティに下げる、分割代入のライブ化、BF044、SSRハイドレーション境界のBF049)は [[barefootjs-props-reactivity]]、生のsignal getter/setterをcomponent propに渡す書き方自体はBF044を通るが、2026-09の修正までCSR fresh-mountでReferenceErrorになっていた件は [[barefootjs-bare-accessor-prop-csr-fresh-mount-crash]]、デバッグ用CLI `bf debug graph` の出力が実際のリアクティビティ検出とズレることがある件は [[barefootjs-debug-graph-undercounts-deps]] にまとめた。keyedな`.map()`の新規行の`ref`が、実ドキュメントに挿入される前のdetachedな状態で呼ばれる件は [[barefootjs-map-ref-detached-document]]、`.map()`行のイベントハンドラが親要素への委譲になり`stopPropagation()`が隣のリスナーを止められない件は [[barefootjs-map-delegated-handler-stoppropagation]] にまとめた。祖先の三項演算子がマウント後に切り替わったとき、その中のfragmentRootな子コンポーネントの内部条件分岐がDOM更新されないまま残ることがある件——子自身のcomment-scopeが`commentScopeRegistry`に登録されないのが原因——は [[barefootjs-nested-fragment-child-unregistered-scope]]、その最小再現は [[barefootjs-nested-fragment-child-unregistered-scope-experiment]] にまとめた。その過程で偶然踏んだ、分岐の形が非対称な三項演算子がDOM更新で兄弟要素を静かに失う別のバグは [[barefootjs-mismatched-branch-shape-drops-siblings]] を参照。この2つのバグは後日コンパイラ/ランタイム本体のソースを直接読んで実際の原因を特定し、いずれも本家に修正がマージされた——三項演算子の分岐が単一要素かfragmentかを決める`isSingleRootElement`が同じタグ名の兄弟要素に騙される件は [[barefootjs-same-tag-sibling-defeats-single-root-check]]、`insert()`のマーカー剥がしフィルタが広すぎてネストした子自身の条件分岐マーカーまで消してしまう件は [[barefootjs-fragment-cond-marker-strip-too-broad]] にまとめた。コンポーネント外のヘルパー関数をコンポーネントから呼ぶと、コンパイラのインライン展開が変数スコープや`async`境界を壊す件は [[barefootjs-module-level-helper-inlining-bug]] にまとめた。
+単機能のフィクスチャでは踏めない、機能同士の組み合わせで起きるバグの洗い出しには [[pairwise-testing]] を使っている。問題発見の手法全体の変遷とできていないことの整理は [[barefootjs-bug-finding]] にまとめた。実際にアプリを作りながら踏んだ個別のバグ・パターンとしては、keyed な `.map()` の行 index の追従は [[barefootjs-loop-index-reactivity]]、コレクション全体を1つの signal に持たない避け方は [[barefootjs-per-key-signal-pattern]]、`.map()` の item 参照 churn は [[barefootjs-map-item-reference-stability]]、`.map()` コールバックがブロック本体で書けない制約は [[barefootjs-map-callback-expression-body]] を参照。Go アダプタのテストがローカルの古い Go で黙ってスキップされる罠は [[barefootjs-go-adapter-toolchain-skip]] にまとめた。signal に閉じない**props の境界**でのリアクティビティ規約（コンパイラが getter プロパティに下げる、分割代入のライブ化、BF044、SSR ハイドレーション境界の BF049）は [[barefootjs-props-reactivity]]、生の signal getter/setter を component prop に渡す書き方自体は BF044 を通るが、2026-09 の修正まで CSR fresh-mount で ReferenceError になっていた件は [[barefootjs-bare-accessor-prop-csr-fresh-mount-crash]]、デバッグ用 CLI `bf debug graph` の出力が実際のリアクティビティ検出とズレることがある件は [[barefootjs-debug-graph-undercounts-deps]] にまとめた。keyed な `.map()` の新規行の `ref` が、実ドキュメントに挿入される前の detached な状態で呼ばれる件は [[barefootjs-map-ref-detached-document]]、`.map()` 行のイベントハンドラが親要素への委譲になり `stopPropagation()` が隣のリスナーを止められない件は [[barefootjs-map-delegated-handler-stoppropagation]] にまとめた。祖先の三項演算子がマウント後に切り替わったとき、その中の fragmentRoot な子コンポーネントの内部条件分岐が DOM 更新されないまま残ることがある件——子自身の comment-scope が `commentScopeRegistry` に登録されないのが原因——は [[barefootjs-nested-fragment-child-unregistered-scope]]、その最小再現は [[barefootjs-nested-fragment-child-unregistered-scope-experiment]] にまとめた。その過程で偶然踏んだ、分岐の形が非対称な三項演算子が DOM 更新で兄弟要素を静かに失う別のバグは [[barefootjs-mismatched-branch-shape-drops-siblings]] を参照。この2つのバグは後日コンパイラ/ランタイム本体のソースを直接読んで実際の原因を特定し、いずれも本家に修正がマージされた——三項演算子の分岐が単一要素か fragment かを決める `isSingleRootElement` が同じタグ名の兄弟要素に騙される件は [[barefootjs-same-tag-sibling-defeats-single-root-check]]、`insert()` のマーカー剥がしフィルタが広すぎてネストした子自身の条件分岐マーカーまで消してしまう件は [[barefootjs-fragment-cond-marker-strip-too-broad]] にまとめた。コンポーネント外のヘルパー関数をコンポーネントから呼ぶと、コンパイラのインライン展開が変数スコープや `async` 境界を壊す件は [[barefootjs-module-level-helper-inlining-bug]] にまとめた。
 
 ## 非同期データ層の設計
 
@@ -90,7 +90,7 @@ expect(button!.events).toContain('click')
 
 ## Hono アダプタで使う
 
-Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[barefootjs-hono-scaffold]] を参照。クライアント側の `@barefootjs/router` を使う場合、region の外は一切更新されないという契約があり、[[barefootjs-router-region-contract]] にまとめた。`'use client'` コンポーネントをプレーンなサーバーコンポーネントの子に置くと静かにhydrateされない落とし穴もある — [[barefootjs-orphaned-child-hydration]]。SSR ではなく静的サイトジェネレーター(Hono の `toSSG`)と CSR Adapter・Router を組み合わせて、このノートサイト自身を実際に置き換えた実験は [[hono-tossg-barefootjs-migration-experiment]] を参照。
+Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[barefootjs-hono-scaffold]] を参照。クライアント側の `@barefootjs/router` を使う場合、region の外は一切更新されないという契約があり、[[barefootjs-router-region-contract]] にまとめた。`'use client'` コンポーネントをプレーンなサーバーコンポーネントの子に置くと静かにhydrateされない落とし穴もある — [[barefootjs-orphaned-child-hydration]]。SSR ではなく静的サイトジェネレーター（Hono の `toSSG`）と CSR Adapter・Router を組み合わせて、このノートサイト自身を実際に置き換えた実験は [[hono-tossg-barefootjs-migration-experiment]] を参照。
 
 ## ノードエディタ（xyflow）
 

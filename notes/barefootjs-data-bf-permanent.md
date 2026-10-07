@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-09-02
+updated: 2026-10-07
 title: data-bf-permanent でナビゲーション間の再描画を防ぐ
 description: "@barefootjs/router は region の swap（差し替え）のたびに、region 内の要素を丸ごと作り直す。"
 tags: [barefootjs, router]
@@ -47,7 +47,7 @@ const toggleThemeButton = document.getElementById('toggle-theme');
 toggleThemeButton.addEventListener('click', toggleTheme);
 ```
 
-region 内の DOM ノードが swap のたびに作り直されるので、`addEventListener` を貼った**その** DOM ノードはもう存在しない。1回でもナビゲーションした後は、見た目は同じボタンがそこにあるのに、クリックしても何も起きない——ちらつきと違って気づきにくい（クリックしても "何も起きない" ようにしか見えず、コンソールにも何も出ない）。
+region 内の DOM ノードが swap のたびに作り直されるので、`addEventListener` を貼った**その** DOM ノードはもう存在しない。1回でもナビゲーションした後は、見た目は同じボタンがそこにあるのに、クリックしても何も起きない——ちらつきと違って気づきにくい（クリックしても「何も起きない」ようにしか見えず、コンソールにも何も出ない）。
 
 対処はロゴと同じ、`id="toggle-theme"` の要素に `data-bf-permanent="toggle-theme"` を足すだけ。ノードそのものが生き残るので、貼ったリスナーも生き残る。BarefootJS 側のコンポーネントを signal ベースの `'use client'` に書き換える必要はなかった。
 

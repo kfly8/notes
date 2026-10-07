@@ -1,6 +1,6 @@
 ---
 created: 2026-09-02
-updated: 2026-09-02
+updated: 2026-10-07
 title: BarefootJS の exhaustiveness-pinned ADT
 description: コンパイラの IR（ParsedExpr など）を discriminated union（タグ付きユニオン、ADT）で定義し、種類を 拡張したときに対応漏れがあればコンパイル時に検出されるようにする設計。
 tags: [barefootjs, testing, typescript]
@@ -57,11 +57,6 @@ coverage-floor は「IR の種類が**fixture でカバーされているか**�
 すべて「実行して壊れを観測する」テストだが、これは「壊れた状態を最初から作れなくする」設計そのもの。
 テストが増える前段階の予防線にあたる。
 
-## 出典
-
-- `packages/jsx/src/expression-parser.ts`（piconic-ai/barefootjs, origin/main）
-- `packages/adapter-{blade,erb,go-template,jinja,mojolicious,rust}/src/adapter/expr/array-method.ts`
-
 ## 理解度チェック
 
 ```quiz
@@ -77,5 +72,10 @@ coverage-floor は「IR の種類が**fixture でカバーされているか**�
 `_exhaustive: never` は IR の種類が増えたときのアダプタ側の実装漏れをコンパイル時に防ぎ、coverage-floor
 は IR の種類がテストの fixture で実際にカバーされているかをテスト実行時に検査する。
 ```
+
+## 出典
+
+- `packages/jsx/src/expression-parser.ts`（piconic-ai/barefootjs, origin/main）
+- `packages/adapter-{blade,erb,go-template,jinja,mojolicious,rust}/src/adapter/expr/array-method.ts`
 
 #barefootjs #testing #typescript

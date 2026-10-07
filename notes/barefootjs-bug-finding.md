@@ -1,6 +1,6 @@
 ---
 created: 2026-09-01
-updated: 2026-09-02
+updated: 2026-10-07
 title: BarefootJS の問題発見手法
 description: BarefootJS でバグ・設計の穴を見つけるためにこれまで使われてきた手法の見取り図。
 tags: [barefootjs, testing, moc]
@@ -16,7 +16,7 @@ tags: [barefootjs, testing, moc]
   Spreadsheet・Graph/DAG エディタなどのミニツール、複数 UI コンポーネントを組み合わせたブロック。
   **ヒューリスティックな探索**——何か作ってみて壊れたら直す。
 - 2026-04〜06: `examples` → `integrations` へ改称、Go（Gin/Chi/net/http）を含む複数アダプタ対応が
-  本格化。拡張そのものが設計の穴を露見させた実例として、Date 型が Go では `interface{}` にサイレント
+  本格化。拡張そのものが設計の穴を露呈させた実例として、Date 型が Go では `interface{}` にサイレント
   パススルーしていた問題（#2273/#2274）がある。
 - 2026-07-03〜04: [[barefootjs-golden-vectors]]（ランタイムのヘルパー関数・`ParsedExpr` 評価器コーパス）
   を一級ディレクトリへ昇格し、各バックエンドの既知の逸脱を自分のパッケージ内の JSON 宣言に切り出す。
@@ -42,7 +42,7 @@ coverage-floor と adversarial-catalog は249件の全量コーパス（IR 適�
 
 「壊れやすい軸」の扱いにも一貫性がある。adversarial-catalog は非整数 number や astral-plane 文字列を
 「価値が低い／別の方法で担保済み」として明示的にスコープ外にし、pairwise の t=3 昇格は逆に「バグの
-実績が多い軸（構造・イベント・コールバック形状）」を名指しで狙い撃ちする。どちらも network を広げず、
+実績が多い軸（構造・イベント・コールバック形状）」を名指しで狙い撃ちする。どちらも網を広げず、
 根拠に基づいて狙いを絞る判断をしている。
 
 ## 「fixture を実行して観測する」以外の3レイヤー
@@ -77,10 +77,6 @@ exhaustive-adt は「実装漏れ」をコンパイル時に、reference-diff-te
   していない。
 - LLM にドキュメントに沿ってオンボーディングさせて評価する、という手法は実装を確認できなかった。
 
-## 出典
-
-- piconic-ai/barefootjs（origin/main, 2026-09-02時点）
-
 ## 理解度チェック
 
 ```quiz
@@ -105,5 +101,9 @@ exhaustive-adt は IR の種類拡張時のアダプタ実装漏れをコンパ�
 時の IR→テンプレート lowering の出力差分を、golden-vectors はさらに手前の実行時ネイティブランタイム
 （ヘルパー関数・式評価器）の値のズレを捉える。
 ```
+
+## 出典
+
+- piconic-ai/barefootjs（origin/main, 2026-09-02時点）
 
 #barefootjs #testing #moc
