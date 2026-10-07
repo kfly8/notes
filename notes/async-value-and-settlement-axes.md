@@ -1,13 +1,13 @@
 ---
 created: 2026-09-21
-updated: 2026-09-23
+updated: 2026-10-07
 title: 非同期状態の「値の軸」と「決着の軸」
-description: 非同期データを値として持つとき、「値があるか」と「最後のリクエストが決着したか」は独立した軸で、1 つの直和に押し込むと prev や idle が要る。TanStack Query v4 の status / fetchStatus と同じ分け方。
+description: 非同期データを値として持つとき、「値があるか」と「最後のリクエストが決着したか」は独立した軸で、1つの直和に押し込むと prev や idle が要る。TanStack Query v4 の status / fetchStatus と同じ分け方。
 tags: [signals, async, types]
 ---
 # 非同期状態の「値の軸」と「決着の軸」
 
-非同期データを値として持つとき（[[async-state-as-value-vs-graph-node]]）、`pending | ready(T) | error(E)` という 1 つの直和で表そうとすると無理が出る。「値があるか」と「最後のリクエストが決着したか」は独立していて、4 通りの組み合わせが全部正当に存在するからだ。
+非同期データを値として持つとき（[[async-state-as-value-vs-graph-node]]）、`pending | ready(T) | error(E)` という1つの直和で表そうとすると無理が出る。「値があるか」と「最後のリクエストが決着したか」は独立していて、4通りの組み合わせが全部正当に存在するからだ。
 
 | | 値あり | 値なし |
 | --- | --- | --- |
@@ -15,9 +15,9 @@ tags: [signals, async, types]
 | error | 再取得に失敗。前の値を見せつつエラー表示 | 初回取得に失敗 |
 | どちらでもない | 通常 | 初期値が無く、まだ何も送っていない |
 
-右下の「error でも pending でもないのに値が無い」が要点で、サーバーがデータを描かなかったシェル状態や、まだ呼んでいない書き込みがこれにあたる。1 つの直和に押し込むと、この状態のために `idle` を足し、再取得中の前の値のために `prev` を足すことになる。
+右下の「error でも pending でもないのに値が無い」が要点で、サーバーがデータを描かなかったシェル状態や、まだ呼んでいない書き込みがこれにあたる。1つの直和に押し込むと、この状態のために `idle` を足し、再取得中の前の値のために `prev` を足すことになる。
 
-## 2 軸に分けると消えるもの
+## 2軸に分けると消えるもの
 
 - **`prev` が要らない。** 値の軸は「最後に分かっている値」で、pending 中も error 後も書き換わらない。
 - **`idle` が要らない。** 決着の軸が「どちらでもない」で、値の軸が「なし」。
@@ -27,8 +27,8 @@ tags: [signals, async, types]
 
 - **TanStack Query v4** は `status`（データがあるか。`loading` / `error` / `success`）と `fetchStatus`（queryFn が走っているか。`fetching` / `paused` / `idle`）に分けた。v3 までの単一 `status` では「データ無しかつ fetch していない」状態が表せず、`idle` という不正な組み合わせを生む状態を持っていたのが理由。
 - **Solid 2.0** は `<Loading>`（値が無いときだけ fallback）と `isPending`（再取得中。古い値は見えたまま）に分けている。
-- **React の `useDeferredValue`** は、古い値でのレンダーを先に出し、新しい値でのレンダーを裏で準備する。「値あり × pending」を、元の値と遅延させた値の 2 つを見比べて作る（[[react-transitions-in-value-model]]）。
-- **Angular の `resource()`** は 1 つの `status`（`idle` / `loading` / `reloading` / `resolved` / `error` / `local`）に押し込んでいて、`loading` 中は `value()` が `undefined` になる。前の値を残したい用途では `reloading` を使い分ける必要がある。
+- **React の `useDeferredValue`** は、古い値でのレンダーを先に出し、新しい値でのレンダーを裏で準備する。「値あり × pending」を、元の値と遅延させた値の2つを見比べて作る（[[react-transitions-in-value-model]]）。
+- **Angular の `resource()`** は1つの `status`（`idle` / `loading` / `reloading` / `resolved` / `error` / `local`）に押し込んでいて、`loading` 中は `value()` が `undefined` になる。前の値を残したい用途では `reloading` を使い分ける必要がある。
 
 ## 型による保証はできない
 
@@ -37,7 +37,7 @@ tags: [signals, async, types]
 ## 理解度チェック
 
 ```quiz
-`pending | ready(T) | error(E)` の 1 つの直和で表そうとすると、なぜ `prev` と `idle` を足すことになるか。
+`pending | ready(T) | error(E)` の1つの直和で表そうとすると、なぜ `prev` と `idle` を足すことになるか。
 ---
 再取得中に前の値を残すには pending に `prev` が要り、「値が無く、送ってもいない」状態には `idle` が要る。値の有無と決着を別の軸にすれば、どちらも組み合わせとして自然に表せる。
 ```

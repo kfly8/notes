@@ -1,6 +1,6 @@
 ---
 created: 2026-09-14
-updated: 2026-09-14
+updated: 2026-10-07
 title: notes.kobaken.co を Astro から Hono(toSSG)+BarefootJS へ移した実験
 description: BarefootJS は SSR が基本だが、作者として、静的サイトジェネレーターで作ったサイトにどこまでうまくインタラクションを足せるか(CSR Adapter)、ページ遷移をどこまで自然に SPA 化できるか(Router)を実地で確かめたかった。
 tags: [barefootjs, hono, astro, vite, experiment]
@@ -59,12 +59,7 @@ CSS のクラス名は1点だけ変える必要があった。Astro のシンタ
 
 ## 実装後に指摘された1点
 
-GitHub の Copilot コードレビューで、検索アイランドのスクリプトタグを常に `<script type="module" src={clientScriptUrl}>` と出力していたため、`clientScriptUrl` が空文字のとき(dev サーバー起動直後で Vite の初回ビルドがまだ終わっていない場合など)に `<script type="module" src="">` が出力され、ブラウザが空 `src` を現在の HTML ページ自身として解決して MIME タイプエラーを起こす、という指摘を受けた。`{clientScriptUrl && <script ...>}` で値があるときだけ出力するよう直した。
-
-## 出典
-
-- 実装: [kfly8/notes#17](https://github.com/kfly8/notes/pull/17)、[#18](https://github.com/kfly8/notes/pull/18)
-- BarefootJS 側に立てた Issue: [piconic-ai/barefootjs#2986](https://github.com/piconic-ai/barefootjs/issues/2986)
+検索アイランドのスクリプトタグを常に `<script type="module" src={clientScriptUrl}>` と出力していた。GitHub の Copilot コードレビューで、`clientScriptUrl` が空文字のとき(dev サーバー起動直後で Vite の初回ビルドがまだ終わっていない場合など)に `<script type="module" src="">` が出力され、ブラウザが空 `src` を現在の HTML ページ自身として解決して MIME タイプエラーを起こす、という指摘を受けた。`{clientScriptUrl && <script ...>}` で値があるときだけ出力するよう直した。
 
 ## 理解度チェック
 
@@ -85,5 +80,10 @@ BarefootJS の Router を導入するのに `<Region>` JSX ヘルパーを使わ
 ---
 `<Region>` はコンパイラを通さないと使えない組み込みタグだが、Router のランタイム自体は DOM 上の `[bf-region]` 属性の有無しか見ていないので、Hono JSX 側で `bf-region` 属性を直接手書きするだけで動いたため。
 ```
+
+## 出典
+
+- 実装: [kfly8/notes#17](https://github.com/kfly8/notes/pull/17)、[#18](https://github.com/kfly8/notes/pull/18)
+- BarefootJS 側に立てた Issue: [piconic-ai/barefootjs#2986](https://github.com/piconic-ai/barefootjs/issues/2986)
 
 #barefootjs #hono #astro #vite #experiment

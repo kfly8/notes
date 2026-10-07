@@ -1,13 +1,13 @@
 ---
 created: 2026-08-22
-updated: 2026-09-12
+updated: 2026-10-07
 title: UnoCSS の arbitrary value のハマりどころ
 description: UnoCSS の presetWind4 は、text-[...]・border-[...] などの arbitrary value を見た目どおりに解釈しないことがある。
 tags: [unocss, css]
 ---
 # UnoCSS の arbitrary value のハマりどころ
 
-UnoCSS の `presetWind4` は、見た目どおりには解釈されない arbitrary value にたびたび遭遇する。`text-[...]` 系で[[barefootjs-hono-scaffold|BarefootJS の Hono scaffold]]で使った際に3つ、`border-[...]`系で別のTauri + BarefootJS CSRプロジェクトで使った際に1つ、踏んだ。
+UnoCSS の `presetWind4` では、見た目どおりには解釈されない arbitrary value にたびたび遭遇する。`text-[...]` 系で[[barefootjs-hono-scaffold|BarefootJS の Hono scaffold]]で使った際に3つ、`border-[...]` 系で別の Tauri + BarefootJS CSR プロジェクトで使った際に1つ、踏んだ。
 
 ## `text-[xx-large]` は文字色として解釈される
 
@@ -29,7 +29,7 @@ CSS のキーワードサイズ（`xx-large` など）をそのまま持ち込�
 
 ## `text-[color:...]` のヒント記法は presetWind4 では効かない
 
-逆に「色として解釈させたい」場合の話。preset-mini / wind3 系で使えた data-type ヒント付きの arbitrary value（`text-[color:var(--color-text-sub)]`）は、presetWind4 では**マッチするルールがなく、静かに無視される**。エラーにも警告にもならず、単にそのクラスのCSSが生成されない。
+逆に「色として解釈させたい」場合の話。preset-mini / wind3 系で使えた data-type ヒント付きの arbitrary value（`text-[color:var(--color-text-sub)]`）は、presetWind4 では**マッチするルールがなく、静かに無視される**。エラーにも警告にもならず、単にそのクラスの CSS が生成されない。
 
 presetWind4 の色ルールは正規表現で明示プレフィックスを持つ形になっている（`@unocss/preset-wind4/dist/rules.mjs`）:
 
@@ -46,7 +46,7 @@ presetWind4 の色ルールは正規表現で明示プレフィックスを持�
 
 なお `decoration-[var(...)]` はプロパティが色で確定しているため、ヒントなしの裸記法で問題ない。ヒントが要りそうに見えるのは `text-*` のような多義的なユーティリティだけで、そこでは wind4 流の明示プレフィックスを使う。
 
-## `border-[Npx]` はborder-**幅**ではなくborder-**色**として解釈される
+## `border-[Npx]` は border-**幅**ではなく border-**色**として解釈される
 
 `text-*` と同じ構造の罠が `border-*` にもある。`border-*` は border-width と border-color の両方を兼ねるユーティリティで、`border-[6px]` のように単位付きの数値を渡しても、幅ではなく**色**として解釈される。
 
@@ -54,7 +54,7 @@ presetWind4 の色ルールは正規表現で明示プレフィックスを持�
 .border-\[6px\]{border-color:color-mix(in oklab, 6px var(--un-border-opacity), transparent);}
 ```
 
-`6px` が色として `color-mix()` に渡された、意味をなさない宣言になる。border-widthには一切反映されず、DevToolsのcomputed styleを見ても既定の太さのまま（枠線自体は他のborder系ユーティリティ由来の値で表示されていることもあり、「太さが変わらない」ことに気づいても「クラスが効いていない」と誤解しやすい）。
+`6px` が色として `color-mix()` に渡された、意味をなさない宣言になる。border-width には一切反映されず、DevTools の computed style を見ても既定の太さのまま（枠線自体は他の border 系ユーティリティ由来の値で表示されていることもあり、「太さが変わらない」ことに気づいても「クラスが効いていない」と誤解しやすい）。
 
 **対処**: 数値スケールのユーティリティ（`border-2`、`border-4`、`border-8` など）を使う。これは正しく border-width として解釈される。
 
@@ -62,7 +62,7 @@ presetWind4 の色ルールは正規表現で明示プレフィックスを持�
 .border-4{border-width:4px;}
 ```
 
-任意のpx数を角括弧で指定したい場合の代替記法は確認できていない。今回は数値スケールに落とし込んで解決した。
+任意の px 数を角括弧で指定したい場合の代替記法は確認できていない。今回は数値スケールに落とし込んで解決した。
 
 ## `font-mono` の既定スタックは `monospace` より幅が広い
 
@@ -85,9 +85,9 @@ export default defineConfig({
 })
 ```
 
-## `inset-0`がWKWebViewで効かないのはUnoCSSの罠ではない
+## `inset-0` が WKWebView で効かないのは UnoCSS の罠ではない
 
-`inset-0`ユーティリティが生成する`inset: calc(var(--spacing) * 0)`が期待通りに効かないことがあるが、これはUnoCSSの誤解釈ではなく、Tauri v2アプリなどが使うWKWebView自体が`inset`ショートハンドを無視することが原因——詳細は[[wkwebview-css-inset-shorthand]]。ChromiumベースのブラウザやDevToolsでは普通に効くため、UnoCSS側を疑いたくなるが、生成されたCSS自体(`inset: calc(...)`)は正しい。
+`inset-0` ユーティリティが生成する `inset: calc(var(--spacing) * 0)` が期待通りに効かないことがあるが、これは UnoCSS の誤解釈ではなく、Tauri v2 アプリなどが使う WKWebView 自体が `inset` ショートハンドを無視することが原因——詳細は [[wkwebview-css-inset-shorthand]]。Chromium ベースのブラウザや DevTools では普通に効くため、UnoCSS 側を疑いたくなるが、生成された CSS 自体（`inset: calc(...)`）は正しい。
 
 ## 気づきにくさの共通点
 
