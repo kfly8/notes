@@ -12,7 +12,7 @@ tags: [websocket, cloudflare, workers]
 ことを知れない。
 
 そこで、断るときもいったん 101 で受け入れ、すぐに自前の close code（4000〜4999 はアプリケーション用）と
-reason で閉じる。ブラウザは `onclose` の `code` と `reason` は読める。
+reason で閉じる。ブラウザでも `onclose` の `code` と `reason` は読める。
 
 ## Cloudflare Workers での書き方
 
@@ -46,7 +46,7 @@ export function refuse(code: number, reason: string, protocol = SOCKET_PROTOCOL)
 | 4002 `CLIENT_OUTDATED` | クライアントのプロトコルが古い | しない。CLI は更新を促し、Web はリロードを促す |
 | 4003 `SERVER_OUTDATED` | サーバーのプロトコルが古い（古いセルフホスト） | しない。サーバーの更新を促す |
 | 4004 `ROOM_FULL` | 部屋が満員 | しない。誰かが抜けるまで満員のまま |
-| 4005 `RELAY_BUSY` | 同じネットワークから接続が多すぎる | する。ただし通常の 0.5 秒ではなく 5〜10 秒待つ |
+| 4005 `RELAY_BUSY` | 同じネットワークから接続が多すぎる | する。ただし通常の 0.5秒ではなく 5〜10秒待つ |
 | 4006 `RELAY_MAINTENANCE` | メンテナンス中 | しない。人が再接続を押す |
 
 「再接続するか」を code ごとに決めておくのが肝。HTTP エラーで断っていた頃は、ブラウザには区別がつかないので

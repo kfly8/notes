@@ -57,7 +57,7 @@ pedit の install.sh は、gh があってサインイン済みなら検証し�
 
 署名の証明書には `SourceRepository` とワークフローの識別子
 （`https://github.com/<owner>/<repo>/.github/workflows/tagpr.yml@refs/heads/main`）が入る。リポジトリを
-改名しても、GitHub はダウンロードと attestation の取得はリダイレクトしてくれるが、署名済みの識別子は
+改名しても、GitHub はダウンロードと attestation の取得をリダイレクトしてくれるが、署名済みの識別子は
 書き換えられない。改名後に `--repo` と `--signer-workflow` を新名で検証すると、改名前のリリースは失敗する。
 
 pedit は v0.0.12 まで `piconic-ai/edit`、以後は `piconic-ai/pedit` と、バージョンで署名者を選ぶようにした

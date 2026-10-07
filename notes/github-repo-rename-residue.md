@@ -23,7 +23,7 @@ piconic-ai/edit を piconic-ai/pedit に改名して（2026-10-06）、リダイ
 - **Homebrew tap の formula。** 自動更新ワークフローは version と sha256 しか書き換えないので、`homepage` と
   `url` は手で直す。
 - **mise のツール名。** `mise use github:piconic-ai/edit` で入れた人の `mise.toml` には旧名が残る。GitHub が
-  リダイレクトするので動き続けるが、更新を案内するときは相手の mise.toml にある名前で言う。
+  リダイレクトするので動き続けるが、更新を案内するときは相手の `mise.toml` にある名前で言う。
 
 ## 残しておくもの
 
