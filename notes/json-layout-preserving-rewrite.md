@@ -1,13 +1,13 @@
 ---
 created: 2026-09-29
 updated: 2026-10-07
-title: JSON を構造から書き戻しても、元のファイルと1バイトも変えない
+title: JSON を構造から書き戻しても、元のファイルから1バイトも変えない
 description: パースした JSON を構造として編集し、ファイルに書き戻す場面で、変えていない部分を元のまま保つ方法。
 tags: [json, json-canvas, obsidian, go]
 ---
-# JSON を構造から書き戻しても、元のファイルと1バイトも変えない
+# JSON を構造から書き戻しても、元のファイルから1バイトも変えない
 
-パースした JSON を構造として編集し、ファイルに書き戻す場面で、変えていない部分を元のまま保つ方法。そのまま `JSON.stringify` し直すと、字下げ・キーの順序・数値の書き方がすべて書き手のものに置き換わり、1か所の変更でもファイル全体の差分になる。ima（現在の [[pedit]]）で [[json-canvas]] を構造として共有したとき（[[json-canvas-co-editing-text-or-structure]]）、ホストのファイルを他のアプリ（Obsidian）でも開いたまま使えるようにするために必要になった。
+パースした JSON を構造として編集し、ファイルに書き戻す場面で、変えていない部分を元のまま保つ方法。そのまま `JSON.stringify` し直すと、字下げ・キーの順序・数値の書き方がすべて書き出す側の流儀に置き換わり、1か所の変更でもファイル全体の差分になる。ima（現在の [[pedit]]）で [[json-canvas]] を構造として共有したとき（[[json-canvas-co-editing-text-or-structure]]）、ホストのファイルを他のアプリ（Obsidian）でも開いたまま使えるようにするために必要になった。
 
 ## Obsidian が書く形
 
@@ -26,7 +26,7 @@ Obsidian 公式のサンプル（`obsidianmd/jsoncanvas` の `sample.canvas`）�
 ```
 
 - 字下げはタブ。ノードとエッジは1つを1行に、スペースなしで書く。
-- ノードのキーは `id`、`type`、`text`／`file`／`url`、`x`、`y`、`width`、`height` の順で、`color` と `label` は `height` の後ろに付く。エッジは `id`、`fromNode`、`fromSide`、`toNode`、`toSide` の順。
+- ノードのキーは `id`、`type`、`text` / `file` / `url`、`x`、`y`、`width`、`height` の順で、`color` と `label` は `height` の後ろに付く。エッジは `id`、`fromNode`、`fromSide`、`toNode`、`toSide` の順。
 - 空の配列は `"edges":[]`。ファイル末尾に改行はない。
 
 ## 書き戻し方

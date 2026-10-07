@@ -7,7 +7,7 @@ tags: [yjs, crdt, go]
 ---
 # ygo と Yjs で入れ子の型をやり取りするときの注意
 
-ygo（`github.com/reearth/ygo`）は Go で書かれた Yjs 互換の CRDT ライブラリ。Y.Array の中の Y.Map、その中の Y.Text のような入れ子の型を Go で作り、ブラウザの Yjs（v13）と同期できる。ima（現在の [[pedit]]）で [[json-canvas]] のノードを `nodes: Y.Array<Y.Map>`（本文は Y.Text）として共有したとき（[[json-canvas-co-editing-text-or-structure]]）、ygo 1.50 と Yjs 13 を双方向に同期させて確かめたことをまとめる。
+ygo（`github.com/reearth/ygo`）は Go で書かれた Yjs 互換の CRDT ライブラリ。Y.Array の中の Y.Map、その中の Y.Text のような入れ子の型を Go で作り、ブラウザの Yjs（v13）と同期できる。ima（現在の [[pedit]]）で [[json-canvas]] のノードを `nodes: Y.Array<Y.Map>`（本文は Y.Text）として共有したとき（[[json-canvas-co-editing-text-or-structure]]）、ygo 1.50 と Yjs v13 を双方向に同期させて確かめたことをまとめる。
 
 ## 入れ子の型の作り方
 
@@ -38,7 +38,7 @@ doc.Transact(func(txn *crdt.Transaction) {
 
 ## `YArray.Len()` はロックを取らない
 
-ygo の `YArray.Len()` はロックなしで長さを読む。受信した更新を別のゴルーチンが当てている最中に読むと、Go の race detector が競合を報告した。ima のホストでは、ドキュメントを読むときは、受信した更新を当てるときと同じロック（ima の `Client.Do`）の中で読むようにした。更新の通知（`OnUpdate`）はそのロックを持ったまま呼ばれるので、そこではそのまま読める。
+ygo の `YArray.Len()` はロックなしで長さを読む。受信した更新を別のゴルーチンが当てている最中に読むと、Go の race detector が競合を報告した。ima のホストでは、ドキュメントを読むのも、受信した更新を当てるときと同じロック（ima の `Client.Do`）の中で行うようにした。更新の通知（`OnUpdate`）はそのロックを持ったまま呼ばれるので、そこではそのまま読める。
 
 ## 理解度チェック
 
@@ -63,7 +63,7 @@ ygo で要素の並べ替えに `YArray.Move` を使わないのはなぜか。
 ## 出典
 
 - [reearth/ygo](https://github.com/reearth/ygo)（`crdt/prelim.go`、`crdt/yarray.go` の doc コメント）
-- [piconic-ai/ima#16 の設計コメント](https://github.com/piconic-ai/ima/issues/16)（ygo 1.50 と Yjs 13 の同期の確認）
+- [piconic-ai/ima#16 の設計コメント](https://github.com/piconic-ai/ima/issues/16)（ygo 1.50 と Yjs v13 の同期の確認）
 - [piconic-ai/ima#46](https://github.com/piconic-ai/ima/pull/46)（ロックの中で読む変更）
 
 関連: [[pedit-development-notes]]
