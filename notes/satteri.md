@@ -89,7 +89,7 @@ Astro が組み込みのハイライトプラグインを挿すので、`markdow
 [data-theme='dark'] .astro-code { color: var(--shiki-dark); background-color: var(--shiki-dark-bg); }
 ```
 
-[[astro-hono-adapter|Astro の Hono アダプタ]]と組み合わせて使っていた。
+[[astro-hono-adapter|Astro の Hono アダプタ]] と組み合わせて使っていた。
 
 `.astro-code` は Astro 側の統合が付けるクラス名で、satteri 本体を直接呼んで shiki の `codeToHast()` を自分で挟む（Astro を経由しない）場合は、素の shiki の既定クラス名 `.shiki` になる。Astro をやめて satteri を直接使うよう移行したときに CSS 側のセレクタもここで直す必要があった — [[hono-tossg-barefootjs-migration-experiment]]。
 

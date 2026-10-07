@@ -55,7 +55,7 @@ Worker からは binding で使う。
 
 ## [[cloudflare-agents-week-2026]]の中での位置づけ
 
-エージェントの検索を扱う。記憶は [[cloudflare-agent-memory]]、Webページの取得は [[kitesurf]] に分けた。
+エージェントの検索を扱う。記憶は [[cloudflare-agent-memory]]、Web ページの取得は [[kitesurf]] に分けた。
 
 ## 理解度チェック
 

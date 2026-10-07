@@ -7,7 +7,7 @@ tags: [barefootjs, events, dom]
 ---
 # BarefootJS: .map()行のイベントハンドラは親要素への委譲になり、stopPropagation()が隣のリスナーを止められない
 
-[[barefootjs]]の`.map()`が生成する各行の`onXxx`ハンドラは、行ごとの本物の`addEventListener`ではなく、`.map()`の最も近い静的な親要素に対する**1個の委譲リスナー**としてコンパイルされる。その親要素自身が同じイベント種別の`onXxx`を直接持っていると、それは**同じDOMノードに対する2個目の別リスナー**になり、`event.stopPropagation()`が効かない——`stopPropagation()`は他の要素(祖先)への伝播だけを止め、同じ要素に登録済みの別リスナーは止められないため。
+[[barefootjs]] の `.map()` が生成する各行の `onXxx` ハンドラは、行ごとの本物の `addEventListener` ではなく、`.map()` の最も近い静的な親要素に対する**1個の委譲リスナー**としてコンパイルされる。その親要素自身が同じイベント種別の `onXxx` を直接持っていると、それは**同じ DOM ノードに対する2個目の別リスナー**になり、`event.stopPropagation()` が効かない——`stopPropagation()` は他の要素(祖先)への伝播だけを止め、同じ要素に登録済みの別リスナーは止められないため。
 
 バグ報告: [piconic-ai/barefootjs#2930](https://github.com/piconic-ai/barefootjs/issues/2930)。
 
@@ -45,9 +45,9 @@ export function Repro() {
 }
 ```
 
-`[data-item="b"]`を右クリックすると、期待は`"row(b) handler;"`のみ(`stopPropagation()`が`container`への伝播を止めるはず)。実際は`"container handler;row(b) handler;"`——両方発火する。実DOMへの`dispatchEvent`、Playwrightの実クリック(`.click({ button: 'right' })`)いずれでも同じ結果になる。
+`[data-item="b"]` を右クリックすると、期待は `"row(b) handler;"` のみ(`stopPropagation()` が `container` への伝播を止めるはず)。実際は `"container handler;row(b) handler;"`——両方発火する。実 DOM への `dispatchEvent`、Playwright の実クリック(`.click({ button: 'right' })`)いずれでも同じ結果になる。
 
-対照実験として、`.map()`を挟まない単純な二重ネストのdiv(それぞれ本物の別要素として`onContextMenu`を持つ)では`stopPropagation()`が期待通り効く。壊れるのは`.map()`行の委譲ハンドラが絡む場合に限られる。
+対照実験として、`.map()` を挟まない単純な二重ネストの div(それぞれ本物の別要素として `onContextMenu` を持つ)では `stopPropagation()` が期待通り効く。壊れるのは `.map()` 行の委譲ハンドラが絡む場合に限られる。
 
 ## 原因(devサーバーが配信するコンパイル後コードで確認)
 
@@ -76,11 +76,11 @@ _s2.addEventListener("contextmenu", (__bfEvt) => {
 })
 ```
 
-両方とも`_s2`(コンテナ要素)に登録されている。ネイティブDOMの`stopPropagation()`は「このイベントが他の要素へ伝播するのを止める」機能であり、「同じ要素に後から登録された別のリスナーの実行を止める」機能ではない(それができるのは`stopImmediatePropagation()`だけで、かつ未実行のリスナーに対してのみ効く)。コンテナ自身のハンドラがコンパイル順で先に登録されるため、行ハンドラが何をしようとコンテナ側が必ず先に実行される。
+両方とも `_s2`(コンテナ要素)に登録されている。ネイティブ DOM の `stopPropagation()` は「このイベントが他の要素へ伝播するのを止める」機能であり、「同じ要素に後から登録された別のリスナーの実行を止める」機能ではない(それができるのは `stopImmediatePropagation()` だけで、かつ未実行のリスナーに対してのみ効く)。コンテナ自身のハンドラがコンパイル順で先に登録されるため、行ハンドラが何をしようとコンテナ側が必ず先に実行される。
 
 ## 回避策: stopPropagation()に頼らず、親ハンドラ側で自己スキップする
 
-親要素の直接ハンドラを、クリックが行の内側だったかどうかを自分で判定して早期returnする形に書き換える。
+親要素の直接ハンドラを、クリックが行の内側だったかどうかを自分で判定して早期 return する形に書き換える。
 
 ```tsx
 <div
@@ -101,7 +101,7 @@ _s2.addEventListener("contextmenu", (__bfEvt) => {
 </div>
 ```
 
-`closest`は「クリックが行の内側だったか」という**有無**だけを見ればよく、行の`data-*`属性の**値**を読む必要はない——値を読むと[[barefootjs-loop-index-reactivity]]で扱っている別問題(生のループindexの追従漏れ)を踏みうるので、値ではなく存在チェックに留めるのが安全。
+`closest` は「クリックが行の内側だったか」という**有無**だけを見ればよく、行の `data-*` 属性の**値**を読む必要はない——値を読むと [[barefootjs-loop-index-reactivity]] で扱っている別問題(生のループ index の追従漏れ)を踏みうるので、値ではなく存在チェックに留めるのが安全。
 
 ## 理解度チェック
 
@@ -131,7 +131,7 @@ _s2.addEventListener("contextmenu", (__bfEvt) => {
 
 ## 出典
 
-- [piconic-ai/barefootjs#2930](https://github.com/piconic-ai/barefootjs/issues/2930) — 一次情報。最小再現コードをコンパイル・devサーバーの配信コードを直接確認・実ブラウザ(Chromium, Playwright経由)で実クリック/`dispatchEvent`双方で検証した。
-- スライド編集GUI(Tauri + BarefootJS CSR)の右クリックメニューで、Cut/Copy/Deleteが常に無効化されるという実バグから発見した。
+- [piconic-ai/barefootjs#2930](https://github.com/piconic-ai/barefootjs/issues/2930) — 一次情報。最小再現コードをコンパイル・dev サーバーの配信コードを直接確認・実ブラウザ(Chromium, Playwright 経由)で実クリック/`dispatchEvent` 双方で検証した。
+- スライド編集 GUI(Tauri + BarefootJS CSR)の右クリックメニューで、Cut/Copy/Delete が常に無効化されるという実バグから発見した。
 
 #barefootjs #events #dom

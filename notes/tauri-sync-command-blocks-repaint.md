@@ -1,11 +1,11 @@
 ---
 created: 2026-09-15
-updated: 2026-09-24
-title: Tauriの同期コマンドは実行中ウィンドウの再描画を止める
+updated: 2026-10-07
+title: Tauri の同期コマンドは実行中ウィンドウの再描画を止める
 description: async でない Tauri コマンドはメインスレッドで動き、実行中はウィンドウが再描画されない。DOM を見るテストでは検出できない。
 tags: [tauri, wkwebview, macos, testing]
 ---
-# Tauriの同期コマンドは実行中ウィンドウの再描画を止める
+# Tauri の同期コマンドは実行中ウィンドウの再描画を止める
 
 Tauri v2 では、`async` でない `#[tauri::command]` はメインスレッドで実行される(公式ドキュメント: "Commands without the async keyword are executed on the main thread unless defined with `#[tauri::command(async)]`")。macOS ではメインスレッドが UI スレッドなので、コマンドが返るまでウィンドウは再描画されない。遅いコマンドを押すと、アプリが固まったように見える。
 
@@ -13,7 +13,7 @@ Tauri v2 では、`async` でない `#[tauri::command]` はメインスレッド
 
 peitho-studio(Tauri v2 + WKWebView)で、Welcome 画面の Recent をクリックすると「Loading deck…」に切り替え、裏で同期コマンド `open_deck`(初回は約5秒)を呼ぶ実装にしていた。
 
-- `MutationObserver` で見ると、プレースホルダーはクリックの4ms後に DOM に入っていた
+- `MutationObserver` で見ると、プレースホルダーはクリックの4ms 後に DOM に入っていた
 - ネイティブのフレーム録画では、Welcome 画面が約5秒止まったまま映り、プレースホルダーはコマンドが返る直前に一瞬出ただけだった
 - tauri-playwright のソケット越しの `evaluate` も、コマンドが返るまで約5秒ブロックした
 
@@ -46,7 +46,7 @@ DOM を見るテストは、この問題を検出できない。IPC をモック
 
 ## 描画されたかどうかを確かめる
 
-DOM ではなく、実際に画面に出たフレームを見る。tauri-playwright の `startRecording({ path, fps })` / `stopRecording()` でウィンドウのネイティブフレームを連番 PNG に保存できる(実際のフレーム数は指定より少なく、fps=30 指定で8〜13fps程度だった)。クリックの前後のフレームを見比べれば、いつ画面が変わったかが分かる。
+DOM ではなく、実際に画面に出たフレームを見る。tauri-playwright の `startRecording({ path, fps })` / `stopRecording()` でウィンドウのネイティブフレームを連番 PNG に保存できる(実際のフレーム数は指定より少なく、fps=30 指定で8〜13fps 程度だった)。クリックの前後のフレームを見比べれば、いつ画面が変わったかが分かる。
 
 録画中はウィンドウを画面上に見えている状態にしておく。隠れた WKWebView は描画が止まることがある([[tauri-macos-window-automation]])。
 

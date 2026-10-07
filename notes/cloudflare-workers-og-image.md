@@ -1,15 +1,15 @@
 ---
 created: 2026-08-29
-updated: 2026-09-02
-title: Cloudflare Workers での動的OGP画像生成
+updated: 2026-10-07
+title: Cloudflare Workers での動的 OGP 画像生成
 description: satori(レイアウト)+ resvg-wasm(ラスタライズ)でCloudflare Workers上に動的OGP画像を生成する方法
 tags: [cloudflare, workers, ogp]
 ---
-# Cloudflare Workers での動的OGP画像生成
+# Cloudflare Workers での動的 OGP 画像生成
 
-記事ごとに違うタイトルを描いた og:image を、リクエスト時にWorker側で生成する方法。node-canvas はネイティブバインディング依存で Workers では動かないので選択肢に入らない。
+記事ごとに違うタイトルを描いた og:image を、リクエスト時に Worker 側で生成する方法。node-canvas はネイティブバインディング依存で Workers では動かないので選択肢に入らない。
 
-定番構成は satori(JSX/plain objectのツリー→SVGへのレイアウトエンジン、Vercelの `@vercel/og` と中身は同じ)+ resvg-wasm(SVG→PNGのラスタライズ)。Workers向けにこれをまとめたパッケージが `@cf-wasm/og`(`fineshopdesign/cf-wasm` 配下)で、`@vercel/og` に似せた `ImageResponse` / `GoogleFont` / `CustomFont` / `cache` を提供する。Workers専用のエントリは `@cf-wasm/og/workerd`。
+定番構成は satori(JSX/plain object のツリー→SVG へのレイアウトエンジン、Vercel の `@vercel/og` と中身は同じ)+ resvg-wasm(SVG→PNG のラスタライズ)。Workers 向けにこれをまとめたパッケージが `@cf-wasm/og`(`fineshopdesign/cf-wasm` 配下)で、`@vercel/og` に似せた `ImageResponse` / `GoogleFont` / `CustomFont` / `cache` を提供する。Workers 専用のエントリは `@cf-wasm/og/workerd`。
 
 ```ts
 import { ImageResponse, GoogleFont, cache } from '@cf-wasm/og/workerd'
@@ -34,8 +34,8 @@ return await ImageResponse.async(element, {
 記事タイトルを直したときに古い画像が残り続けないようにする必要がある。試した順:
 
 1. `max-age` を短く(1日)+ `stale-while-revalidate` — 結局「編集したら手動で消す」運用が要る
-2. URLに `?v=<タイトルのhash>` を付け、中身が変わったらURLごと変える(静的アセットの `?v=<hash>` と同じ発想) — 機能はしたが「URLが汚い」という理由で却下された
-3. **最終形**: URLは素のまま、`ETag` に記事全体(タイトルだけでなくbody/tags/description)のFNV-1aハッシュを設定。リクエストの `If-None-Match` がこのETagと一致したら、satori/resvgの重い処理を実行する前に `304` を即返す
+2. URL に `?v=<タイトルのhash>` を付け、中身が変わったら URL ごと変える(静的アセットの `?v=<hash>` と同じ発想) — 機能はしたが「URL が汚い」という理由で却下された
+3. **最終形**: URL は素のまま、`ETag` に記事全体(タイトルだけでなく body/tags/description)の FNV-1a ハッシュを設定。リクエストの `If-None-Match` がこの ETag と一致したら、satori/resvg の重い処理を実行する前に `304` を即返す
 
 ```ts
 const etag = `"${post.contentHash}"`
@@ -45,13 +45,13 @@ if (ifNoneMatch === etag) {
 // ここから先が重い処理(satori + resvg)
 ```
 
-`Cache-Control` は `public, max-age=604800, stale-while-revalidate=2592000`(1週間新鮮、以降30日はstaleを返しつつ裏で再検証)。immutableは使わない — 同じURLの中身が本当に変わりうるので、immutableと書くのは不正確。
+`Cache-Control` は `public, max-age=604800, stale-while-revalidate=2592000`(1週間新鮮、以降30日は stale を返しつつ裏で再検証)。immutable は使わない — 同じ URL の中身が本当に変わりうるので、immutable と書くのは不正確。
 
-**未確認点**: Workers Cacheの `stale-while-revalidate` が実際にバックグラウンド再検証時に `If-None-Match` をWorkerまで転送してくるかはドキュメントに記載がなく、ローカル環境([[cloudflare-workers-cache|Workers Cacheのpurgeと同じ理由]])でも確認できない。転送されなくても実害はなく、304のショートカットを使えずWorkerが毎回フル生成し直すだけ(このユースケースなら週1回程度の頻度なので誤差)。
+**未確認点**: Workers Cache の `stale-while-revalidate` が実際にバックグラウンド再検証時に `If-None-Match` を Worker まで転送してくるかはドキュメントに記載がなく、ローカル環境([[cloudflare-workers-cache|Workers Cacheのpurgeと同じ理由]])でも確認できない。転送されなくても実害はなく、304のショートカットを使えず Worker が毎回フル生成し直すだけ(このユースケースなら週1回程度の頻度なので誤差)。
 
 ## JSXなしでも書ける
 
-satoriは `{type, props.children, props.style}` の形の plain object をそのまま受け付ける。JSXトランスパイラが要らない。
+satori は `{type, props.children, props.style}` の形の plain object をそのまま受け付ける。JSX トランスパイラが要らない。
 
 ```js
 await satori(
@@ -66,13 +66,13 @@ await satori(
 )
 ```
 
-プロジェクト側で既に別のJSXランタイム(例: 独自フレームワークの `jsxImportSource`)を `tsconfig.json` に設定している場合、この形で書けばJSXランタイムを二重に混在させずに済む。`div` の `display` は既定で `flex`。
+プロジェクト側で既に別の JSX ランタイム(例: 独自フレームワークの `jsxImportSource`)を `tsconfig.json` に設定している場合、この形で書けば JSX ランタイムを二重に混在させずに済む。`div` の `display` は既定で `flex`。
 
 ## 日本語(CJK)を描くには明示的にフォントが要る
 
-satoriの既定フォントはLatinしかカバーしない。非Latin文字(日本語など)を描くフォントを明示的に `fonts` に渡さないと、その文字が描画されない。**WOFF2はサポート外**(brotli展開非対応)。TTF/OTF/WOFFのみ。
+satori の既定フォントは Latin しかカバーしない。非 Latin 文字(日本語など)を描くフォントを明示的に `fonts` に渡さないと、その文字が描画されない。**WOFF2はサポート外**(brotli 展開非対応)。TTF/OTF/WOFF のみ。
 
-`GoogleFont` クラスはこの形式問題を吸収してくれる。satori互換の形式でGoogle Fontsから取得する。
+`GoogleFont` クラスはこの形式問題を吸収してくれる。satori 互換の形式で Google Fonts から取得する。
 
 ```ts
 new GoogleFont('Noto Sans JP', { weight: 900, subset: 'japanese', text: '...' })
@@ -80,19 +80,19 @@ new GoogleFont('Noto Sans JP', { weight: 900, subset: 'japanese', text: '...' })
 
 `subset` には `japanese` `korean` `chinese-simplified` など29種類が指定できる(ソース `@cf-wasm/og` の `font.ts` で確認)。`text` を渡すと実際に使う文字だけに絞ったフォントを取得できる(パフォーマンス最適化、未使用)。
 
-**複数フォントの自動フォールバックは動く。** `fonts: [Inter, NotoSansJP]` のように並べておけば、CSSの `font-family: Inter, "Noto Sans JP"` のようなカンマ区切りを書かなくても、文字ごとに正しいフォントが自動選択される。実際に生成したPNGを目視確認し、日本語グリフが豆腐/空白にならず正しく表示されることを確認した。
+**複数フォントの自動フォールバックは動く。** `fonts: [Inter, NotoSansJP]` のように並べておけば、CSS の `font-family: Inter, "Noto Sans JP"` のようなカンマ区切りを書かなくても、文字ごとに正しいフォントが自動選択される。実際に生成した PNG を目視確認し、日本語グリフが豆腐/空白にならず正しく表示されることを確認した。
 
 ## 画像はdata: URIで埋め込む
 
-satori自身の画像フェッチ(`src="https://..."`)はWorkers内では不安定という報告がある。アイコン画像などはbase64の `data:` URIとして埋め込むほうが確実。
+satori 自身の画像フェッチ(`src="https://..."`)は Workers 内では不安定という報告がある。アイコン画像などは base64の `data:` URI として埋め込むほうが確実。
 
 ## CPU時間の制約でFreeプランでは事実上動かない
 
-satori(レイアウト)+ resvg(ラスタライズ)は、wasm初期化やフォント処理を含めると数十ms級のCPU時間がかかることが多い。Freeプランは「リクエストあたりCPU時間10ms」の上限があり、これをほぼ確実に超える。実質、Paidプラン($5/月〜、CPU時間はデフォルト30秒/最大5分)が前提になる。コストを下げる選択というより、動かすための前提条件。
+satori(レイアウト)+ resvg(ラスタライズ)は、wasm 初期化やフォント処理を含めると数十 ms 級の CPU 時間がかかることが多い。Free プランは「リクエストあたり CPU 時間10ms」の上限があり、これをほぼ確実に超える。実質、Paid プラン($5/月〜、CPU 時間はデフォルト30秒/最大5分)が前提になる。コストを下げる選択というより、動かすための前提条件。
 
 ## [[cloudflare-workers]]の中での位置づけ
 
-satori+resvg-wasmによる動的画像生成という個別の技術を扱う。生成結果をキャッシュする仕組みは [[cloudflare-workers-cache]] が別に扱う。
+satori+resvg-wasm による動的画像生成という個別の技術を扱う。生成結果をキャッシュする仕組みは [[cloudflare-workers-cache]] が別に扱う。
 
 ## 理解度チェック
 

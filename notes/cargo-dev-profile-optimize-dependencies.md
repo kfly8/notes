@@ -1,11 +1,11 @@
 ---
 created: 2026-09-15
-updated: 2026-09-15
-title: devプロファイルで依存クレートだけ最適化する
+updated: 2026-10-07
+title: dev プロファイルで依存クレートだけ最適化する
 description: Cargo の dev プロファイル(cargo build / cargo run / tauri dev の既定)は opt-level = 0 で、依存クレートも最適化なしでビルドされる。
 tags: [rust, cargo, performance]
 ---
-# devプロファイルで依存クレートだけ最適化する
+# dev プロファイルで依存クレートだけ最適化する
 
 Cargo の dev プロファイル(`cargo build` / `cargo run` / `tauri dev` の既定)は `opt-level = 0` で、依存クレートも最適化なしでビルドされる。正規表現エンジンのような重い処理を依存クレートに任せていると、debug ビルドだけ桁違いに遅くなる。プロファイルのオーバーライドで、自分のクレートは debug のまま依存だけを最適化できる。
 

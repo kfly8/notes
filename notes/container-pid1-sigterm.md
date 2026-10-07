@@ -1,6 +1,6 @@
 ---
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-10-07
 title: コンテナの PID 1 がハンドラを持たないと SIGTERM は無視される
 description: Linux はコンテナ内の PID 1 を init として特別扱いし、ハンドラを登録していないシグナルを PID 1 に届けない。
 tags: [linux, docker, containers, cloudflare, signals]
@@ -13,13 +13,13 @@ Linux はコンテナ内の PID 1 を init として特別扱いし、**ハン�
 
 ## Cloudflare Containers では 15 分ぶん余計に動く
 
-`@cloudflare/containers` の `Container` クラスは、`sleepAfter` のアイドル時間を過ぎると `container.signal(15)`、つまり SIGTERM を送るだけ。プラットフォーム側の停止手順は「SIGTERM を送る → 最大 15 分待つ → SIGKILL」なので、SIGTERM を無視するイメージは **1 回起こされるたびに `sleepAfter` + 約 15 分**動き続ける。`sleepAfter = '1m'` なら約 16 倍。
+`@cloudflare/containers` の `Container` クラスは、`sleepAfter` のアイドル時間を過ぎると `container.signal(15)`、つまり SIGTERM を送るだけ。プラットフォーム側の停止手順は「SIGTERM を送る → 最大 15分待つ → SIGKILL」なので、SIGTERM を無視するイメージは **1回起こされるたびに `sleepAfter` + 約 15分**動き続ける。`sleepAfter = '1m'` なら約 16倍。
 
 コンテナが起きている間は Durable Object も課金されるので、費用はそのまま二重に効く → [[cloudflare-containers-durable-object-duration]]。
 
 ## 自前で扱うランタイム、扱わないランタイム
 
-16 個のイメージを本番で測った結果。`sleepAfter`（1〜2 分）を過ぎた 4 分後にアクセスし、応答が速ければ「まだ起きている＝SIGTERM を無視した」と判定した（キャッシュを避けるためクエリ文字列を毎回変える）。
+16個のイメージを本番で測った結果。`sleepAfter`（1〜2分）を過ぎた 4分後にアクセスし、応答が速ければ「まだ起きている＝SIGTERM を無視した」と判定した（キャッシュを避けるためクエリ文字列を毎回変える）。
 
 | 無視した（PID 1 のまま放置されていた） | 自前でハンドラを持つ |
 |---|---|
@@ -57,7 +57,7 @@ CMD ["...", "..."]
 - ゾンビ回収も tini が引き受ける。
 - 「今必要なイメージだけ」ではなく全イメージに入れておくと、「このランタイムは PID 1 で安全か」を毎回判断しなくて済む。
 
-`ENTRYPOINT` を上書きすると、ベースイメージ側の ENTRYPOINT は消える。`php:8.4-cli` の `docker-php-entrypoint`（第 1 引数が `-` 始まりのときだけ `php` を前置する）や `eclipse-temurin` の `/__cacert_entrypoint.sh`（`USE_SYSTEM_CA_CERTS` が設定されたときだけ働く）は、これらを使っていなければ消えても影響しない。
+`ENTRYPOINT` を上書きすると、ベースイメージ側の ENTRYPOINT は消える。`php:8.4-cli` の `docker-php-entrypoint`（第 1引数が `-` 始まりのときだけ `php` を前置する）や `eclipse-temurin` の `/__cacert_entrypoint.sh`（`USE_SYSTEM_CA_CERTS` が設定されたときだけ働く）は、これらを使っていなければ消えても影響しない。
 
 ## シェルを挟まない
 

@@ -39,7 +39,7 @@ mutation にはキャッシュも重複排除もない。2回呼べば2回送信
 
 ここから「サーバーへの書き込みが順番どおりに終わる」とは言えない。直列化が必要な用途では呼び出し側の制御が要る。上の例は pending 中の再操作を拒んでいる。
 
-非2xx応答は `HttpError` として reject し、`status` と `body` を読める。`await save()` なら catch でき、await しない呼び出しの rejection はあらかじめ処理される。ただし失敗を画面に伝えるかは別の責務。通信状態の表示位置には [[barefootjs-async-action-template-reads]] の制約がある。
+非2xx 応答は `HttpError` として reject し、`status` と `body` を読める。`await save()` なら catch でき、await しない呼び出しの rejection はあらかじめ処理される。ただし失敗を画面に伝えるかは別の責務。通信状態の表示位置には [[barefootjs-async-action-template-reads]] の制約がある。
 
 ## invalidates は成功時に働く
 

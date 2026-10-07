@@ -1,13 +1,13 @@
 ---
 created: 2026-08-29
-updated: 2026-09-28
+updated: 2026-10-07
 title: Cloudflare Workers
 description: Cloudflare Workers のプラットフォーム機能(配信・キャッシュ・デプロイなど)を扱うノートの見取り図
 tags: [cloudflare, workers, moc]
 ---
 # Cloudflare Workers
 
-Cloudflare Workers のランタイム・プラットフォーム機能を扱うノートのハブ。[[cloudflare-agents-week-2026]] が AI エージェント関連の発表を時系列で追うハブなのに対し、こちらは「Workerを1つ運用する上で必要になる、プラットフォームの機能」という切り口でまとめる。
+Cloudflare Workers のランタイム・プラットフォーム機能を扱うノートのハブ。[[cloudflare-agents-week-2026]] が AI エージェント関連の発表を時系列で追うハブなのに対し、こちらは「Worker を1つ運用する上で必要になる、プラットフォームの機能」という切り口でまとめる。
 
 ## 配信
 
@@ -15,18 +15,18 @@ Cloudflare Workers のランタイム・プラットフォーム機能を扱う�
 
 ## Worker生成レスポンスのキャッシュ
 
-- [[cloudflare-workers-cache]] — Worker自身が生成したレスポンスを、`Cache-Control` ヘッダーを見て自動でキャッシュする仕組み。[[cloudflare-workers-assets|静的アセット側のキャッシュ]]とは別レイヤー
-- [[cloudflare-workers-og-image]] — satori + resvg-wasmで動的にOGP画像(PNG)を生成する具体例。生成結果を[[cloudflare-workers-cache|Workers Cache]]でキャッシュする、という実際の組み合わせ
+- [[cloudflare-workers-cache]] — Worker 自身が生成したレスポンスを、`Cache-Control` ヘッダーを見て自動でキャッシュする仕組み。[[cloudflare-workers-assets|静的アセット側のキャッシュ]] とは別レイヤー
+- [[cloudflare-workers-og-image]] — satori + resvg-wasm で動的に OGP 画像(PNG)を生成する具体例。生成結果を [[cloudflare-workers-cache|Workers Cache]] でキャッシュする、という実際の組み合わせ
 
 ## デプロイ
 
-- [[cloudflare-workers-builds]] — リポジトリをpushしたときの自動ビルド・デプロイ。上3つとは違うレイヤー(実行時ではなくデプロイ時)の話
+- [[cloudflare-workers-builds]] — リポジトリを push したときの自動ビルド・デプロイ。上3つとは違うレイヤー(実行時ではなくデプロイ時)の話
 - [[cloudflare-worker-previews]] — ブランチごとに本番と切り離した環境を作る仕組み。本番の設定を継承せず、D1などは自動では分かれない
 - [[tagpr-workers-builds-release-flow]] — 上の2つと [[tagpr]] を組み合わせた、本番（Release PR のマージ時だけ）とプレビュー（それ以外の全ブランチ）のデプロイ構成
 
 ## コンピュート
 
-- [[cloudflare-containers]] — Dockerイメージをエッジで動かす仕組み。Worker自身とは別のリソース設定(instance_type)・課金体系を持つ
+- [[cloudflare-containers]] — Docker イメージをエッジで動かす仕組み。Worker 自身とは別のリソース設定(instance_type)・課金体系を持つ
 - [[durable-objects-await-gap]] — Durable Object は R2 や `fetch()` を待つ間に別のリクエストを受ける。直列化はストレージ操作の間だけ
 
 ## 理解度チェック

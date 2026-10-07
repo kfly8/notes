@@ -1,19 +1,19 @@
 ---
 created: 2026-09-12
 updated: 2026-10-07
-title: "[[barefootjs-nested-fragment-child-unregistered-scope]]の最小再現実験"
+title: "[[barefootjs-nested-fragment-child-unregistered-scope]] の最小再現実験"
 description: "peitho-studioの実アプリでしか再現しなかったBarefootJS: ネストしたfragmentRootの子コンポーネントの内部条件分岐がDOM更新されないのバグを、外部から検証・報告できる独立した最小コードに切り出す。"
 tags: [barefootjs, reactivity, hydration]
 ---
-# [[barefootjs-nested-fragment-child-unregistered-scope]]の最小再現実験
+# [[barefootjs-nested-fragment-child-unregistered-scope]] の最小再現実験
 
 ## 目的
 
-peitho-studioの実アプリでしか再現しなかった[[barefootjs-nested-fragment-child-unregistered-scope]]のバグを、外部から検証・報告できる独立した最小コードに切り出す。過去に3回(Honoアダプタ@0.35.5、CSRアダプタ@0.35.5、CSRアダプタ0.35.1固定)試して失敗していた。
+peitho-studio の実アプリでしか再現しなかった [[barefootjs-nested-fragment-child-unregistered-scope]] のバグを、外部から検証・報告できる独立した最小コードに切り出す。過去に3回(Hono アダプタ@0.35.5、CSR アダプタ@0.35.5、CSR アダプタ0.35.1固定)試して失敗していた。
 
 ## 材料
 
-`create-barefootjs@latest`で`--adapter csr --css unocss`のCSRスキャフォールドを作り、`@barefootjs/client`等を`0.35.6`(2026-09-12時点の最新)に固定。
+`create-barefootjs@latest` で `--adapter csr --css unocss` の CSR スキャフォールドを作り、`@barefootjs/client` 等を `0.35.6`(2026-09-12時点の最新)に固定。
 
 ```
 components/store.ts
@@ -112,16 +112,16 @@ export function Repro() {
 }
 ```
 
-`pages/index.html`のブートストラップを`Repro`を描画するように差し替えるだけ(scaffoldのデフォルトの`Counter`呼び出しを置き換える)。
+`pages/index.html` のブートストラップを `Repro` を描画するように差し替えるだけ(scaffold のデフォルトの `Counter` 呼び出しを置き換える)。
 
 ## 躓いた点
 
-- 最初、`Welcome`側を`<div id="welcome">Welcome</div>`という生の要素のまま(子コンポーネントにしない)で試したところ再現しなかった。理由は[[barefootjs-mismatched-branch-shape-drops-siblings]]という**別のバグ**を踏んでいたため——`isFragmentCond`判定が偽になり、DOM更新自体が`before`要素だけを残して残り全部を静かに捨てていた(`StatusBarCopy`の出力が丸ごと消えていたので、そもそも子の`insert()`が呼ばれることすらなかった)。`Welcome`も子コンポーネントに変えたことで、実アプリ(`WelcomeScreen`も`'use client'`コンポーネント)と同じ`isFragmentCond: true`の経路に乗り、本命のバグを踏めた。
-- `StatusBarCopy`を分岐内で唯一の要素(前後に兄弟なし)にすると再現しなかった。`before`/`after`という何の変哲もない`<div>`を前後に1個ずつ置いただけで再現するようになった。前だけ、後だけでもダメで、両方必要だった。
+- 最初、`Welcome` 側を `<div id="welcome">Welcome</div>` という生の要素のまま(子コンポーネントにしない)で試したところ再現しなかった。理由は [[barefootjs-mismatched-branch-shape-drops-siblings]] という**別のバグ**を踏んでいたため——`isFragmentCond` 判定が偽になり、DOM 更新自体が `before` 要素だけを残して残り全部を静かに捨てていた(`StatusBarCopy` の出力が丸ごと消えていたので、そもそも子の `insert()` が呼ばれることすらなかった)。`Welcome` も子コンポーネントに変えたことで、実アプリ(`WelcomeScreen` も `'use client'` コンポーネント)と同じ `isFragmentCond: true` の経路に乗り、本命のバグを踏めた。
+- `StatusBarCopy` を分岐内で唯一の要素(前後に兄弟なし)にすると再現しなかった。`before`/`after` という何の変哲もない `<div>` を前後に1個ずつ置いただけで再現するようになった。前だけ、後だけでもダメで、両方必要だった。
 
 ## 実際の出力
 
-`open-deck`→`trigger`をクリックした後の`document.body`(抜粋、`insert()`にログを仕込んで観測):
+`open-deck`→`trigger` をクリックした後の `document.body`(抜粋、`insert()` にログを仕込んで観測):
 
 ```
 [BFDBG insert() call] s2 <div bf-s="Repro_oevb95">...
@@ -130,13 +130,13 @@ export function Repro() {
 [WARNING] [barefootjs] no claimed slot for id s1; write ignored
 ```
 
-外側の三項演算子(`s2`)は正しく`Repro`自身のルート要素をscopeにしている。だが`StatusBarCopy`自身の内部条件分岐(`s0`)は、`<footer id="footer-copy">`をscopeにしてしまっている——peitho-studioの実アプリで観測したのと**全く同じパターン**。`slot s1 marker not found`はBarefootJS自身が出す native の警告で、何かがおかしいことをランタイム自身も検知している。
+外側の三項演算子(`s2`)は正しく `Repro` 自身のルート要素を scope にしている。だが `StatusBarCopy` 自身の内部条件分岐(`s0`)は、`<footer id="footer-copy">` を scope にしてしまっている——peitho-studio の実アプリで観測したのと**全く同じパターン**。`slot s1 marker not found` は BarefootJS 自身が出す native の警告で、何かがおかしいことをランタイム自身も検知している。
 
-このとき`#banner-copy`は`errorMessage`をセットしても最後まで出現しない。
+このとき `#banner-copy` は `errorMessage` をセットしても最後まで出現しない。
 
 ## コードから読み取れること
 
-`updateFragmentConditional`が`region.anchor`(コメントノード)を持たない場合、`commentsInScope(scope)`/`candidatesInScope(scope, selector)`で`scope`自身のサブツリーだけを探す。`scope`が`commentScopeRegistry`に登録されていない普通の要素(`<footer>`)だと、この探索は子コンポーネント自身のコメントマーカーに絶対に届かない——マーカーは`<footer>`の外、fragment内の兄弟の位置にあるため。
+`updateFragmentConditional` が `region.anchor`(コメントノード)を持たない場合、`commentsInScope(scope)`/`candidatesInScope(scope, selector)` で `scope` 自身のサブツリーだけを探す。`scope` が `commentScopeRegistry` に登録されていない普通の要素(`<footer>`)だと、この探索は子コンポーネント自身のコメントマーカーに絶対に届かない——マーカーは `<footer>` の外、fragment 内の兄弟の位置にあるため。
 
 ## 理解度チェック
 

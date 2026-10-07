@@ -73,7 +73,7 @@ npx wrangler preview
 - Settings → Build → Branch control の **Enable Preview Builds** を ON にすると、本番ブランチ以外への push ごとに、Build command に続けて Preview command が走る。
 - 新しい Worker では、Preview command の既定値が `npx wrangler preview`。
 - Worker Previews より前から Builds を使っている Worker は、ダッシュボードの「Switch to Worker Previews」で一度だけ切り替える。**この切り替えは元に戻せない。**
-- 切り替えのダイアログには「Custom commands must invoke `npx wrangler preview`」と出る。前処理を足したいときは `前処理 && npx wrangler preview …` のように、Preview command の中で `wrangler preview` を直接呼ぶ形にする。
+- 切り替えのダイアログには「Custom commands must invoke `npx wrangler preview`」と出る。前処理を足したいときは ` 前処理 && npx wrangler preview …` のように、Preview command の中で `wrangler preview` を直接呼ぶ形にする。
 - Preview の名前は、ビルド環境変数 `WORKERS_CI_BRANCH`（ブランチ名）から決まる。PR には Preview URL のコメントが付き、同じブランチに push すると同じ URL が更新される。
 - Builds が自動で発行する API トークンには D1 の権限がない。ビルド中に D1 のマイグレーションを当てるなら、D1 の権限を持つトークンを別に用意する。
 

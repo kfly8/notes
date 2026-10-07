@@ -1,17 +1,17 @@
 ---
 created: 2026-08-30
-updated: 2026-08-30
-title: cwebpでHDR画像を変換すると暗くなる
+updated: 2026-10-07
+title: cwebp で HDR 画像を変換すると暗くなる
 description: HDR(Display P3 + PQ)なPNGをcwebpでWebP化すると、暗く沈んだ画像になる
 tags: [image, color, macos]
 ---
-# cwebpでHDR画像を変換すると暗くなる
+# cwebp で HDR 画像を変換すると暗くなる
 
-`cwebp -q 85 in.png -o out.webp` で変換したら、色が全体的に暗く・くすんで見えた。単なる圧縮劣化(chroma subsamplingなど)ではなく、**元のPNGがHDR画像だったのが原因**だった。
+`cwebp -q 85 in.png -o out.webp` で変換したら、色が全体的に暗く・くすんで見えた。単なる圧縮劣化(chroma subsampling など)ではなく、**元の PNG が HDR 画像だったのが原因**だった。
 
 ## 診断
 
-ImageMagickで埋め込みICCプロファイルを見ると分かる。
+ImageMagick で埋め込み ICC プロファイルを見ると分かる。
 
 ```sh
 magick identify -verbose in.png | grep -iE "colorspace|profile"
@@ -22,13 +22,13 @@ magick in.png -format "%[icc:description]\n" info:
 Display P3 Primaries; PQ (Adaptive Gain Curve ...)
 ```
 
-`PQ`(Perceptual Quantizer)はHDR10などで使われるトランスファーカーブで、最大10,000nitまでを表現できるよう輝度を非線形に圧縮している。iPhoneの「Adaptive HDR」写真をスクリーンショット・書き出しした際にPNGへ埋め込まれることがある。
+`PQ`(Perceptual Quantizer)は HDR10などで使われるトランスファーカーブで、最大10,000nit までを表現できるよう輝度を非線形に圧縮している。iPhone の「Adaptive HDR」写真をスクリーンショット・書き出しした際に PNG へ埋め込まれることがある。
 
-`cwebp` はこのHDR(PQ)プロファイルをトーンマッピングしてSDRに変換する機能を持たない。生のピクセル値をそのまま標準ガンマのsRGBとして書き出すため、PQで圧縮されていた輝度値が誤って解釈され、画像全体が暗く・彩度も低く見える。**cwebpのバグというより、そもそもHDR→SDR変換という工程が必要で、それをやっていない**という話。
+`cwebp` はこの HDR(PQ)プロファイルをトーンマッピングして SDR に変換する機能を持たない。生のピクセル値をそのまま標準ガンマの sRGB として書き出すため、PQ で圧縮されていた輝度値が誤って解釈され、画像全体が暗く・彩度も低く見える。**cwebp のバグというより、そもそも HDR→SDR 変換という工程が必要で、それをやっていない**という話。
 
 ## 対処: 先にSDRへトーンマップしてから変換する
 
-macOS純正の `sips`(ColorSyncベース)は、Apple自身のHDRプロファイルを正しく解釈してSDRへ変換できる。
+macOS 純正の `sips`(ColorSync ベース)は、Apple 自身の HDR プロファイルを正しく解釈して SDR へ変換できる。
 
 ```sh
 # 1. Apple純正のカラーマネジメントでSDR(sRGB)に変換
@@ -38,7 +38,7 @@ sips -s format png --matchTo "/System/Library/ColorSync/Profiles/sRGB Profile.ic
 cwebp -q 85 in-srgb.png -o out.webp
 ```
 
-副産物として、正しく変換した方がファイルサイズも小さくなった(219KB → 66KB)。HDRの生データはWebPの通常の圧縮モデルと相性が悪く、圧縮効率も落ちていたと見られる。
+副産物として、正しく変換した方がファイルサイズも小さくなった(219KB → 66KB)。HDR の生データは WebP の通常の圧縮モデルと相性が悪く、圧縮効率も落ちていたと見られる。
 
 ## 理解度チェック
 

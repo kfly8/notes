@@ -36,7 +36,7 @@ scripts/build-site.ts                   # vite build → manifest 解決 → toS
 
 CSR Adapter が生成する検索アイランドのスクリプトは、`build.manifest: true`(`barefoot()` が自動設定)で書き出される `dist/client/.vite/manifest.json` を `@barefootjs/vite` の `loadManifest`/`resolveScriptAssets` で読み、実 URL(ハッシュ付き)を解決して Hono 側の `<script type="module" src="...">` に埋め込む。`integrations/csr` の公式サンプルのように Vite のマルチページ HTML ビルドに乗せる必要はなかった。
 
-`@barefootjs/router` の `startRouter()` の導入は、[[barefootjs-router-region-contract|Router の region 契約]]どおりシンプルだった——`<Region>` JSX ヘルパーはコンパイラを通さないと使えないので、Hono JSX の `<main bf-region>` に**属性を直接手書き**しただけで動く。ランタイム(`indexRegions`)は DOM 上の `[bf-region]` 属性の有無しか見ておらず、BarefootJS コンポーネントを一切使わない素の HTML でも Router だけ独立して機能する。
+`@barefootjs/router` の `startRouter()` の導入は、[[barefootjs-router-region-contract|Router の region 契約]] どおりシンプルだった——`<Region>` JSX ヘルパーはコンパイラを通さないと使えないので、Hono JSX の `<main bf-region>` に**属性を直接手書き**しただけで動く。ランタイム(`indexRegions`)は DOM 上の `[bf-region]` 属性の有無しか見ておらず、BarefootJS コンポーネントを一切使わない素の HTML でも Router だけ独立して機能する。
 
 ## 実装中に踏んだ2つの制約(詳細は別ノート)
 
@@ -51,7 +51,7 @@ Astro 版の `dist/client` を退避してから新方式でビルドし、`diff
 - `/<slug>.md`(OKF frontmatter 付き Markdown ソース)はほぼ一致。唯一の差は末尾改行の有無で、これは Astro 側の `entry.body` がソースの末尾改行を trim していたのに対し、Hono 版は元の Markdown ファイルをそのまま返しているだけ——むしろ Hono 版の方が「ソースをそのまま返す」という `/<slug>.md` の役割に忠実
 - `wrangler dev` 上で全ページ・検索アイランド・ページ遷移(region 差し替え、ヘッダーは維持)・mermaid・shiki ハイライト・quiz・テーマ切替を目視確認
 
-CSS のクラス名は1点だけ変える必要があった。Astro のシンタックスハイライトは `<pre>` に `.astro-code` を付けるが、素の shiki は `.shiki` を付ける([[satteri]]にも同じ差分の記録あり)。
+CSS のクラス名は1点だけ変える必要があった。Astro のシンタックスハイライトは `<pre>` に `.astro-code` を付けるが、素の shiki は `.shiki` を付ける([[satteri]] にも同じ差分の記録あり)。
 
 ## `bun run dev` に足りなかったもの
 

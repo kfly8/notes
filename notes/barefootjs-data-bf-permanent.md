@@ -19,7 +19,7 @@ tags: [barefootjs, router]
 
 ## region の中でも効く: ロゴのちらつき対策
 
-サイト共通ヘッダーを [[barefootjs-router-region-contract|region の中に移した]]結果、ページ間で見た目が変わらないロゴ画像まで、遷移のたびに `<img>` が作り直されるようになった。ファイル自体は HTTP キャッシュ済みで再ダウンロードは起きないが、DOM ノードの破棄・再生成そのものが視覚的なちらつきとして見えていた。
+サイト共通ヘッダーを [[barefootjs-router-region-contract|region の中に移した]] 結果、ページ間で見た目が変わらないロゴ画像まで、遷移のたびに `<img>` が作り直されるようになった。ファイル自体は HTTP キャッシュ済みで再ダウンロードは起きないが、DOM ノードの破棄・再生成そのものが視覚的なちらつきとして見えていた。
 
 `<img>` に `data-bf-permanent="site-logo-img"` を付けるだけで解決した。
 

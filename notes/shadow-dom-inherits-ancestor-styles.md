@@ -1,29 +1,29 @@
 ---
 created: 2026-09-11
-updated: 2026-09-11
-title: Shadow DOMは`<iframe>`と違い、ホストの祖先から継承プロパティを引き継ぐ
+updated: 2026-10-07
+title: Shadow DOM は `<iframe>` と違い、ホストの祖先から継承プロパティを引き継ぐ
 description: <iframe>のコンテンツは完全に別ドキュメントなので、埋め込み側ページのCSSカスケードは一切届かない。
 tags: [css, shadow-dom, iframe]
 ---
-# Shadow DOMは`<iframe>`と違い、ホストの祖先から継承プロパティを引き継ぐ
+# Shadow DOM は `<iframe>` と違い、ホストの祖先から継承プロパティを引き継ぐ
 
-`<iframe>`のコンテンツは完全に別ドキュメントなので、埋め込み側ページのCSSカスケードは一切届かない。Shadow DOMはそうではなく、`text-align`・`color`・`font-family`のような**通常の継承プロパティ**を、shadow hostの祖先の計算済みスタイルからそのまま引き継ぐ——`:host`自身がその継承の起点になり、shadow rootの子孫は他の子孫と同じルールで継承を受け取る。
+`<iframe>` のコンテンツは完全に別ドキュメントなので、埋め込み側ページの CSS カスケードは一切届かない。Shadow DOM はそうではなく、`text-align`・`color`・`font-family` のような**通常の継承プロパティ**を、shadow host の祖先の計算済みスタイルからそのまま引き継ぐ——`:host` 自身がその継承の起点になり、shadow root の子孫は他の子孫と同じルールで継承を受け取る。
 
-`<iframe>`を撤去してShadow DOMに置き換える設計変更(iframeが増え続ける問題への対処)をした際、この違いが実機で顕在化した。
+`<iframe>` を撤去して Shadow DOM に置き換える設計変更(iframe が増え続ける問題への対処)をした際、この違いが実機で顕在化した。
 
 ## 症状
 
-スライド編集GUIのサムネイル一覧で、タイトル・本文テキストが中央寄せになる一方、`<li>`の箇条書きマーカーだけが左端に取り残されて浮いて見える、という表示崩れが実機で報告された。
+スライド編集 GUI のサムネイル一覧で、タイトル・本文テキストが中央寄せになる一方、`<li>` の箇条書きマーカーだけが左端に取り残されて浮いて見える、という表示崩れが実機で報告された。
 
 ## 原因
 
-サムネイルのcanvasホスト(`<div>`にShadow DOMをattachしたもの)は`<button>`要素の内側にマウントされていた。`<button>`はブラウザのUAスタイルシートの既定値として`text-align: center`を持つ。旧`<iframe>`は別ドキュメントだったためこの祖先の`text-align`は一切届かなかったが、Shadow DOMは`:host`が`<button>`の計算済みスタイルからそのまま`text-align: center`を継承し、shadow内の`<h1>`/`<ul>`にまで及んだ。
+サムネイルの canvas ホスト(`<div>` に Shadow DOM を attach したもの)は `<button>` 要素の内側にマウントされていた。`<button>` はブラウザの UA スタイルシートの既定値として `text-align: center` を持つ。旧 `<iframe>` は別ドキュメントだったためこの祖先の `text-align` は一切届かなかったが、Shadow DOM は `:host` が `<button>` の計算済みスタイルからそのまま `text-align: center` を継承し、shadow 内の `<h1>`/`<ul>` にまで及んだ。
 
-`<li>`の箇条書きマーカーは`list-style-position: outside`のためコンテンツボックスの外側に固定描画され、`text-align`の影響を受けない。結果、マーカーは元の左端位置のまま、テキストだけが中央寄せになり、視覚的に分離して見えた。
+`<li>` の箇条書きマーカーは `list-style-position: outside` のためコンテンツボックスの外側に固定描画され、`text-align` の影響を受けない。結果、マーカーは元の左端位置のまま、テキストだけが中央寄せになり、視覚的に分離して見えた。
 
 ## 再現方法
 
-実際に開いていたデッキの`.peitho/present-cache/`(ビルド成果物)から本物のfragment HTML・テーマCSSを取り出し、Playwrightで実際のDOM祖先構造(`<button><span><span>`)を持つ最小ページを組んで再現した。単純な`<div>`直下にShadow DOMをマウントするだけの再現コードでは発生せず、実際の祖先チェーンを再現して初めて崩れが出た——「その要素が実際にどんな祖先の中に置かれているか」を再現しないと、シンプルな再現コードでは見えないタイプのバグ。
+実際に開いていたデッキの `.peitho/present-cache/`(ビルド成果物)から本物の fragment HTML・テーマ CSS を取り出し、Playwright で実際の DOM 祖先構造(`<button><span><span>`)を持つ最小ページを組んで再現した。単純な `<div>` 直下に Shadow DOM をマウントするだけの再現コードでは発生せず、実際の祖先チェーンを再現して初めて崩れが出た——「その要素が実際にどんな祖先の中に置かれているか」を再現しないと、シンプルな再現コードでは見えないタイプのバグ。
 
 ```js
 // 実機の崩れを再現できた構成
@@ -39,7 +39,7 @@ shadow.innerHTML = '<h1>Title</h1><ul><li>a</li><li>b</li></ul>'
 
 ## 対処
 
-shadow root側で、継承されると困るプロパティを`:host`に明示的に上書きする。
+shadow root 側で、継承されると困るプロパティを `:host` に明示的に上書きする。
 
 ```css
 :host {
@@ -47,7 +47,7 @@ shadow root側で、継承されると困るプロパティを`:host`に明示�
 }
 ```
 
-これは一般に、Shadow DOMを「`<iframe>`並みに独立した見た目」として使いたい場合に必要な作法——`<iframe>`が暗黙に提供していた祖先からの隔離を、Shadow DOM移行後は明示的に作り直す必要がある。`text-align`以外にも`color`・`font-family`など標準的な継承プロパティは同じ経路で漏れうるので、shadow内のコンテンツが祖先のスタイルに依存しないことを前提にしている箇所は、疑ってかかる価値がある。
+これは一般に、Shadow DOM を「`<iframe>` 並みに独立した見た目」として使いたい場合に必要な作法——`<iframe>` が暗黙に提供していた祖先からの隔離を、Shadow DOM 移行後は明示的に作り直す必要がある。`text-align` 以外にも `color`・`font-family` など標準的な継承プロパティは同じ経路で漏れうるので、shadow 内のコンテンツが祖先のスタイルに依存しないことを前提にしている箇所は、疑ってかかる価値がある。
 
 ## 理解度チェック
 
@@ -71,6 +71,6 @@ shadow root側で、継承されると困るプロパティを`:host`に明示�
 
 ## 出典
 
-- 実際にTauri v2 + BarefootJS CSRのデスクトップアプリ(スライド編集GUI)で、`<iframe>`をShadow DOM(`dom/slideCanvas.ts`)に置き換える設計変更中、実機報告から発見・Playwrightで再現・修正した。
+- 実際に Tauri v2 + BarefootJS CSR のデスクトップアプリ(スライド編集 GUI)で、`<iframe>` を Shadow DOM(`dom/slideCanvas.ts`)に置き換える設計変更中、実機報告から発見・Playwright で再現・修正した。
 
 #css #shadow-dom #iframe

@@ -1,29 +1,29 @@
 ---
 created: 2026-09-11
 updated: 2026-10-07
-title: "BarefootJS: keyed .map()の新規行は、refが呼ばれる時点ではまだ本物のドキュメントに属していない"
+title: "BarefootJS: keyed .map()の新規行は、ref が呼ばれる時点ではまだ本物のドキュメントに属していない"
 description: BarefootJSのkeyedな.map()で新しいkeyの行が追加されると、その行のrefコールバックは、要素がまだ実ページのドキュメントに挿入される前、行のマークアップが解析された別の(detachedな)ドキュメントに属した状態で呼ばれる。
 tags: [barefootjs, dom, shadow-dom]
 ---
-# BarefootJS: keyed .map()の新規行は、refが呼ばれる時点ではまだ本物のドキュメントに属していない
+# BarefootJS: keyed .map()の新規行は、ref が呼ばれる時点ではまだ本物のドキュメントに属していない
 
-[[barefootjs]]のkeyedな`.map()`で新しいkeyの行が追加されると、その行の`ref`コールバックは、要素が**まだ実ページのドキュメントに挿入される前**、行のマークアップが解析された別の(detachedな)ドキュメントに属した状態で呼ばれる。`ref`の中で`host.isConnected`は`false`、`host.ownerDocument`も実ページの`document`とは別物になっている。実際に挿入される処理(reparent)はこの`ref`が返った直後、同じ同期tick内で起きる。おそらくHTML5の`<template>`要素の"template contents owner document"の仕組み(`template.content`内のノードは、実際にツリーへ追加されるまでownerDocumentが本体のdocumentとは別になる)に類する挙動で、行のマークアップをそう解析しているものと推測される(BarefootJSのソースそのものでこの一点までは確認できていない)。
+[[barefootjs]] の keyed な `.map()` で新しい key の行が追加されると、その行の `ref` コールバックは、要素が**まだ実ページのドキュメントに挿入される前**、行のマークアップが解析された別の(detached な)ドキュメントに属した状態で呼ばれる。`ref` の中で `host.isConnected` は `false`、`host.ownerDocument` も実ページの `document` とは別物になっている。実際に挿入される処理(reparent)はこの `ref` が返った直後、同じ同期 tick 内で起きる。おそらく HTML5の `<template>` 要素の"template contents owner document"の仕組み(`template.content` 内のノードは、実際にツリーへ追加されるまで ownerDocument が本体の document とは別になる)に類する挙動で、行のマークアップをそう解析しているものと推測される(BarefootJS のソースそのものでこの一点までは確認できていない)。
 
 ## 症状: 新規行でだけShadow DOMのマウントが失敗する
 
-スライド編集GUIで、右クリック→「New Slide」を押しても新しいサムネイルが増えないというバグがあった。「New Slide」自体の処理(Markdownソースの更新)は正しく実行されているのに、サムネイル一覧が増えない。
+スライド編集 GUI で、右クリック→「New Slide」を押しても新しいサムネイルが増えないというバグがあった。「New Slide」自体の処理(Markdown ソースの更新)は正しく実行されているのに、サムネイル一覧が増えない。
 
-原因は、新規行の`ref`内で`CSSStyleSheet`を`shadow.adoptedStyleSheets`に代入していた処理。`CSSStyleSheet`は自分の生成元ドキュメントと同じドキュメント(またはそのshadow root)にしかadoptできない——
+原因は、新規行の `ref` 内で `CSSStyleSheet` を `shadow.adoptedStyleSheets` に代入していた処理。`CSSStyleSheet` は自分の生成元ドキュメントと同じドキュメント(またはその shadow root)にしか adopt できない——
 
 ```
 DOMException: Sharing constructed stylesheets in multiple documents is not allowed
 ```
 
-新規行の`ref`が呼ばれる時点で、行の要素はまだ実ドキュメントに属していないため、実ドキュメント上で生成した`CSSStyleSheet`をこの時点でadoptしようとすると必ず投げる。しかもこのエラーはどこにも表示されなかった——アプリ自身のエラー表示欄も、同じ理由で初回の条件分岐レンダリング時にdetached状態の問題を抱えていたため、投げられたエラー自体が画面に描画されなかった。
+新規行の `ref` が呼ばれる時点で、行の要素はまだ実ドキュメントに属していないため、実ドキュメント上で生成した `CSSStyleSheet` をこの時点で adopt しようとすると必ず投げる。しかもこのエラーはどこにも表示されなかった——アプリ自身のエラー表示欄も、同じ理由で初回の条件分岐レンダリング時に detached 状態の問題を抱えていたため、投げられたエラー自体が画面に描画されなかった。
 
 ## 気づき方
 
-自律的なPlaywright検証(`window.__TAURI_INTERNALS__.invoke`をモックして実フロントエンドを動かす手法。詳細は[[tauri-invoke-mock-testing]])で再現し、`mountSlideCanvas`関数の冒頭に段階的にログを仕込んで`host.isConnected`/`host.ownerDocument === document`を確認して特定した。
+自律的な Playwright 検証(`window.__TAURI_INTERNALS__.invoke` をモックして実フロントエンドを動かす手法。詳細は [[tauri-invoke-mock-testing]])で再現し、`mountSlideCanvas` 関数の冒頭に段階的にログを仕込んで `host.isConnected`/`host.ownerDocument === document` を確認して特定した。
 
 ## 対処: `host.isConnected`をチェックし、未接続ならマイクロタスク1回分だけ遅延する
 
@@ -39,13 +39,13 @@ function mountSlideCanvas(host: HTMLElement, sheet: CSSStyleSheet, /* ... */): v
 }
 ```
 
-挿入(reparent)は`ref`が返った直後の同期tick内で起きるため、マイクロタスク1回の遅延で十分——挿入を待つのに2回目のリトライが必要になったケースは観測されていない。
+挿入(reparent)は `ref` が返った直後の同期 tick 内で起きるため、マイクロタスク1回の遅延で十分——挿入を待つのに2回目のリトライが必要になったケースは観測されていない。
 
 ## 落とし穴: 行が同期tick内で追加後すぐ削除されると、無限リトライになる
 
-上記の対処だけをレビューに出したところ、次の指摘を受けた: もし行が追加されてから、キューに積んだマイクロタスクが実行される**前**に同期的に削除されると、`host`は一度も接続されないまま終わる。すると`isConnected`は以後ずっと`false`のままなので、`queueMicrotask`による再帰的なリトライが**永遠に終わらず**、`host`・`sheet`・fragment文字列などクロージャが捕まえている参照を永久にリークし続ける。
+上記の対処だけをレビューに出したところ、次の指摘を受けた: もし行が追加されてから、キューに積んだマイクロタスクが実行される**前**に同期的に削除されると、`host` は一度も接続されないまま終わる。すると `isConnected` は以後ずっと `false` のままなので、`queueMicrotask` による再帰的なリトライが**永遠に終わらず**、`host`・`sheet`・fragment 文字列などクロージャが捕まえている参照を永久にリークし続ける。
 
-対処: リトライ回数を`WeakMap<HTMLElement, number>`でホストごとに数え、上限(5回など)に達したら諦めて追跡を打ち切る。
+対処: リトライ回数を `WeakMap<HTMLElement, number>` でホストごとに数え、上限(5回など)に達したら諦めて追跡を打ち切る。
 
 ```ts
 const MAX_MOUNT_RETRIES = 5
@@ -91,6 +91,6 @@ host.isConnectedはfalse、host.ownerDocumentも実ページのdocumentとは別
 
 ## 出典
 
-- スライド編集GUI(Tauri + BarefootJS CSR)の「New Slide」機能で発生した実バグの調査・修正から。BarefootJSの`mapArray`/`createItemScope`/`insertScope`の実行順序をランタイムソースで確認し、自律的なPlaywright検証(詳細は[[tauri-invoke-mock-testing]])で`host.isConnected`/`host.ownerDocument`の値を実測して特定した。無限リトライの指摘はコードレビュー(Pullfrog)で受けた。
+- スライド編集 GUI(Tauri + BarefootJS CSR)の「New Slide」機能で発生した実バグの調査・修正から。BarefootJS の `mapArray`/`createItemScope`/`insertScope` の実行順序をランタイムソースで確認し、自律的な Playwright 検証(詳細は [[tauri-invoke-mock-testing]])で `host.isConnected`/`host.ownerDocument` の値を実測して特定した。無限リトライの指摘はコードレビュー(Pullfrog)で受けた。
 
 #barefootjs #dom #shadow-dom

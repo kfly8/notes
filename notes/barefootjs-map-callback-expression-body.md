@@ -7,11 +7,11 @@ tags: [barefootjs, jsx]
 ---
 # BarefootJS: .map()コールバックはブロック本体で書けない(BF021)
 
-[[barefootjs]]の`.map()`コールバックを式本体(`(item, i) => (<jsx/>)`)ではなく**ブロック本体**(`(item, i) => { const x = ...; return <jsx/> }`)で書くと、`BF021`(preambleがvalue declarationの並びとして認識されない)でコンパイルが落ちる。
+[[barefootjs]] の `.map()` コールバックを式本体(`(item, i) => (<jsx/>)`)ではなく**ブロック本体**(`(item, i) => { const x = ...; return <jsx/> }`)で書くと、`BF021`(preamble が value declaration の並びとして認識されない)でコンパイルが落ちる。
 
 ## 回避策
 
-ループの中で何かを事前計算したい場合は、`.map()`の**外**で`createMemo`を使って準備しておき、コールバック自体は式本体のまま保つ。
+ループの中で何かを事前計算したい場合は、`.map()` の**外**で `createMemo` を使って準備しておき、コールバック自体は式本体のまま保つ。
 
 ```tsx
 const rowLabels = createMemo(() => items().map(item => computeLabel(item)))
@@ -41,6 +41,6 @@ return (
 
 ## 出典
 
-- 実際にBarefootJSアプリを実装中に踏んだ(`@barefootjs/jsx@0.33.6`)。
+- 実際に BarefootJS アプリを実装中に踏んだ(`@barefootjs/jsx@0.33.6`)。
 
 #barefootjs #jsx

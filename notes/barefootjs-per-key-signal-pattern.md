@@ -1,13 +1,13 @@
 ---
 created: 2026-09-06
 updated: 2026-10-07
-title: "BarefootJS: コレクション全体を1つのsignalに持たない"
+title: "BarefootJS: コレクション全体を1つの signal に持たない"
 description: keyedな.map()リストの各行が、他の行とは独立な「自分専用の値」(現在の描画内容、現在の並び順位置、など)を必要とする場面で、Record<key, X>やMap<key, X>を1つのsignal/memoにまとめて持つと、意図しない全行再レンダーを引き起こす。
 tags: [barefootjs, signals, reactivity, performance]
 ---
-# BarefootJS: コレクション全体を1つのsignalに持たない
+# BarefootJS: コレクション全体を1つの signal に持たない
 
-keyedな`.map()`リストの各行が、他の行とは独立な「自分専用の値」(現在の描画内容、現在の並び順位置、など)を必要とする場面で、`Record<key, X>`や`Map<key, X>`を**1つのsignal/memo**にまとめて持つと、意図しない全行再レンダーを引き起こす。代わりに、キーごとに独立したsignalを遅延生成する。
+keyed な `.map()` リストの各行が、他の行とは独立な「自分専用の値」(現在の描画内容、現在の並び順位置、など)を必要とする場面で、`Record<key, X>` や `Map<key, X>` を**1つの signal/memo**にまとめて持つと、意図しない全行再レンダーを引き起こす。代わりに、キーごとに独立した signal を遅延生成する。
 
 ## 問題のあるパターン
 
@@ -20,16 +20,16 @@ const itemStateByKey = createMemo<Map<string, X>>(() => {
 itemStateByKey().get(item.key)
 ```
 
-`itemStateByKey()`を呼ぶすべての行が、この**1つのmemo**を購読する。`items`全体が変わるたびに(たとえ変わったのがどれか1件だけでも)memoが再計算され、それを読んでいる**全行**の該当箇所が再レンダー対象になる。
+`itemStateByKey()` を呼ぶすべての行が、この**1つの memo**を購読する。`items` 全体が変わるたびに(たとえ変わったのがどれか1件だけでも)memo が再計算され、それを読んでいる**全行**の該当箇所が再レンダー対象になる。
 
 これは2つの文脈で実際に問題になった。
 
-1. **サムネイルのチラつき**: あるスライドを編集するたびに、選択中でない他のスライドのサムネイル(`<iframe srcdoc>`)まで再描画され、画面全体がちらつく。原因は、サムネイルのHTMLフラグメントを1つの`Record<key, string>` signalで持っていたこと——1件編集するたびに新しいRecordオブジェクトが作られ、全サムネイルの`srcdoc`バインディングが「値は同じでも」再評価され、`.srcdoc`への代入は値が同一でも常にiframeの再ナビゲーションを起こす。(この節の対処だけでは実は直りきらず、`.map()`のitem自体の参照churnという別レイヤーの原因が残っていた——[[barefootjs-map-item-reference-stability]]参照。)
-2. **keyedな`.map()`の生のループindexが並べ替え後に古いまま固まる問題**(詳細は[[barefootjs-loop-index-reactivity]])の対処として書いた最初の実装が同じ罠を踏んだ: 生のループindexの代わりに「keyの現在位置」を`createMemo<Map<key, number>>`で用意したところ、これも1つのmemoが`items`全体に依存するため、**1件のスライドを編集するだけで全スライドの位置表示が再計算対象になり**、直したはずのチラつきバグを同じ形で再発させてしまった。
+1. **サムネイルのチラつき**: あるスライドを編集するたびに、選択中でない他のスライドのサムネイル(`<iframe srcdoc>`)まで再描画され、画面全体がちらつく。原因は、サムネイルの HTML フラグメントを1つの `Record<key, string>` signal で持っていたこと——1件編集するたびに新しい Record オブジェクトが作られ、全サムネイルの `srcdoc` バインディングが「値は同じでも」再評価され、`.srcdoc` への代入は値が同一でも常に iframe の再ナビゲーションを起こす。(この節の対処だけでは実は直りきらず、`.map()` の item 自体の参照 churn という別レイヤーの原因が残っていた——[[barefootjs-map-item-reference-stability]] 参照。)
+2. **keyed な `.map()` の生のループ index が並べ替え後に古いまま固まる問題**(詳細は [[barefootjs-loop-index-reactivity]])の対処として書いた最初の実装が同じ罠を踏んだ: 生のループ index の代わりに「key の現在位置」を `createMemo<Map<key, number>>` で用意したところ、これも1つの memo が `items` 全体に依存するため、**1件のスライドを編集するだけで全スライドの位置表示が再計算対象になり**、直したはずのチラつきバグを同じ形で再発させてしまった。
 
 ## 対処: per-key signal
 
-キーごとに`createSignal`を遅延生成して`Map<key, [getter, setter]>`で管理し、値が実際に変わったキーのsetterだけを呼ぶ。
+キーごとに `createSignal` を遅延生成して `Map<key, [getter, setter]>` で管理し、値が実際に変わったキーの setter だけを呼ぶ。
 
 ```tsx
 const signalsByKey = new Map<string, [() => X, (v: X) => void]>()
@@ -54,13 +54,13 @@ createEffect(() => {
 signalFor(item.key)[0]()
 ```
 
-各行は自分のkeyのsignalだけを購読するので、他の行の値が変わっても再レンダーされない。`if (get() !== next)`のガードも重要——これが無いと、`items`全体を辿るeffectが走るたびに**全キー**のsetterが呼ばれ、値が同じでも依存先を再評価させてしまい、結局同じ問題に戻る。
+各行は自分の key の signal だけを購読するので、他の行の値が変わっても再レンダーされない。`if (get() !== next)` のガードも重要——これが無いと、`items` 全体を辿る effect が走るたびに**全キー**の setter が呼ばれ、値が同じでも依存先を再評価させてしまい、結局同じ問題に戻る。
 
 ## 追記: index追従はフレームワーク側で直った
 
-上の2番目の例が回避しようとしていた「keyedな`.map()`の生のループindexが並べ替え後に古いまま固まる」問題自体は、[piconic-ai/barefootjs#2860](https://github.com/piconic-ai/barefootjs/pull/2860)でフレームワーク本体が修正した——`mapArray`/`mapArrayLazy`がindexをitemと同じ仕組みでトラッキングするようになったため、この特定のケースについては自前のper-key signalはもう不要。ただし、signal読み取りも関数呼び出しも含まない生のindex単体の式は今も未対応([piconic-ai/barefootjs#2861](https://github.com/piconic-ai/barefootjs/issues/2861)、2026-09時点でOPEN)。詳細は[[barefootjs-loop-index-reactivity]]を参照。
+上の2番目の例が回避しようとしていた「keyed な `.map()` の生のループ index が並べ替え後に古いまま固まる」問題自体は、[piconic-ai/barefootjs#2860](https://github.com/piconic-ai/barefootjs/pull/2860)でフレームワーク本体が修正した——`mapArray`/`mapArrayLazy` が index を item と同じ仕組みでトラッキングするようになったため、この特定のケースについては自前の per-key signal はもう不要。ただし、signal 読み取りも関数呼び出しも含まない生の index 単体の式は今も未対応([piconic-ai/barefootjs#2861](https://github.com/piconic-ai/barefootjs/issues/2861)、2026-09時点で OPEN)。詳細は [[barefootjs-loop-index-reactivity]] を参照。
 
-このper-key signalパターン自体(コレクション全体を1つのsignal/memoに持たない、という設計判断)は、フレームワークが面倒を見ない独自の派生状態全般に今も有効。
+この per-key signal パターン自体(コレクション全体を1つの signal/memo に持たない、という設計判断)は、フレームワークが面倒を見ない独自の派生状態全般に今も有効。
 
 ## 理解度チェック
 
@@ -78,6 +78,6 @@ per-key signalパターンで、`if (get() !== next) set(next)`のガードを�
 
 ## 出典
 
-- スライド編集GUI(Tauri + BarefootJS CSR)のサムネイル一覧実装で、同じ形の問題を2回(サムネイルHTML、並べ替え後のindex追従)踏んで同じパターンで解決した。
+- スライド編集 GUI(Tauri + BarefootJS CSR)のサムネイル一覧実装で、同じ形の問題を2回(サムネイル HTML、並べ替え後の index 追従)踏んで同じパターンで解決した。
 
 #barefootjs #signals #reactivity #performance

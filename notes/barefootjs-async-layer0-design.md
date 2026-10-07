@@ -65,7 +65,7 @@ BarefootJS は SSR を Go や ERB など9つの非 JS テンプレートで行�
 
 `http.get(url, params)` は `{ url, method, params }` を返すだけで IO をしない。この純粋さが4箇所で効く。
 
-- **キー**は `method + url + body の安定直列化` で、送る前に同期で決まる。定義側の `query('posts', fn)` のようなキー登録の API が要らない。
+- **キー**は `method + url + body の安定直列化 ` で、送る前に同期で決まる。定義側の `query('posts', fn)` のようなキー登録の API が要らない。
 - **mount 時に取り直さない。** init 中に関数を評価してもリクエストが飛ばないので、初回キーを得て `initial` をキャッシュに fresh として入れられる。SSR が描いた値をクライアントが即座に取り直す、という React の `useEffect` フェッチの問題は、この規則で消える。規則は SSR に依存せず、「props が先、fetch が後」の順序だけで決まる。
 - **中間状態で評価されても送らずに済む。** リクエスト関数は effect の本体なので、ひし形の依存があると中間状態で1回余計に評価される（[[reactive-glitch]]）。評価しても IO が起きないので、runtime は各評価の記述を記録し、tick の末尾に最後の1つだけを送ればよい。2026-09-23 に「1 tick に1回送る」として spec に追加した。
 - **batch や prefetch が runtime の方針になる。** 同じ tick の記述を集めて1つの HTTP にする DataLoader 的な処理が、コンポーネントのコードを変えずに書ける。

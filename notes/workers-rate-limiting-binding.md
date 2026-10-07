@@ -67,7 +67,7 @@ export async function overLimit(limiter: RateLimit | undefined, request: Request
 
 定数キーでのグローバルな遮断器は入れなかった。ロケーションごとのカウントなので、混んだ1ロケーションの正当な
 利用者だけを止めかねない。緊急時は
-[[cloudflare-vars-only-deploy-keeps-running-durable-objects|メンテナンスモード]]と WAF に任せる。
+[[cloudflare-vars-only-deploy-keeps-running-durable-objects|メンテナンスモード]] と WAF に任せる。
 
 ## 理解度チェック
 

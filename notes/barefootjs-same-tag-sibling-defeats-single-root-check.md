@@ -1,13 +1,13 @@
 ---
 created: 2026-09-13
 updated: 2026-10-07
-title: "BarefootJS: 同じタグ名の兄弟要素がisSingleRootElementの単一root判定を欺く"
+title: "BarefootJS: 同じタグ名の兄弟要素が isSingleRootElement の単一 root 判定を欺く"
 description: BarefootJS のコンパイラが三項演算子cond ?
 tags: [barefootjs, reactivity]
 ---
-# BarefootJS: 同じタグ名の兄弟要素がisSingleRootElementの単一root判定を欺く
+# BarefootJS: 同じタグ名の兄弟要素が isSingleRootElement の単一 root 判定を欺く
 
-[[barefootjs]] のコンパイラが三項演算子`cond ? A : B`の各分岐を`bf-c`属性方式(単一要素)にするか`<!--bf-cond-start-->`コメントマーカー方式(複数要素/fragment)にするか決める`isSingleRootElement`(`packages/jsx/src/ir-to-client-js/html-template.ts`)が、分岐の最初と最後の要素がたまたま**同じタグ名**だと、複数要素の分岐を単一rootと誤判定する。これが[[barefootjs-mismatched-branch-shape-drops-siblings]]で観測された「非対称な三項演算子が兄弟要素を静かに失う」症状の実際のコンパイラ側の原因だった。
+[[barefootjs]] のコンパイラが三項演算子 `cond ? A : B` の各分岐を `bf-c` 属性方式(単一要素)にするか `<!--bf-cond-start-->` コメントマーカー方式(複数要素/fragment)にするか決める `isSingleRootElement`(`packages/jsx/src/ir-to-client-js/html-template.ts`)が、分岐の最初と最後の要素がたまたま**同じタグ名**だと、複数要素の分岐を単一 root と誤判定する。これが [[barefootjs-mismatched-branch-shape-drops-siblings]] で観測された「非対称な三項演算子が兄弟要素を静かに失う」症状の実際のコンパイラ側の原因だった。
 
 ## 元の実装の問題
 
@@ -23,9 +23,9 @@ function isSingleRootElement(html: string): boolean {
 }
 ```
 
-「文字列の末尾が、開始タグと同じタグ名の閉じタグで終わっているか」しか見ていない。`<div id="before">before</div><div id="after">after</div>`のような**2つの`<div>`の兄弟**を渡すと、末尾は確かに`</div>`で終わっているので`true`を返す——ただしそれは2つ目の、無関係な`div`の閉じタグ。ネストの深さを一切追跡していないので、単一rootとの区別がつかない。
+「文字列の末尾が、開始タグと同じタグ名の閉じタグで終わっているか」しか見ていない。`<div id="before">before</div><div id="after">after</div>` のような**2つの `<div>` の兄弟**を渡すと、末尾は確かに `</div>` で終わっているので `true` を返す——ただしそれは2つ目の、無関係な `div` の閉じタグ。ネストの深さを一切追跡していないので、単一 root との区別がつかない。
 
-`addCondAttrToTemplate`はこの判定が`true`だと最初の要素にだけ`bf-c="<id>"`を付け、コメントマーカーを出さない。結果、`insert()`のランタイムは`isFragmentCond: false`と判断して`updateElementConditional`(`fragment.firstChild`しか見ない関数)に流れ、2つ目以降の要素は静かに捨てられる——という経路は[[barefootjs-mismatched-branch-shape-drops-siblings]]で確認済みの通り。
+`addCondAttrToTemplate` はこの判定が `true` だと最初の要素にだけ `bf-c="<id>"` を付け、コメントマーカーを出さない。結果、`insert()` のランタイムは `isFragmentCond: false` と判断して `updateElementConditional`(`fragment.firstChild` しか見ない関数)に流れ、2つ目以降の要素は静かに捨てられる——という経路は [[barefootjs-mismatched-branch-shape-drops-siblings]] で確認済みの通り。
 
 ## 修正: タグの深さを追跡する
 
@@ -54,15 +54,15 @@ return false
 
 ## 書き換える過程で2回踏んだ落とし穴
 
-素朴な「タグらしき`<...>`を全部拾う」正規表現では足りず、実装を進める中で2つの回帰を自分で作って自分で踏んだ。
+素朴な「タグらしき `<...>` を全部拾う」正規表現では足りず、実装を進める中で2つの回帰を自分で作って自分で踏んだ。
 
 **1回目: コメントマーカーをタグとして誤カウント**
 
-BarefootJSは反応的なテキストスロットを`<!--bf:s1-->...<!--/-->`のようなコメントで囲んで表現する。単一rootの中にこのマーカーがあると、`<!--bf:s1-->`は`<`で始まり`>`で終わる文字列なので、コメントを除外しないタグパターンにマッチしてしまい、開始タグとして深さを1つ余分に増やしてしまう。結果、本来単一rootのはずの分岐が「深さが0に戻らない」と誤判定されてコメントマーカー方式に倒れた。ドキュメント例`count() > 0 ? <p>{count} items</p> : <p>No items</p>`のスナップショットが変わったことで発覚した。対策は上のコードにある通り、コメント全体`<!--[\s\S]*?-->`を最初の選択肢に置き、タグより先にマッチさせて素通りさせること。
+BarefootJS は反応的なテキストスロットを `<!--bf:s1-->...<!--/-->` のようなコメントで囲んで表現する。単一 root の中にこのマーカーがあると、`<!--bf:s1-->` は `<` で始まり `>` で終わる文字列なので、コメントを除外しないタグパターンにマッチしてしまい、開始タグとして深さを1つ余分に増やしてしまう。結果、本来単一 root のはずの分岐が「深さが0に戻らない」と誤判定されてコメントマーカー方式に倒れた。ドキュメント例 `count() > 0 ? <p>{count} items</p> : <p>No items</p>` のスナップショットが変わったことで発覚した。対策は上のコードにある通り、コメント全体 `<!--[\s\S]*?-->` を最初の選択肢に置き、タグより先にマッチさせて素通りさせること。
 
-**2回目: 自己終了タグ+兄弟要素を単一rootと誤判定**
+**2回目: 自己終了タグ+兄弟要素を単一 root と誤判定**
 
-`<input .../><label>...</label>`(TodoAppの「toggle all」分岐、自己終了要素の後に別要素が続く)のような入力は、深さ0のまま自己終了タグを無条件で読み飛ばす実装だと、`<input/>`を素通りしてから`<label>`だけを見てしまい、2つが1つの単一rootであるかのように判定してしまう。原因は「深さ0で自己終了タグに出会うことはない」という思い込み——ゲート`/^<(\w+)[\s>]/`はタグ名の直後の1文字(空白か`>`)しか見ておらず、そのタグが後で`/>`で自己終了するかどうかまでは判定していない。`<input id="..." ...`はタグ名の直後が空白なのでゲートを通り、実際には自己終了タグなのにチェックをすり抜ける。この回帰は`generate-expected-html.ts`によるfixtureドリフト検査(`todo-app` fixture)がCI上で検出した——ローカルでは`@barefootjs/client`がビルドされておらずこのチェック自体が無音で失敗していたため、最初は見逃していた。対策は「深さ0での自己終了タグも、他のタグの閉じ位置と同様に単一root判定の対象にする」こと。
+`<input .../><label>...</label>`(TodoApp の「toggle all」分岐、自己終了要素の後に別要素が続く)のような入力は、深さ0のまま自己終了タグを無条件で読み飛ばす実装だと、`<input/>` を素通りしてから `<label>` だけを見てしまい、2つが1つの単一 root であるかのように判定してしまう。原因は「深さ0で自己終了タグに出会うことはない」という思い込み——ゲート `/^<(\w+)[\s>]/` はタグ名の直後の1文字(空白か `>`)しか見ておらず、そのタグが後で `/>` で自己終了するかどうかまでは判定していない。`<input id="..." ...` はタグ名の直後が空白なのでゲートを通り、実際には自己終了タグなのにチェックをすり抜ける。この回帰は `generate-expected-html.ts` による fixture ドリフト検査(`todo-app` fixture)が CI 上で検出した——ローカルでは `@barefootjs/client` がビルドされておらずこのチェック自体が無音で失敗していたため、最初は見逃していた。対策は「深さ0での自己終了タグも、他のタグの閉じ位置と同様に単一 root 判定の対象にする」こと。
 
 ## 理解度チェック
 
@@ -86,7 +86,7 @@ BarefootJSの反応的スロットのマーカーコメント(`<!--bf:s1-->`な�
 
 ## 出典
 
-- `packages/jsx/src/ir-to-client-js/html-template.ts`(`piconic-ai/barefootjs`、2026-09-13時点の`main`)。修正前は commit `1cd0b8e`、修正後は同ファイルの現行版。
-- [piconic-ai/barefootjs#2960](https://github.com/piconic-ai/barefootjs/issues/2960)(issue) / [piconic-ai/barefootjs#2961](https://github.com/piconic-ai/barefootjs/pull/2961)(修正PR、マージ済み)
+- `packages/jsx/src/ir-to-client-js/html-template.ts`(`piconic-ai/barefootjs`、2026-09-13時点の `main`)。修正前は commit `1cd0b8e`、修正後は同ファイルの現行版。
+- [piconic-ai/barefootjs#2960](https://github.com/piconic-ai/barefootjs/issues/2960)(issue) / [piconic-ai/barefootjs#2961](https://github.com/piconic-ai/barefootjs/pull/2961)(修正 PR、マージ済み)
 
 #barefootjs #reactivity

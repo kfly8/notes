@@ -7,16 +7,16 @@ tags: [cloudflare, workers, ci-cd]
 ---
 # Workers Builds
 
-GitHub/GitLab リポジトリを Cloudflare ダッシュボードで接続すると、指定ブランチへのpushで自動的にビルド・デプロイする機能。GitHub Actionsのワークフローや、手動発行した API トークンをGitHub Secretsに登録する作業が要らない。
+GitHub/GitLab リポジトリを Cloudflare ダッシュボードで接続すると、指定ブランチへの push で自動的にビルド・デプロイする機能。GitHub Actions のワークフローや、手動発行した API トークンを GitHub Secrets に登録する作業が要らない。
 
 ## 接続手順
 
-1. ダッシュボード → Workers & Pages → 対象のWorkerを選択
+1. ダッシュボード → Workers & Pages → 対象の Worker を選択
 2. Settings → Builds → Connect
 3. 「Cloudflare Workers & Pages GitHub App」の認可プロンプトに従う
 4. 接続するリポジトリ・ブランチを選ぶ
 
-**ダッシュボード上のWorker名と、wrangler設定ファイルの `name` が一致していないとビルドが失敗する。**
+**ダッシュボード上の Worker 名と、wrangler 設定ファイルの `name` が一致していないとビルドが失敗する。**
 
 ただし 2026-10 に [[pedit]] で観測したのは失敗ではない挙動だった。接続された Worker `edit` に対して `name` が
 `pedit` の設定ファイルでデプロイすると、名前が一致しないと**警告するだけで `edit` としてデプロイされた**。
@@ -44,51 +44,51 @@ GitHub アカウントは1つの Cloudflare アカウントにしか紐づけら
 | API token | 任意 |
 | Build variables and secrets | 任意 |
 
-`main` 以外のブランチへのpushは本番デプロイ(`wrangler deploy`)ではなく、既定では `wrangler versions upload` が動く。2026年9月に [[cloudflare-worker-previews|Worker Previews]] が出てからは、新しい Worker の既定値は Preview command の `npx wrangler preview` になった。既存の Worker は「Switch to Worker Previews」で一度だけ切り替える（元に戻せない）。プルリクエストにはビルド状況のコメントと、`wrangler versions upload` を実行したビルドについてはプレビューURLが付く。以下のプレビューURLの節は、`versions upload` 方式のときの話。
+`main` 以外のブランチへの push は本番デプロイ(`wrangler deploy`)ではなく、既定では `wrangler versions upload` が動く。2026年9月に [[cloudflare-worker-previews|Worker Previews]] が出てからは、新しい Worker の既定値は Preview command の `npx wrangler preview` になった。既存の Worker は「Switch to Worker Previews」で一度だけ切り替える（元に戻せない）。プルリクエストにはビルド状況のコメントと、`wrangler versions upload` を実行したビルドについてはプレビュー URL が付く。以下のプレビュー URL の節は、`versions upload` 方式のときの話。
 
-wranglerのバージョンは `package.json` に指定したものが使われる。
+wrangler のバージョンは `package.json` に指定したものが使われる。
 
 自己ホストの GitHub/GitLab インスタンスは非対応(2026年8月時点)。
 
 ## プレビューURL（`versions upload` 方式）
 
-`main` 以外のブランチへの `wrangler versions upload` は、`<ブランチ名>-<Worker名>.<サブドメイン>.workers.dev` という固定のプレビューURLを生成する。ブランチ名に含まれる `.` は `-` に置き換わる。バージョンごとに変わる `<hash>-<Worker名>....workers.dev` とは別物で、こちらはそのブランチへの最新pushを常に指す安定したURLになる。
+`main` 以外のブランチへの `wrangler versions upload` は、`<ブランチ名>-<Worker名>.<サブドメイン>.workers.dev` という固定のプレビュー URL を生成する。ブランチ名に含まれる `.` は `-` に置き換わる。バージョンごとに変わる `<hash>-<Worker名>....workers.dev` とは別物で、こちらはそのブランチへの最新 push を常に指す安定した URL になる。
 
-このプレビューURLが実際に有効になるには2つの条件が要る。
+このプレビュー URL が実際に有効になるには2つの条件が要る。
 
-1. **`preview_urls` が有効であること。** wrangler設定の `preview_urls` は既定で `workers_dev` の値を継承する。カスタムドメインのみで運用していて `workers_dev: false` にしている場合、明示的に `preview_urls: true` を書かないと、ビルド自体は成功してもプレビューURLが一切生成されない。
-2. **ダッシュボードの Domains タブで、ワイルドカードのプレビュードメイン（`*-<Worker名>.<サブドメイン>.workers.dev`）を個別にONにすること。** Builds の設定画面とは別の場所・別のトグルなので見落としやすい。
+1. **`preview_urls` が有効であること。** wrangler 設定の `preview_urls` は既定で `workers_dev` の値を継承する。カスタムドメインのみで運用していて `workers_dev: false` にしている場合、明示的に `preview_urls: true` を書かないと、ビルド自体は成功してもプレビュー URL が一切生成されない。
+2. **ダッシュボードの Domains タブで、ワイルドカードのプレビュードメイン（`*-<Worker名>.<サブドメイン>.workers.dev`）を個別に ON にすること。** Builds の設定画面とは別の場所・別のトグルなので見落としやすい。
 
 Cloudflare Access はこのワイルドカードドメインに対してポリシーを適用でき、ブランチを問わずすべてのプレビューを一括で認証保護できる。
 
 ## push トリガーのみでリリース限定デプロイをしたいとき
 
-Workers Builds は push トリガーしか持たず、タグ作成やGitHub Releaseのようなイベントでは発火しない。「実際にリリースが確定した時だけ本番へ反映したい」場合は、Production branch に専用のブランチ（例: `release`）を指定し、CI側でリリースが確定した瞬間だけそのブランチを進める構成にする。通常の開発ブランチ（`main` 含む）へのpushはこの専用ブランチに触れないので、本番デプロイの引き金にならない。
+Workers Builds は push トリガーしか持たず、タグ作成や GitHub Release のようなイベントでは発火しない。「実際にリリースが確定した時だけ本番へ反映したい」場合は、Production branch に専用のブランチ（例: `release`）を指定し、CI 側でリリースが確定した瞬間だけそのブランチを進める構成にする。通常の開発ブランチ（`main` 含む）への push はこの専用ブランチに触れないので、本番デプロイの引き金にならない。
 
 このブランチを進める操作自体を安全に実装する方法は [[github-api-ref-update]] を参照。[[tagpr]] と組み合わせた全体の構成は [[tagpr-workers-builds-release-flow]]。
 
 ## 本番とプレビューを1つのWorkerで共存させる制約
 
-Custom Domain は、そのWorkerの**現在アクティブ（＝昇格済み）なバージョン**に紐づく。1つのWorkerに複数のCustom Domainを設定しても、すべて同じアクティブバージョンを指すため、「ドメインAは本番のバージョン、ドメインBは開発中の最新バージョン」のように、ドメインごとに異なるバージョンを常時出し分けることはできない。
+Custom Domain は、その Worker の**現在アクティブ（＝昇格済み）なバージョン**に紐づく。1つの Worker に複数の Custom Domain を設定しても、すべて同じアクティブバージョンを指すため、「ドメイン A は本番のバージョン、ドメイン B は開発中の最新バージョン」のように、ドメインごとに異なるバージョンを常時出し分けることはできない。
 
-一方、上記のブランチごとのプレビューURLは「昇格されていない特定バージョン」に直接ひも付くため、アクティブバージョンとは独立して存在し続けられる。本番とプレビューを両立したい場合は、本番をCustom Domain、プレビューをプレビューURLの仕組みに任せる、という役割分担になる。
+一方、上記のブランチごとのプレビュー URL は「昇格されていない特定バージョン」に直接ひも付くため、アクティブバージョンとは独立して存在し続けられる。本番とプレビューを両立したい場合は、本番を Custom Domain、プレビューをプレビュー URL の仕組みに任せる、という役割分担になる。
 
-ただしこのバージョンは本番と同じバインディング（本番のDBなど）を使い、`wrangler versions deploy` すれば本番に昇格できてしまう。バインディングを分け、昇格もできない別枠の環境にしたいなら [[cloudflare-worker-previews]] を使う。
+ただしこのバージョンは本番と同じバインディング（本番の DB など）を使い、`wrangler versions deploy` すれば本番に昇格できてしまう。バインディングを分け、昇格もできない別枠の環境にしたいなら [[cloudflare-worker-previews]] を使う。
 
 ## kobaken.co での実際の設定
 
 - Build command: `bun install && bun run build`
 - Deploy command: 既定の `npx wrangler deploy` のまま
-- API tokenは未入力。`wrangler.jsonc` に `account_id` を直接書いていた(account IDは非機密情報で、ダッシュボードのURLにそのまま出る)ので、それだけで通った
+- API token は未入力。`wrangler.jsonc` に `account_id` を直接書いていた(account ID は非機密情報で、ダッシュボードの URL にそのまま出る)ので、それだけで通った
 
-結果、GitHub Actions側で書いていたデプロイ用ワークフロー(`CLOUDFLARE_API_TOKEN` をSecretsに登録する方式)は丸ごと不要になった。
+結果、GitHub Actions 側で書いていたデプロイ用ワークフロー(`CLOUDFLARE_API_TOKEN` を Secrets に登録する方式)は丸ごと不要になった。
 
 ## `@cloudflare/ci`([[cloudflare-ci]])との違い
 
 名前が紛らわしいが別物。
 
-- **Workers Builds**: ダッシュボードで設定する、Workers/Pagesの「pushしたらデプロイ」に特化したシンプルな機能。今回使ったのはこちら
-- **`@cloudflare/ci`**: Workflows / Sandbox SDK / Artifacts の上に構築された、TypeScriptでパイプラインを書く汎用CI/CD製品。自己修復エージェントなど、単純なpushデプロイより高度な機能を持つ
+- **Workers Builds**: ダッシュボードで設定する、Workers/Pages の「push したらデプロイ」に特化したシンプルな機能。今回使ったのはこちら
+- **`@cloudflare/ci`**: Workflows / Sandbox SDK / Artifacts の上に構築された、TypeScript でパイプラインを書く汎用 CI/CD 製品。自己修復エージェントなど、単純な push デプロイより高度な機能を持つ
 
 ## プレビュービルドの失敗を調べる
 

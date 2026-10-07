@@ -1,6 +1,6 @@
 ---
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-10-07
 title: peitho のデッキを URL を変えずに言語切替する
 description: peitho の frontmatter には lang があるだけで、1つのデッキに複数言語を持つ仕組みはない。
 tags: [peitho, slides, i18n]
@@ -32,7 +32,11 @@ window.fetch = function (u, o) {
 
 ## `<head>` に置く理由
 
-ビューアの JS はスライドを読む前に走る。`fetch` の差し替えはそれより前、つまり `<head>` の先頭でないと間に合わない。1ファイルに全部インライン化した配布物でも、同じシムをコピーして `fetch` の代わりに埋め込み表を引く形にすれば動く。
+ビューアの JS はスライドを読む前に走る。`fetch` の差し替えはそれより前、つまり `<head>` の先頭でないと間に合わない。
+
+### 1ファイルにまとめた配布物でも同じ形で動く
+
+peitho 自体には1ファイルにまとめた配布物を作るコマンドはない（v1.34.0 の `peitho export` は `pdf` だけ。上流のリリースノートも v1.39.0 まで見たが該当する項目はない）。そこで v1.34.0 の `peitho build --out` で `deck.md` と `deck.ja.md` を別々に組み、`index.html` に `peitho.css` と両言語の `manifest.json`・`slides/*.html` を手で埋め込んだ単一ファイルを作って試した。シムは上と同じものを `<head>` 先頭に置き、`fetch` の包みだけを「URL が埋め込み表 `{lang: {url: 本文}}` にあれば `new Response(本文)` を返す」形に変えた。`file://` で開いた headless Chromium 153（Playwright 1.63.0）で、`localStorage` に `bf-lang` を書いてリロードすると `<html lang>`・`document.title`・スライド本文が切り替わり、`?slide=N` の位置も保たれた。`manifest.json` と `slides/` への要求は一件も飛ばない（埋め込まなかった `theme-fonts/*.woff2` だけが読まれる）。
 
 ## 日本語版で別に要ったこと
 

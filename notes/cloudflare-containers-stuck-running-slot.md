@@ -1,6 +1,6 @@
 ---
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-10-07
 title: 停止した Cloudflare Container が running 枠を握ったままになる
 description: Cloudflare Containers のインスタンスが、アイドル停止したあともプラットフォーム側で「動いている」扱いのまま残ることがある。
 tags: [cloudflare, containers, durable-objects, troubleshooting]
@@ -25,7 +25,7 @@ Cloudflare Containers のインスタンスが、アイドル停止したあと�
 
 紛らわしいが、起動そのものに失敗したときの `Failed to start container: The container is not listening in the TCP address ...` とは別物。あちらは起動を試みた結果で、`lite` の資源が足りずコールドスタートが readiness チェックに間に合わない、といった原因がある（[[cloudflare-containers]]）。こちらは**起動を試みてすらいない**（Durable Object が「もう動いている」と思っているため）ので、メッセージの頭が `Error proxying request to container:` になる。
 
-後者が決め手になった。`max_instances = 1` の設定で、新しい名前の Durable Object から起動しようとすると上限超過で弾かれる。**停止したはずの古いインスタンスが枠を占有している**ということ。実際、新しい名前に切り替えてから最初の約 6 分間は上限超過で起動できず、古いインスタンスが解放された直後に起動して 200 を返すようになった。
+後者が決め手になった。`max_instances = 1` の設定で、新しい名前の Durable Object から起動しようとすると上限超過で弾かれる。**停止したはずの古いインスタンスが枠を占有している**ということ。実際、新しい名前に切り替えてから最初の約 6分間は上限超過で起動できず、古いインスタンスが解放された直後に起動して 200 を返すようになった。
 
 `wrangler containers instances <app-id>` の表示は当てにならない。壊れている最中の STATE は `stopped` や `inactive` と出るのに、枠は握られたままだった。
 
@@ -33,10 +33,10 @@ Cloudflare Containers のインスタンスが、アイドル停止したあと�
 
 観測した範囲では、**デプロイ（ロールアウト）後の最初のアイドル停止**で起きる。デプロイ直後の起動は成功し、`sleepAfter` を過ぎて止まった次のアクセスから 500 になる。
 
-- 同じアプリで 3 回続けて再現した。
+- 同じアプリで 3回続けて再現した。
 - 別のアプリでも起きた。特定のイメージやフレームワークに固有ではない。
 - PID 1 に tini を置いても外しても起きる → [[container-pid1-sigterm]] とは無関係。最初は tini を疑って puma のイメージから外したが、外した状態のデプロイでまた詰まったので、そこで切り離せた。
-- 毎回必ず起きるわけではない。デプロイ 1 回につき、16 個のうち 1 つが詰まる、くらいの頻度だった。詰まらずに何度も止まって起き直すデプロイもある。
+- 毎回必ず起きるわけではない。デプロイ 1回につき、16個のうち 1つが詰まる、くらいの頻度だった。詰まらずに何度も止まって起き直すデプロイもある。
 
 Durable Object 側の様子も揃って壊れている。`Container` の状態は `healthy` のまま、`ctx.container.running` は true、そして **alarm が動かなくなる**ので、状態を取り直す機会が来ない。`wrangler tail` にはリクエストのエラーだけが並び、alarm のイベントが出てこない。
 
@@ -44,7 +44,7 @@ Durable Object 側の様子も揃って壊れている。`Container` の状態�
 
 同じイメージ・同じ設定の**別 Worker を workers.dev に立てて比べる**のが効いた。本番と同じイメージ（レジストリのダイジェストを直接指定）、同じ `lite`、ライフサイクルのログだけ足した写しで、次のどれでも再現しなかった。
 
-- `sleepAfter` 30 秒 / 2 分で、停止と再起動を数サイクル
+- `sleepAfter` 30秒 / 2分で、停止と再起動を数サイクル
 - 稼働中にイメージを差し替えるデプロイ（ロールアウト）を挟んでから、停止と再起動
 
 これで、イメージ・Worker のコード・`instance_type`・`sleepAfter` のどれも原因ではないと言える。メモリも無関係だった（256MiB 上限に対して実測 55〜70MiB、30 並列でも増えない）。
@@ -77,7 +77,7 @@ export class MyContainer extends Container<Env> {
 | `max_instances` を増やす | 枠を握られていても新しいインスタンスを起動できる | 握られたままのインスタンスが残ると費用が増える恐れ |
 | `containerFetch` の失敗を見て `destroy()` してから起動し直す | 自動で復旧できる | プラットフォーム側の不整合を利用側で拭う形になる |
 
-3 つ目は `Container` のサブクラスにすると、全アプリで同じ扱いにできる。
+3つ目は `Container` のサブクラスにすると、全アプリで同じ扱いにできる。
 
 ```ts
 export class SelfHealingContainer<Env = unknown> extends Container<Env> {

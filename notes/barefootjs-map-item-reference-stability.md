@@ -1,21 +1,21 @@
 ---
 created: 2026-09-07
 updated: 2026-10-07
-title: "BarefootJS: keyedな.map()のitemは、内容が同じでも参照が別なら「変わった」扱いになる"
+title: "BarefootJS: keyed な.map()の item は、内容が同じでも参照が別なら「変わった」扱いになる"
 description: per-key signalパターンで個々のデータをキーごとに分けても、.map()のitem自体が構造的に同じ内容で参照だけ新しくなるオブジェクトだと、それだけでその行の全bindingが再評価される。
 tags: [barefootjs, signals, reactivity, performance]
 ---
-# BarefootJS: keyedな.map()のitemは、内容が同じでも参照が別なら「変わった」扱いになる
+# BarefootJS: keyed な.map()の item は、内容が同じでも参照が別なら「変わった」扱いになる
 
-[[barefootjs-per-key-signal-pattern|per-key signalパターン]]で個々のデータをキーごとに分けても、`.map()`の**item自体**が構造的に同じ内容で参照だけ新しくなるオブジェクトだと、それだけでその行の全bindingが再評価される。原因はitem用のper-item signal自体が参照比較(`Object.is`)でしか変化を判定しないこと。
+[[barefootjs-per-key-signal-pattern|per-key signalパターン]] で個々のデータをキーごとに分けても、`.map()` の**item 自体**が構造的に同じ内容で参照だけ新しくなるオブジェクトだと、それだけでその行の全 binding が再評価される。原因は item 用の per-item signal 自体が参照比較(`Object.is`)でしか変化を判定しないこと。
 
 ## 症状
 
-APIレスポンス(JSON経由など)を毎回まるごと再構築して`.map()`に渡すと、内容が1件も変わっていない行まで再描画される。具体例: スライド編集GUIで、あるスライドを編集するたびに、他の**無関係な**スライドのサムネイル(`<iframe srcdoc>`)までリロードされてちらついた。[[barefootjs-per-key-signal-pattern]]で個別データ(サムネイルHTML、位置情報)をper-key signal化していたにもかかわらず再発した。
+API レスポンス(JSON 経由など)を毎回まるごと再構築して `.map()` に渡すと、内容が1件も変わっていない行まで再描画される。具体例: スライド編集 GUI で、あるスライドを編集するたびに、他の**無関係な**スライドのサムネイル(`<iframe srcdoc>`)までリロードされてちらついた。[[barefootjs-per-key-signal-pattern]] で個別データ(サムネイル HTML、位置情報)を per-key signal 化していたにもかかわらず再発した。
 
 ## 原因
 
-`packages/client/src/reactive.ts`の`createSignal`は、setterで`Object.is(oldValue, newValue)`が真なら**何もせず抜ける**:
+`packages/client/src/reactive.ts` の `createSignal` は、setter で `Object.is(oldValue, newValue)` が真なら**何もせず抜ける**:
 
 ```ts
 const set = (valueOrFn) => {
@@ -28,7 +28,7 @@ const set = (valueOrFn) => {
 }
 ```
 
-一方、`mapArray`(`.map()`の実行エンジン)は、同じkeyの行を再利用するとき、値の比較を一切せず無条件でitemを流し込む:
+一方、`mapArray`(`.map()` の実行エンジン)は、同じ key の行を再利用するとき、値の比較を一切せず無条件で item を流し込む:
 
 ```ts
 const existing = scopes.get(key)
@@ -38,13 +38,13 @@ if (existing) {
 }
 ```
 
-APIレスポンスをJSON経由で毎回まるごと再パースしていると、**内容が1バイトも変わっていない要素でも、新しいオブジェクト参照**になる。`existing.setItem(newButEqualItem)`が呼ばれ、item用signalの`set()`にたどり着くが、`Object.is(oldRef, newRef)`は**参照が違うので偽**——結果、内容が同じでも「変わった」と判定され、購読者(その行のJSXバインディング全部)が再評価される。
+API レスポンスを JSON 経由で毎回まるごと再パースしていると、**内容が1バイトも変わっていない要素でも、新しいオブジェクト参照**になる。`existing.setItem(newButEqualItem)` が呼ばれ、item 用 signal の `set()` にたどり着くが、`Object.is(oldRef, newRef)` は**参照が違うので偽**——結果、内容が同じでも「変わった」と判定され、購読者(その行の JSX バインディング全部)が再評価される。
 
-さらに厄介なのは、`slide.key`のように**itemの一部を読むだけ**(per-key signalのMapキーを決めるためだけ、など)でも、コンパイラの`wrapLoopParamAsAccessor`変換により、そのbinding全体が`item`(のsignal)に依存する扱いになること。つまり、per-key signal自体は正しく値の変化を判定していても、item読み取りを1つでも含むbindingは「itemが変わった」という上位のシグナルにつられて再評価されてしまう。
+さらに厄介なのは、`slide.key` のように**item の一部を読むだけ**(per-key signal の Map キーを決めるためだけ、など)でも、コンパイラの `wrapLoopParamAsAccessor` 変換により、その binding 全体が `item`(の signal)に依存する扱いになること。つまり、per-key signal 自体は正しく値の変化を判定していても、item 読み取りを1つでも含む binding は「item が変わった」という上位のシグナルにつられて再評価されてしまう。
 
 ## 対処: 内容が同じなら前回のオブジェクト参照を再利用する
 
-APIレスポンス(または`.map()`に渡す配列)を新しく受け取ったら、要素ごとに**前回の対応する要素と構造的に同じかどうか**を比較し、同じなら前回のオブジェクト参照をそのまま使う。
+API レスポンス(または `.map()` に渡す配列)を新しく受け取ったら、要素ごとに**前回の対応する要素と構造的に同じかどうか**を比較し、同じなら前回のオブジェクト参照をそのまま使う。
 
 ```ts
 function stabilizeByKey<T extends { key: string }>(previous: T[], next: T[]): T[] {
@@ -59,7 +59,7 @@ function stabilizeByKey<T extends { key: string }>(previous: T[], next: T[]): T[
 setItems(stabilizeByKey(items(), freshlyParsedItems))
 ```
 
-これにより、内容が同じ要素は`existing.setItem(sameRef)`と同じ参照で呼ばれ、`Object.is`比較で弾かれて購読者への通知が止まる——その行のbindingは一切再評価されない。実際に、無関係なスライドの`<iframe srcdoc>`変異回数が(ヘッドレスPlaywrightで計測して)編集のたびに4件→0件になった。
+これにより、内容が同じ要素は `existing.setItem(sameRef)` と同じ参照で呼ばれ、`Object.is` 比較で弾かれて購読者への通知が止まる——その行の binding は一切再評価されない。実際に、無関係なスライドの `<iframe srcdoc>` 変異回数が(ヘッドレス Playwright で計測して)編集のたびに4件→0件になった。
 
 ## 理解度チェック
 
@@ -77,7 +77,7 @@ per-key signalで個々のデータをキーごとに分けているのに、な
 
 ## 出典
 
-- `packages/client/src/reactive.ts`(`createSignal`の`set`、`Object.is`比較)、`packages/client/src/runtime/map-array.ts`(`mapArray`の`existing.setItem(item)`)——`@barefootjs/client@0.35.0`。`createSignal`のあるファイルは`runtime/`の下ではなく`src/`直下の`reactive.ts`で、本文(原因の節)の旧表記`runtime/reactive.ts`は誤りだった。BarefootJSリポジトリ(`afdf77e3c`時点、`@barefootjs/*@0.39.1`)で`git ls-files`と`git log --all --follow -- packages/client/src/reactive.ts`を確認したところ、`packages/client/src/runtime/reactive.ts`はどのコミットにも存在せず(`git log --all`が空)、`reactive.ts`は2025-12-20の初期コミット以来`packages/client/src/`直下にあり、移動はしていない。`map-array.ts`だけが`runtime/`の下にある。
-- スライド編集GUI(Tauri + BarefootJS CSR)で、ヘッドレスPlaywright + IPCスタブによる`<iframe srcdoc>`のDOM変異回数の直接計測で発見・検証した。
+- `packages/client/src/reactive.ts`(`createSignal` の `set`、`Object.is` 比較)、`packages/client/src/runtime/map-array.ts`(`mapArray` の `existing.setItem(item)`)——`@barefootjs/client@0.35.0`。`createSignal` のあるファイルは `runtime/` の下ではなく `src/` 直下の `reactive.ts` で、本文(原因の節)の旧表記 `runtime/reactive.ts` は誤りだった。BarefootJS リポジトリ(`afdf77e3c` 時点、`@barefootjs/*@0.39.1`)で `git ls-files` と `git log --all --follow -- packages/client/src/reactive.ts` を確認したところ、`packages/client/src/runtime/reactive.ts` はどのコミットにも存在せず(`git log --all` が空)、`reactive.ts` は2025-12-20の初期コミット以来 `packages/client/src/` 直下にあり、移動はしていない。`map-array.ts` だけが `runtime/` の下にある。
+- スライド編集 GUI(Tauri + BarefootJS CSR)で、ヘッドレス Playwright + IPC スタブによる `<iframe srcdoc>` の DOM 変異回数の直接計測で発見・検証した。
 
 #barefootjs #signals #reactivity #performance

@@ -1,13 +1,13 @@
 ---
 created: 2026-09-11
-updated: 2026-09-14
-title: Tauriアプリを、実ウィンドウを起動せずにPlaywrightでテストする
+updated: 2026-10-07
+title: Tauri アプリを、実ウィンドウを起動せずに Playwright でテストする
 description: Tauriアプリのフロントエンドはwindow.__TAURI_INTERNALS__.invoke(cmd, args)経由でRust側の#[tauri::command]を呼ぶ。
 tags: [tauri, playwright, testing]
 ---
-# Tauriアプリを、実ウィンドウを起動せずにPlaywrightでテストする
+# Tauri アプリを、実ウィンドウを起動せずに Playwright でテストする
 
-Tauriアプリのフロントエンドは`window.__TAURI_INTERNALS__.invoke(cmd, args)`経由でRust側の`#[tauri::command]`を呼ぶ。この関数をPlaywrightの`page.exposeFunction`+`page.addInitScript`で差し替えれば、本物のTauriウィンドウを一切起動せずに、プレーンなブラウザタブ上で実際のフロントエンドコード(コンポーネント・状態管理・DOM操作)をそのまま動かせる。
+Tauri アプリのフロントエンドは `window.__TAURI_INTERNALS__.invoke(cmd, args)` 経由で Rust 側の `#[tauri::command]` を呼ぶ。この関数を Playwright の `page.exposeFunction`+`page.addInitScript` で差し替えれば、本物の Tauri ウィンドウを一切起動せずに、プレーンなブラウザタブ上で実際のフロントエンドコード(コンポーネント・状態管理・DOM 操作)をそのまま動かせる。
 
 ## 実装
 
@@ -39,23 +39,23 @@ export async function mockTauri(page: Page, /* テスト用の状態 */): Promis
 }
 ```
 
-`page.goto('/')`より前にこれを呼んでおけば、以降のアプリのコードは実物のTauri環境と何も変わらず動く——`invoke()`を直接呼んでいるかどうかに関わらず、実際に叩かれるのは`window.__TAURI_INTERNALS__.invoke`というグローバル関数1点なので、差し替え箇所はここ1箇所で足りる。
+`page.goto('/')` より前にこれを呼んでおけば、以降のアプリのコードは実物の Tauri 環境と何も変わらず動く——`invoke()` を直接呼んでいるかどうかに関わらず、実際に叩かれるのは `window.__TAURI_INTERNALS__.invoke` というグローバル関数1点なので、差し替え箇所はここ1箇所で足りる。
 
 ## この手法が有効な理由
 
-Tauriアプリの実e2e(実ウィンドウを`tauri-driver`で駆動するもの)を用意するのは、別立てのインフラが要って重い。一方、プレーンな開発サーバー(フロントエンドだけを`vite`などで配信するもの)に対するスモークテストは、「ようこそ画面が表示されるだけ」で止まりがちだった——`invoke()`が呼ばれた瞬間にrejectし、アプリはTauri未検出のフォールバック状態のまま先に進めないため。
+Tauri アプリの実 e2e(実ウィンドウを `tauri-driver` で駆動するもの)を用意するのは、別立てのインフラが要って重い。一方、プレーンな開発サーバー(フロントエンドだけを `vite` などで配信するもの)に対するスモークテストは、「ようこそ画面が表示されるだけ」で止まりがちだった——`invoke()` が呼ばれた瞬間に reject し、アプリは Tauri 未検出のフォールバック状態のまま先に進めないため。
 
-このモックを挟むことで、「実ウィンドウは要らないが、ようこそ画面より先の実際のアプリロジック(デッキを開く、スライドを編集する、右クリックメニューを操作する、など)を検証したい」という中間の要求を満たせる。バックエンド側の戻り値は本物のRust実装ではなく自作のスタブなので、peitho-core(Rust)の実際の出力やWKWebView固有の挙動(`adoptedStyleSheets`、フォント登録、ネイティブ右クリックなど)は検証できない——その部分は引き続き実機での確認が必要([[tauri-macos-window-automation]]参照。OSレベルのGUI自動化には構造的なブラスト半径の問題があり、macOSでは`tauri-driver`の代わりにアプリ内JSブリッジ方式が現実的な解)。
+このモックを挟むことで、「実ウィンドウは要らないが、ようこそ画面より先の実際のアプリロジック(デッキを開く、スライドを編集する、右クリックメニューを操作する、など)を検証したい」という中間の要求を満たせる。バックエンド側の戻り値は本物の Rust 実装ではなく自作のスタブなので、peitho-core(Rust)の実際の出力や WKWebView 固有の挙動(`adoptedStyleSheets`、フォント登録、ネイティブ右クリックなど)は検証できない——その部分は引き続き実機での確認が必要([[tauri-macos-window-automation]] 参照。OS レベルの GUI 自動化には構造的なブラスト半径の問題があり、macOS では `tauri-driver` の代わりにアプリ内 JS ブリッジ方式が現実的な解)。
 
 ## 効果: 実際にバグを発見・修正できた
 
-この手法を導入する前は、実機でのバグ再現・修正・再確認のたびに手作業のGUI自動化(`osascript`/`cliclick`)が必要で、時間がかかるだけでなく、複数デスクトップ(Mission Control Spaces)環境ではクリック座標が意図しないウィンドウ・別セッションに着地する事故も起きていた。
+この手法を導入する前は、実機でのバグ再現・修正・再確認のたびに手作業の GUI 自動化(`osascript`/`cliclick`)が必要で、時間がかかるだけでなく、複数デスクトップ(Mission Control Spaces)環境ではクリック座標が意図しないウィンドウ・別セッションに着地する事故も起きていた。
 
-この手法に切り替えたことで、実際に2件のバグを自律的に(実機での対話的操作なしに)再現・特定・修正・回帰テスト化できた——[[barefootjs-map-ref-detached-document]]と、Cut/Copy/Deleteが常に無効化される右クリックメニューのバグ([[barefootjs-map-delegated-handler-stoppropagation]])。いずれもRustバックエンドの実際の出力に依存しない、フロントエンド自身のロジック・DOM操作のバグだったため、このモックで十分再現できた。
+この手法に切り替えたことで、実際に2件のバグを自律的に(実機での対話的操作なしに)再現・特定・修正・回帰テスト化できた——[[barefootjs-map-ref-detached-document]] と、Cut/Copy/Delete が常に無効化される右クリックメニューのバグ([[barefootjs-map-delegated-handler-stoppropagation]])。いずれも Rust バックエンドの実際の出力に依存しない、フロントエンド自身のロジック・DOM 操作のバグだったため、このモックで十分再現できた。
 
 ## 関連: CSSバグの再現には実際のビルド成果物を使う
 
-Shadow DOM移行で見つかった`text-align`継承バグ([[shadow-dom-inherits-ancestor-styles]])は、上記のIPCモックではなく別の再現手法で見つけた——実際に開いていたデッキのビルドキャッシュ(`.peitho/present-cache/`)から本物のfragment HTML・テーマCSSを直接読み出し、実際のDOM祖先構造を再現したPlaywrightページで視覚的に確認した。IPCモックが有効なのは「アプリのロジック・状態遷移を検証したい」場合、実ビルド成果物の直接読み出しが有効なのは「実際のレンダリング結果・CSSの見た目を検証したい」場合、という住み分けになる。
+Shadow DOM 移行で見つかった `text-align` 継承バグ([[shadow-dom-inherits-ancestor-styles]])は、上記の IPC モックではなく別の再現手法で見つけた——実際に開いていたデッキのビルドキャッシュ(`.peitho/present-cache/`)から本物の fragment HTML・テーマ CSS を直接読み出し、実際の DOM 祖先構造を再現した Playwright ページで視覚的に確認した。IPC モックが有効なのは「アプリのロジック・状態遷移を検証したい」場合、実ビルド成果物の直接読み出しが有効なのは「実際のレンダリング結果・CSS の見た目を検証したい」場合、という住み分けになる。
 
 ## 理解度チェック
 
@@ -79,6 +79,6 @@ CSSの見た目に関するバグ(text-align継承など)を再現する場合�
 
 ## 出典
 
-- Tauri v2 + BarefootJS CSRのデスクトップアプリ(スライド編集GUI)で、実機デバッグの手間を減らすためにユーザーの要望で導入した。
+- Tauri v2 + BarefootJS CSR のデスクトップアプリ(スライド編集 GUI)で、実機デバッグの手間を減らすためにユーザーの要望で導入した。
 
 #tauri #playwright #testing

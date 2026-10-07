@@ -7,7 +7,7 @@ tags: [unocss, css]
 ---
 # UnoCSS の arbitrary value のハマりどころ
 
-UnoCSS の `presetWind4` では、見た目どおりには解釈されない arbitrary value にたびたび遭遇する。`text-[...]` 系で[[barefootjs-hono-scaffold|BarefootJS の Hono scaffold]]で使った際に3つ、`border-[...]` 系で別の Tauri + BarefootJS CSR プロジェクトで使った際に1つ、踏んだ。
+UnoCSS の `presetWind4` では、見た目どおりには解釈されない arbitrary value にたびたび遭遇する。`text-[...]` 系で [[barefootjs-hono-scaffold|BarefootJS の Hono scaffold]] で使った際に3つ、`border-[...]` 系で別の Tauri + BarefootJS CSR プロジェクトで使った際に1つ、踏んだ。
 
 ## `text-[xx-large]` は文字色として解釈される
 

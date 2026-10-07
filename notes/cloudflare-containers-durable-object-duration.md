@@ -1,13 +1,13 @@
 ---
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-10-07
 title: Cloudflare Containers の費用は Durable Object の稼働時間として出てくる
 description: Cloudflare Containers のコンテナは 1 台ごとに Durable Object と紐づいていて、コンテナが動いている間、その DO も「稼働中」として課金される。
 tags: [cloudflare, containers, durable-objects, billing]
 ---
 # Cloudflare Containers の費用は Durable Object の稼働時間として出てくる
 
-Cloudflare Containers のコンテナは 1 台ごとに Durable Object と紐づいていて、**コンテナが動いている間、その DO も「稼働中」として課金される**。コンテナ側の vCPU・メモリ・ディスクだけを見ていると、請求の内訳で Durable Objects Compute Duration のほうが大きくなっていて驚く。
+Cloudflare Containers のコンテナは 1台ごとに Durable Object と紐づいていて、**コンテナが動いている間、その DO も「稼働中」として課金される**。コンテナ側の vCPU・メモリ・ディスクだけを見ていると、請求の内訳で Durable Objects Compute Duration のほうが大きくなっていて驚く。
 
 紐づきは `@cloudflare/containers` の実装でそうなっている。alarm ハンドラの中で、コンテナが動いている間は `setTimeout` を await して DO を意図的に起こしたままにしている。
 
@@ -21,7 +21,7 @@ await new Promise(resolve => {
 })
 ```
 
-実測でも一致する。16 個のコンテナを 3 週間ほど動かしたアカウントで、DO duration 416.22k GB-s をインスタンスあたり固定の 128MB で割ると約 3.3M 秒。同じ期間のコンテナメモリ 839.3k GiB-s を lite の 256MiB で割ると約 3.4M 秒で、ほぼ同じだった。つまり **DO duration ≒ コンテナが起きていた秒数**。
+実測でも一致する。16個のコンテナを 3週間ほど動かしたアカウントで、DO duration 416.22k GB-s をインスタンスあたり固定の 128MB で割ると約 3.3M 秒。同じ期間のコンテナメモリ 839.3k GiB-s を lite の 256MiB で割ると約 3.4M 秒で、ほぼ同じだった。つまり **DO duration ≒ コンテナが起きていた秒数**。
 
 ## 減らすつまみはコンテナの稼働時間しかない
 
@@ -32,7 +32,7 @@ DO duration の GB-s は「128MB × 稼働秒」で決まる。DO 側ででき�
 - クローラーを締め出す（robots.txt、WAF のボット対策）
 - PID 1 がシグナルを無視して止まらなくなっていないか確かめる → [[container-pid1-sigterm]]
 
-無料枠は 400,000 GB-s/月。128MB 固定なので **約 870 時間/月**、つまり平均 1.2 台が常時起きている状態が上限の目安になる。
+無料枠は 400,000 GB-s/月。128MB 固定なので **約 870時間/月**、つまり平均 1.2台が常時起きている状態が上限の目安になる。
 
 ## 無料枠を超えた日だけグラフが跳ねる
 

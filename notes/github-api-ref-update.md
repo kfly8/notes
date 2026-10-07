@@ -1,23 +1,23 @@
 ---
 created: 2026-09-12
-updated: 2026-09-12
-title: GitHub APIでrefをfast-forwardのみ更新する
+updated: 2026-10-07
+title: GitHub API で ref を fast-forward のみ更新する
 description: CIから「あるブランチを、あるコミットまで安全に進める」処理を書くとき、git push origin <src>:<branch> ではなく GitHub REST API の Update a reference エンドポイント（PATCH /repos/{owner}/{repo}/git/refs/{ref}）を直接叩くと、ローカルにコミット履歴を持たずに fast-forward 判定を…
 tags: [git, github, ci-cd]
 ---
-# GitHub APIでrefをfast-forwardのみ更新する
+# GitHub API で ref を fast-forward のみ更新する
 
-CIから「あるブランチを、あるコミットまで安全に進める」処理を書くとき、`git push origin <src>:<branch>` ではなく GitHub REST API の Update a reference エンドポイント（`PATCH /repos/{owner}/{repo}/git/refs/{ref}`）を直接叩くと、ローカルにコミット履歴を持たずに fast-forward 判定をサーバー側に任せられる。
+CI から「あるブランチを、あるコミットまで安全に進める」処理を書くとき、`git push origin <src>:<branch>` ではなく GitHub REST API の Update a reference エンドポイント（`PATCH /repos/{owner}/{repo}/git/refs/{ref}`）を直接叩くと、ローカルにコミット履歴を持たずに fast-forward 判定をサーバー側に任せられる。
 
 ## `git push` が誤って拒否される場面
 
-CIのジョブがそのブランチの過去のコミットをローカルに持たない浅い(shallow)チェックアウトの状態だと、`git push` は本来fast-forwardであるはずの更新すら `! [rejected] ... (fetch first)` で拒否することがある。gitの非強制pushの安全確認は、更新先ブランチの現在のコミットがローカルの祖先として存在することを前提にしており、浅いチェックアウトにはそのコミットオブジェクトが無いため判定できず、安全側に倒して拒否する。
+CI のジョブがそのブランチの過去のコミットをローカルに持たない浅い(shallow)チェックアウトの状態だと、`git push` は本来 fast-forward であるはずの更新すら `! [rejected] ... (fetch first)` で拒否することがある。git の非強制 push の安全確認は、更新先ブランチの現在のコミットがローカルの祖先として存在することを前提にしており、浅いチェックアウトにはそのコミットオブジェクトが無いため判定できず、安全側に倒して拒否する。
 
-この状態を `fetch-depth: 0`（全履歴取得）で回避すると判定は正しく動くが、コストがリポジトリの履歴サイズに比例して増え続ける。`git push --force` にすれば履歴を持たなくて済むが、非fast-forwardを検知する安全弁そのものを失う。
+この状態を `fetch-depth: 0`（全履歴取得）で回避すると判定は正しく動くが、コストがリポジトリの履歴サイズに比例して増え続ける。`git push --force` にすれば履歴を持たなくて済むが、非 fast-forward を検知する安全弁そのものを失う。
 
 ## APIで解決する
 
-GitHub側はそのリポジトリの全履歴をすでに持っているので、fast-forward判定をサーバーに任せれば、ローカルには対象コミットのSHAさえ分かればよく、チェックアウト自体が不要になる。
+GitHub 側はそのリポジトリの全履歴をすでに持っているので、fast-forward 判定をサーバーに任せれば、ローカルには対象コミットの SHA さえ分かればよく、チェックアウト自体が不要になる。
 
 ```sh
 # タグ名を渡してもannotated tagごとコミットSHAまで解決してくれる
@@ -34,22 +34,22 @@ else
 fi
 ```
 
-`git/ref/{ref}`（単数形）は特定の1つのrefを取得するエンドポイントで、存在確認に使う。存在しなければ404になるので、それを見て作成(`POST /git/refs`)と更新(`PATCH /git/refs/{ref}`)を出し分ける。
+`git/ref/{ref}`（単数形）は特定の1つの ref を取得するエンドポイントで、存在確認に使う。存在しなければ404になるので、それを見て作成(`POST /git/refs`)と更新(`PATCH /git/refs/{ref}`)を出し分ける。
 
-`gh api` でboolean値を渡すときは `-f`（文字列）ではなく `-F`（型付き）を使う。`-f force=false` だと文字列 `"false"` が送られてしまい、意図通りに動かない。
+`gh api` で boolean 値を渡すときは `-f`（文字列）ではなく `-F`（型付き）を使う。`-f force=false` だと文字列 `"false"` が送られてしまい、意図通りに動かない。
 
 ## 動作確認
 
 実際のリポジトリに対して両方のパスを確認した。
 
-- 更新先ブランチの現在のSHAと同じ値でPATCH → 成功（冪等、変化なし）
-- 更新先ブランチの祖先コミット（＝後退させる操作）でPATCH → `422 Update is not a fast forward` で拒否、refは変化しない
+- 更新先ブランチの現在の SHA と同じ値で PATCH → 成功（冪等、変化なし）
+- 更新先ブランチの祖先コミット（＝後退させる操作）で PATCH → `422 Update is not a fast forward` で拒否、ref は変化しない
 
 祖先コミットを使ったテストをするときは、`git merge-base --is-ancestor <候補> <現在のブランチ先端>` で本当に祖先であることを確認してから使う。ローカルで別ブランチをチェックアウトした状態のまま `git log` で「古そうなコミット」を拾うと、実際にはそのブランチの派生先(祖先ではなく子孫)を掴んでしまい、「後退できてしまった」ように誤読する。
 
 ## 使われる場面
 
-[[cloudflare-workers-builds]] のように、pushトリガーしか持たないCI/CDを「リリースが確定した時だけ」起動したい場合、専用ブランチ(`release` など)を用意し、リリースが確定した瞬間だけこの方法でそのブランチを進める、という使い方をする。ブランチは自動化専用で人間が直接pushしない前提なら、fast-forward判定だけあれば十分な安全弁になる。
+[[cloudflare-workers-builds]] のように、push トリガーしか持たない CI/CD を「リリースが確定した時だけ」起動したい場合、専用ブランチ(`release` など)を用意し、リリースが確定した瞬間だけこの方法でそのブランチを進める、という使い方をする。ブランチは自動化専用で人間が直接 push しない前提なら、fast-forward 判定だけあれば十分な安全弁になる。
 
 ## 理解度チェック
 

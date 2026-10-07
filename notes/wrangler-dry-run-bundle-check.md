@@ -1,6 +1,6 @@
 ---
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-10-07
 title: wrangler deploy --dry-run で、デプロイ前に Worker のバンドルだけ確かめる
 description: wrangler deploy --dry-run は、アップロードせずにバンドルだけ作る。
 tags: [cloudflare, workers, wrangler, ci]
@@ -32,7 +32,7 @@ await Bun.write('/tmp/x.json', JSON.stringify({ ...rest, main: resolve(dir, rest
 
 `wrangler.toml` の代わりに JSON を渡せるので、TOML を書き戻す必要はない。`main` は設定ファイルからの相対で解決されるので、別の場所に書き出すなら絶対パスにしておく。
 
-16 個のアプリで並列度 4、1 分ほどで終わる。イメージまで作ると 10 分以上かかっていたので、分けるだけの価値はある。
+16個のアプリで並列度 4、1分ほどで終わる。イメージまで作ると 10分以上かかっていたので、分けるだけの価値はある。
 
 ## 対象の一覧を手で持たない
 

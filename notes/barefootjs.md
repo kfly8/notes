@@ -21,7 +21,7 @@ Go なら `html/template` の `.tmpl`、Perl なら Mojolicious の `.html.ep`�
 
 | 言語 | テンプレートエンジン | アダプタ |
 | --- | --- | --- |
-| TypeScript（リファレンス） | JSX（実JS実行） | HonoAdapter |
+| TypeScript（リファレンス） | JSX（実 JS 実行） | HonoAdapter |
 | Go | `html/template` | GoTemplateAdapter |
 | Perl | Mojolicious | MojoliciousAdapter |
 | Perl | Text::Xslate | XslateAdapter |
@@ -90,7 +90,7 @@ expect(button!.events).toContain('click')
 
 ## Hono アダプタで使う
 
-Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[barefootjs-hono-scaffold]] を参照。クライアント側の `@barefootjs/router` を使う場合、region の外は一切更新されないという契約があり、[[barefootjs-router-region-contract]] にまとめた。`'use client'` コンポーネントをプレーンなサーバーコンポーネントの子に置くと静かにhydrateされない落とし穴もある — [[barefootjs-orphaned-child-hydration]]。SSR ではなく静的サイトジェネレーター（Hono の `toSSG`）と CSR Adapter・Router を組み合わせて、このノートサイト自身を実際に置き換えた実験は [[hono-tossg-barefootjs-migration-experiment]] を参照。
+Hono / Cloudflare Workers 向けの scaffold 構成（UnoCSS を含む）は [[barefootjs-hono-scaffold]] を参照。クライアント側の `@barefootjs/router` を使う場合、region の外は一切更新されないという契約があり、[[barefootjs-router-region-contract]] にまとめた。`'use client'` コンポーネントをプレーンなサーバーコンポーネントの子に置くと静かに hydrate されない落とし穴もある — [[barefootjs-orphaned-child-hydration]]。SSR ではなく静的サイトジェネレーター（Hono の `toSSG`）と CSR Adapter・Router を組み合わせて、このノートサイト自身を実際に置き換えた実験は [[hono-tossg-barefootjs-migration-experiment]] を参照。
 
 ## ノードエディタ（xyflow）
 

@@ -68,7 +68,7 @@ $ curl -s -o /dev/null -w '%{http_code}' https://notes.kobaken.co/agent-koans.ht
 
 ## Worker のリダイレクト処理と重複しがち
 
-`auto-trailing-slash` は assets 層で完結するので、Worker 側で同じ正規化をもう一度書くと処理が二重になる。実例として、notes.kobaken.co はもともと [[astro-hono-adapter|Astro の Hono アダプタ]]経由で `main: "@astrojs/cloudflare/entrypoints/server"` を Worker として立てていたが、全ページ prerender のため Hono パイプラインで意味を持っていたのは `trailingSlash()` ミドルウェアだけだった。それがこの `auto-trailing-slash` と同じ仕事をしていた。そこで、`wrangler dev` で `.html` の 307・末尾スラッシュの 307・`.md` の Content-Type・404・通常ページがすべて変更前と同じ挙動であることを確認した上で `main` / `assets.binding` / `observability` を外し、Worker なしの構成に変更した。
+`auto-trailing-slash` は assets 層で完結するので、Worker 側で同じ正規化をもう一度書くと処理が二重になる。実例として、notes.kobaken.co はもともと [[astro-hono-adapter|Astro の Hono アダプタ]] 経由で `main: "@astrojs/cloudflare/entrypoints/server"` を Worker として立てていたが、全ページ prerender のため Hono パイプラインで意味を持っていたのは `trailingSlash()` ミドルウェアだけだった。それがこの `auto-trailing-slash` と同じ仕事をしていた。そこで、`wrangler dev` で `.html` の 307・末尾スラッシュの 307・`.md` の Content-Type・404・通常ページがすべて変更前と同じ挙動であることを確認した上で `main` / `assets.binding` / `observability` を外し、Worker なしの構成に変更した。
 
 ## `.assetsignore`
 
@@ -78,7 +78,7 @@ $ curl -s -o /dev/null -w '%{http_code}' https://notes.kobaken.co/agent-koans.ht
 
 ## [[cloudflare-workers]]の中での位置づけ
 
-静的ファイルの配信を扱う。Worker自身が生成したレスポンスのキャッシュは別の仕組みで、[[cloudflare-workers-cache]] に分けた。
+静的ファイルの配信を扱う。Worker 自身が生成したレスポンスのキャッシュは別の仕組みで、[[cloudflare-workers-cache]] に分けた。
 
 ## 理解度チェック
 
