@@ -54,9 +54,15 @@ tauri-driverはmacOSでTauriアプリを実ウィンドウのまま自動操作�
 ```
 
 ```quiz
-tauri-driverの代わりにmacOSで実用されている自動操作方式は何か、なぜクリックの誤爆リスクが構造的にゼロになるのか?
+tauri-driverの代わりにmacOSで実用されている自動操作方式は何か?
 ---
-アプリ内にWebDriverサーバーを埋め込み、WKWebView.evaluateJavaScriptで直接JSを実行する方式(tauri-playwright、wdio埋め込みプロバイダなど)。OSの画面座標・入力を一切経由せずDOM合成イベントで操作するため、別ウィンドウへの誤爆が原理的に起きない。
+アプリ内にWebDriverサーバーを埋め込み、WKWebView.evaluateJavaScriptで直接JSを実行する方式(tauri-playwright、wdio埋め込みプロバイダなど)。
+```
+
+```quiz
+その方式では、なぜ別ウィンドウへのクリックの誤爆が構造的に起きないのか?
+---
+OSの画面座標・入力を一切経由せず、DOM合成イベントで操作するため。
 ```
 
 ```quiz

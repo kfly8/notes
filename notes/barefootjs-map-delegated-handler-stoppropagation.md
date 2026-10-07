@@ -118,9 +118,15 @@ _s2.addEventListener("contextmenu", (__bfEvt) => {
 ```
 
 ```quiz
-この問題の実用的な回避策は何か? なぜstopPropagation()を直そうとするより安全か?
+この問題の実用的な回避策は何か?
 ---
-親要素側のハンドラを、event.targetがclosest()で行の内側にあるかどうかを自分で判定して早期returnする形に書き換える。行のdata属性の値は並べ替え後に追従しない可能性がある([[barefootjs-loop-index-reactivity]])ため、値ではなく「行の内側かどうか」という存在チェックだけに留めるのが安全。
+親要素側のハンドラを、event.targetがclosest()で行の内側にあるかどうかを自分で判定して早期returnする形に書き換える。stopPropagation()を直そうとはしない。
+```
+
+```quiz
+その判定で、行のdata属性の値を見ずに「行の内側かどうか」の存在チェックだけに留めるのはなぜか?
+---
+行のdata属性の値は並べ替え後に追従しない可能性があるため([[barefootjs-loop-index-reactivity]])。
 ```
 
 ## 出典

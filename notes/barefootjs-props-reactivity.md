@@ -72,9 +72,15 @@ tags: [barefootjs, signals, reactivity, props]
 ```
 
 ```quiz
-`<Child count={count} />`のように、signal/memoのgetterをそのまま子コンポーネントのcomponent propに渡すと`BF044`は発火するか? `<div style={{ color: color }} />`のようにDOM要素の属性に同じことをした場合はどうか?
+`<Child count={count} />`のように、signal/memoのgetterをそのまま子コンポーネントのcomponent propに渡すと`BF044`は発火するか?
 ---
-component propには発火しない(2026-09時点で正しい書き方)。DOM要素の属性には発火する。判定基準は「実際にレンダリングされる位置かどうか」——component propは子が読み取りタイミングを決められる不透明な値の受け渡しであり、DOM属性はそのまま描画結果になる。
+発火しない(2026-09時点で正しい書き方)。component propは子が読み取りタイミングを決められる不透明な値の受け渡しで、実際にレンダリングされる位置ではないため。
+```
+
+```quiz
+`<div style={{ color: color }} />`のように、signal/memoのgetterをそのままDOM要素の属性に渡すと`BF044`は発火するか?
+---
+発火する。DOM属性はそのまま描画結果になる位置なので、getterではなく値(`color()`)を渡す必要がある。
 ```
 
 ```quiz
