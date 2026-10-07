@@ -48,7 +48,7 @@ Chrome の側が広いので、両方に出すなら Chrome の基準に合わ�
 
 ## [[browser-extension-publishing]]の中での位置づけ
 
-提出フォームを埋める段の話。Chrome 側の具体的な記入は [[chrome-web-store-submission]] に、AMO 側の `data_collection_permissions` の書き場所は [[wxt]] に書いた。
+提出フォームを埋める段の話。Chrome 側の具体的な記入は [[chrome-web-store-submission]] に書いた。AMO 側は上に書いた manifest の `data_collection_permissions` の宣言で済む。
 
 ## 理解度チェック
 

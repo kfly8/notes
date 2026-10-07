@@ -7,7 +7,7 @@ tags: [barefootjs, reactivity, hydration]
 ---
 # BarefootJS: ネストしたfragmentRootの子コンポーネントの内部条件分岐がDOM更新されない
 
-[[barefootjs]]で、祖先の三項演算子(`cond ? <A/> : <B/>`)がマウント後に`A`から`B`へ切り替わったとき、`B`の中にある`'use client'`な子コンポーネント(fragmentRoot、つまり単一のラップ要素を持たず`<>...</>`を返すもの)がさらに内部に持つ条件分岐(`{errorMessage ? <div>...</div> : null}`)が、シグナルは正しく変化しているのに一度もDOM更新されないことがある。エラーもワーニングも出ない(ただしランタイム自身が別の警告を出す場合がある。後述)。
+[[barefootjs]]で、祖先の三項演算子(`cond ? <A/> : <B/>`)がマウント後に`A`から`B`へ切り替わったとき、`B`の中にある`'use client'`な子コンポーネント(fragmentRoot、つまり単一のラップ要素を持たず`<>...</>`を返すもの)がさらに内部に持つ条件分岐(`{errorMessage ? <div>...</div> : null}`)が、シグナルは正しく変化しているのに一度もDOM更新されないことがある。エラーもワーニングも出ない(ただしランタイム自身が `slot s1 marker not found` という別の警告を出す場合がある。[[barefootjs-nested-fragment-child-unregistered-scope-experiment]] を参照)。
 
 peitho-studioの`StatusBar.tsx`で発生を確認し、その後[[barefootjs-nested-fragment-child-unregistered-scope-experiment|独立した最小コード]]で`@barefootjs/client@0.35.1`・`0.35.6`(2026-09-12時点の最新)の両方に再現することを確認した。
 

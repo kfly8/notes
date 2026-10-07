@@ -19,7 +19,7 @@ GitHub Actions のような YAML ベースの CI/CD 設定は、複雑になる�
 
 | 部品 | 役割 |
 | --- | --- |
-| [[cloudflare-sandboxes\|Artifacts]] | 数百万リポジトリを保存する versioned code storage |
+| [[cloudflare-agents-week-2026\|Artifacts]] | 数百万リポジトリを保存する versioned code storage |
 | Cloudflare Workflows | CI パイプライン全体のオーケストレーション層(ステップの連鎖・再試行・状態永続化) |
 | Sandbox SDK | 各 CI ステップを実行する隔離環境 |
 | CI SDK (`@cloudflare/ci`) | 上記を CI 向けの薄い API にまとめたパッケージ |

@@ -11,7 +11,7 @@ Vite ベースのブラウザ拡張フレームワーク。TypeScript が既定�
 
 2026-08 時点で 0.21.4、週間ダウンロード 63万、MIT。**まだ 0.x なのでマイナー更新に破壊的変更が入りうる**（実際 `changesets/action` と同様、入力名が変わった前例がある）。バージョンはキャレットなしで固定しておくのが無難。
 
-同種のものとの比較は [[browser-extension-publishing]] に書いた。
+公開までの全体の見取り図は [[browser-extension-publishing]]。
 
 ## ブラウザ別に manifest を出し分ける
 
