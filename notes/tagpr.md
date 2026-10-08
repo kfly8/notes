@@ -1,6 +1,6 @@
 ---
 created: 2026-08-24
-updated: 2026-10-07
+updated: 2026-10-08
 title: tagpr
 description: リリース用の PR を維持しておいて、それをマージした瞬間にタグを打つツール。
 tags: [リリース, ci, github]
@@ -122,6 +122,8 @@ README に明記がある。
 `release = draft` にして、成果物を添付してから `gh release edit "$TAG" --draft=false` で公開に切り替えると、**中身のない Release が一瞬でも見える状態を作らずに済む。** 途中で落ちた場合も、公開済みの空 Release ではなく下書きが残る。
 
 配布物のバージョン番号は一度使うと再利用できないことが多い（ブラウザ拡張のストアなど）ので、この差は小さくない。
+
+`releases/latest` が draft を含まないことも効く。公開前に `releases/latest/download/<asset>` を取りに来るクライアント（Tauri updater など）が、まだ無い asset で 404 を受けることがなくなる。tagpr はタグを push してから Release を作るので、draft でもタグ付きの checkout はそのまま動く（[[github-releases-latest-excludes-drafts]]）。
 
 ## CHANGELOG はマージ済み PR から作られる
 

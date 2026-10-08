@@ -1,6 +1,6 @@
 ---
 created: 2026-09-12
-updated: 2026-09-29
+updated: 2026-10-08
 title: peitho
 description: Markdown からスライドの静的サイトを組むツール。
 tags: [peitho, slides]
@@ -48,6 +48,13 @@ Error: line 148: showcase.css: unknown slot class '.slot-body-wrap' in override 
 - コメントのピンを要素に追従させる — [[overlay-pin-follows-reflow]]
 - ラウンドの途中の編集でコメントの行がずれる — [[crit-comment-carry-forward]]
 - 画像をスライドにドロップしたときの位置の単位 — [[tauri-macos-drop-position-points]]
+
+## エディタ（peitho-studio）の配布と更新
+
+- 「終了時に更新する」が Cmd+Q で効かない — [[tauri-predefined-quit-skips-exit-requested]]
+- 公開直後の更新確認が manifest の 404 になる — [[github-releases-latest-excludes-drafts]]
+- updater アーカイブの URL が 404 になる — [[github-release-asset-name-rewrite]]
+- canvas 編集の結果を実エンジンで検証する e2e — [[tauri-invoke-mock-testing]]
 
 ## 理解度チェック
 
