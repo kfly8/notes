@@ -1,6 +1,6 @@
 ---
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-08
 title: pedit の開発で調べたことの見取り図
 description: pedit の開発で調べたことを、設計・Cloudflare・WebSocket・配布・Go・Web の領域ごとに並べたハブノート。
 tags: [pedit, cloudflare, moc]
@@ -8,7 +8,8 @@ tags: [pedit, cloudflare, moc]
 # pedit の開発で調べたことの見取り図
 
 [[pedit]]（手元のテキストファイルをその場でブラウザと共同編集する CLI。旧称 ima）の開発で調べたことの見取り図。
-pedit そのものの使い方と信頼モデルは [[pedit]] に書いてあり、ここは調べて分かったことだけを領域ごとに並べる。
+pedit そのものの使い方と信頼モデルは [[pedit]] に、ソースコードを処理の流れに沿って読んだ記録は [[pedit-source-reading]] に
+あり、ここは調べて分かったことだけを領域ごとに並べる。
 
 ## 設計
 

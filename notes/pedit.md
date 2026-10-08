@@ -1,6 +1,6 @@
 ---
 created: 2026-10-03
-updated: 2026-10-07
+updated: 2026-10-08
 title: pedit
 description: "ローカルのテキストファイルを、リンク1つで相手のブラウザと共同編集する CLI。編集はホストのファイルに書き戻され、サーバーは暗号文を中継するだけで中身を持たない。信頼モデルと限界も含めて、他のチームが試すかどうかを判断できる材料をまとめる。"
 tags: [pedit, e2ee, yjs, crdt, cloudflare, coding-agent]
@@ -140,6 +140,6 @@ E2E 暗号化されていても、pedit を使う側が信頼しなければな�
 - ソース: `internal/session`、`internal/merge`、`internal/filewriter`、`packages/worker/src/room.ts`、`packages/protocol/src`（v0.0.7）
 - [Releases](https://github.com/piconic-ai/edit/releases)（v0.0.1 は 2026-09-24、v0.0.7 は 2026-10-02）
 
-関連: [[pedit-development-notes]]（開発で調べたことの見取り図）、[[e2ee-ephemeral-attachments]]、[[json-canvas-co-editing-text-or-structure]]、[[three-way-apply-not-idempotent]]、[[json-layout-preserving-rewrite]]、[[ygo-yjs-nested-types]]、[[crit]]（エージェントの出力を人がレビューする側の道具）
+関連: [[pedit-source-reading]]（ソースコードを処理の流れに沿って読んだ記録）、[[pedit-development-notes]]（開発で調べたことの見取り図）、[[e2ee-ephemeral-attachments]]、[[json-canvas-co-editing-text-or-structure]]、[[three-way-apply-not-idempotent]]、[[json-layout-preserving-rewrite]]、[[ygo-yjs-nested-types]]、[[crit]]（エージェントの出力を人がレビューする側の道具）
 
 #pedit #e2ee #yjs #crdt #cloudflare #coding-agent
