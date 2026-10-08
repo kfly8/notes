@@ -93,6 +93,8 @@ jq --arg v "$version" '.version = $v' src-tauri/tauri.conf.json > "$tmp"
 mv "$tmp" src-tauri/tauri.conf.json
 ```
 
+このフックが `Cargo.toml` を読む前提は、RC から安定版に上げるときに崩れた。tagpr は `versionFile` の中の「前の安定版の文字列」を次の版に置換するが、ファイルが `0.1.0-rc.7` を持っていると置換が一致せず、Release PR は CHANGELOG しか変えない。フックはそのまま `Cargo.toml` の `0.1.0-rc.7` を `tauri.conf.json` に写し、ビルドは `Release tag and app version differ` で止まった。フックは `Cargo.toml` ではなく環境変数 `TAGPR_NEXT_VERSION` を正とし、`Cargo.toml`・`Cargo.lock` の自パッケージ・`tauri.conf.json` の3つをそこから書く形にした。
+
 `Cargo.lock` 内の同じパッケージ自身のバージョン欄も同様にずれるが、こちらは次に `cargo build`/`cargo check` を一度でも走らせれば自動で書き換わる(依存解決に使うロックではなく自パッケージの表示上の値なので、ビルドを `--locked` 付きで CI に組み込まない限り実害は出にくい)。
 
 ## タグ駆動の別ワークフローは動かない
