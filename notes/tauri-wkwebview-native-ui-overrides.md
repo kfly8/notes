@@ -1,6 +1,6 @@
 ---
 created: 2026-09-06
-updated: 2026-10-07
+updated: 2026-10-08
 title: "Tauri (macOS/WKWebView): ネイティブ UI が Web 側のつもりを上書きしてくる"
 description: Tauri v2をmacOSで使うと、WKWebViewというネイティブのブラウザコンポーネントの上でページが動く。
 tags: [tauri, wkwebview, macos, desktop]
@@ -66,6 +66,28 @@ for (const frame of iframes) frame.style.pointerEvents = 'none'
 for (const frame of iframes) frame.style.pointerEvents = ''
 ```
 
+## アプリがメニューを持たない場所でも、ネイティブの右クリックメニューが出る
+
+自前の右クリックメニューを持つ場所以外（プレビューの選択テキスト、空いた領域）で右クリックすると、WKWebView 自身の「調べる」「翻訳」「共有」のメニューが出る。アプリの一部ではない項目が混ざるので、アプリがメニューを持たない場所では出さない。
+
+**対処**: `window` にバブリング段階で `contextmenu` のリスナーを1つ置き、アプリのハンドラが `preventDefault()` 済み（`event.defaultPrevented`）なら何もしない、それ以外は `preventDefault()` する。`input`・`textarea`・`contentEditable` はネイティブのメニュー（カット/コピー/ペースト、スペル）が役に立つので残す。対象の要素は `event.target` ではなく `composedPath()[0]` から取る。Shadow DOM のキャンバスの中で右クリックすると `event.target` は host に付け替えられているため。
+
+```ts
+window.addEventListener('contextmenu', event => {
+  if (event.defaultPrevented) return
+  const target = event.composedPath()[0] ?? event.target
+  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement
+    || (target instanceof HTMLElement && target.isContentEditable)) return
+  event.preventDefault()
+})
+```
+
+書いた時点では実機での確認は未了。
+
+## [[tauri]] の中での位置づけ
+
+WKWebView がページ側の意図を横から変える例をまとめた入口。Shadow DOM に替えた後の話は [[shadow-dom-inherits-ancestor-styles]] と [[shadow-dom-selection-getcomposedranges]]。
+
 ## 気づきにくさの共通点
 
 どれも「Web ページとして正しく書けば正しく動くはず」という前提を裏切ってくる。WKWebView はただのブラウザエンジンではなく、macOS ネイティブの部品(ネイティブダイアログ、ネイティブコンテキストメニュー、開発者向けインスペクタ)を随所に持ち込んでいて、それらがページ側のイベントハンドリングより優先されることがある。原因の切り分けは、まず「ページの JS は正しく動いているのに、見た目の結果だけがおかしい」という症状を手がかりに、ネイティブ側の割り込みを疑うところから始めた。
@@ -88,6 +110,12 @@ Tauriの開発ビルドはWKWebViewの`isInspectable`を既定で`true`にして
 手動ドラッグ(mousedown/mousemove/mouseup方式)の実装中、カーソルが`<iframe>`をまたぐとドラッグが止まる。原因は何か?
 ---
 iframeは親ドキュメントとは別のブラウジングコンテキストなので、親ドキュメントに貼った`mousemove`リスナーはiframeの中までは追いかけない。ドラッグ中は全iframeの`pointer-events`を一時的に無効化して回避する。
+```
+
+```quiz
+右クリックを抑止するリスナーで、対象の要素を `event.target` ではなく `composedPath()[0]` から取るのはなぜか。
+---
+Shadow DOM の中で右クリックすると `event.target` は shadow host に付け替えられていて、中の `contentEditable` かどうかが分からないため。
 ```
 
 ## 出典
