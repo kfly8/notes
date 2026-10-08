@@ -74,6 +74,10 @@ const invoke = (deckPath, cmd, args) => new Promise((resolve, reject) => {
 
 Shadow DOM 移行で見つかった `text-align` 継承バグ([[shadow-dom-inherits-ancestor-styles]])は、上記の IPC モックではなく別の再現手法で見つけた——実際に開いていたデッキのビルドキャッシュ(`.peitho/present-cache/`)から本物の fragment HTML・テーマ CSS を直接読み出し、実際の DOM 祖先構造を再現した Playwright ページで視覚的に確認した。IPC モックが有効なのは「アプリのロジック・状態遷移を検証したい」場合、実ビルド成果物の直接読み出しが有効なのは「実際のレンダリング結果・CSS の見た目を検証したい」場合、という住み分けになる。
 
+## [[tauri]] の中での位置づけ
+
+テストの入口。実ウィンドウの操作は [[tauri-macos-window-automation]]、DOM では見えない描画の問題は [[tauri-sync-command-blocks-repaint]]。
+
 ## 理解度チェック
 
 ```quiz

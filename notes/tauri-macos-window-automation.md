@@ -1,6 +1,6 @@
 ---
 created: 2026-09-14
-updated: 2026-10-07
+updated: 2026-10-08
 title: Tauri アプリを macOS で実ウィンドウのまま自動操作する
 description: Tauriアプリを、実ウィンドウを起動せずにPlaywrightでテストするでカバーできないもの(peitho-coreの実際の出力、WKWebView固有のレンダリング、ネイティブ右クリック・ダイアログ・ドラッグ)を検証するには、実際のTauriウィンドウを動かす必要がある。
 tags: [tauri, macos, webdriver, testing, accessibility]
@@ -44,6 +44,10 @@ Fast User Switching と仮想ディスプレイは、直感的には「別画面
 peitho-studio(Tauri v2 + WKWebView のデスクトップアプリ)で、AI エージェントが `osascript` の `set frontmost`+スクリーンショット確認+`cliclick` の座標クリックで実ウィンドウを検証しようとしたところ、クリックが別のウィンドウ(操作者が別件で Google Meet 画面共有中だった Chrome タブ)に着弾した。原因は [[macos-accessibility-api-hidden-spaces]] に記録した Spaces の制約と一致する挙動だった。
 
 操作者が会議中で画面を共有していたため、意図しない内容が共有画面上に一瞬映る事故になった——これが本ノートを書くきっかけになった。OS レベルの GUI 自動化は、精度を上げても「操作者の他の作業を巻き込みうる」という構造的なブラスト半径の問題が残り、[[tauri-invoke-mock-testing]] の IPC モック(プレーンなブラウザタブで完結する)と違って安全に無人実行できない。
+
+## [[tauri]] の中での位置づけ
+
+実ウィンドウを操作するときの選択肢。実ウィンドウ無しで済む範囲は [[tauri-invoke-mock-testing]]。
 
 ## 理解度チェック
 

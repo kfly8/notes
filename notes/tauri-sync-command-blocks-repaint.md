@@ -1,6 +1,6 @@
 ---
 created: 2026-09-15
-updated: 2026-10-07
+updated: 2026-10-08
 title: Tauri の同期コマンドは実行中ウィンドウの再描画を止める
 description: async でない Tauri コマンドはメインスレッドで動き、実行中はウィンドウが再描画されない。DOM を見るテストでは検出できない。
 tags: [tauri, wkwebview, macos, testing]
@@ -49,6 +49,10 @@ DOM を見るテストは、この問題を検出できない。IPC をモック
 DOM ではなく、実際に画面に出たフレームを見る。tauri-playwright の `startRecording({ path, fps })` / `stopRecording()` でウィンドウのネイティブフレームを連番 PNG に保存できる(実際のフレーム数は指定より少なく、fps=30 指定で8〜13fps 程度だった)。クリックの前後のフレームを見比べれば、いつ画面が変わったかが分かる。
 
 録画中はウィンドウを画面上に見えている状態にしておく。隠れた WKWebView は描画が止まることがある([[tauri-macos-window-automation]])。
+
+## [[tauri]] の中での位置づけ
+
+DOM を見るテストが通るのに実機で固まって見える、という食い違いの1つ。
 
 ## 理解度チェック
 

@@ -73,6 +73,10 @@ Dock の「終了」、ログアウト、シャットダウンは macOS が NSAp
 
 メニュー構築そのものの落とし穴（`Builder::menu()` のファクトリが呼ばれる時点では Tauri の管理状態が無い）は [[tauri-multi-window-and-startup-state]]。
 
+## [[tauri]] の中での位置づけ
+
+アプリ内更新を終了時に適用するための経路の話。メニュー構築の落とし穴は [[tauri-multi-window-and-startup-state]]。
+
 ## 理解度チェック
 
 ```quiz

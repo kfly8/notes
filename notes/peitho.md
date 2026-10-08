@@ -55,6 +55,17 @@ Error: line 148: showcase.css: unknown slot class '.slot-body-wrap' in override 
 - 公開直後の更新確認が manifest の 404 になる — [[github-releases-latest-excludes-drafts]]
 - updater アーカイブの URL が 404 になる — [[github-release-asset-name-rewrite]]
 - canvas 編集の結果を実エンジンで検証する e2e — [[tauri-invoke-mock-testing]]
+- Finder から `.md` を開く — [[tauri-finder-open-md-files]]
+- dmg のレイアウトと Homebrew の cask — [[tauri-dmg-layout-skipped-on-ci]]、[[homebrew-cask-update-pr-from-release]]
+- Tauri まわりの見取り図 — [[tauri]]
+
+## エディタ（peitho-studio）の canvas 編集
+
+- 編集を Markdown に戻すとスロットの上限を超える形 — [[canvas-edit-slot-arity-traps]]
+- Undo が飛行中の描画に追い越される — [[skip-render-must-invalidate-inflight]]
+- Shadow DOM の中の選択範囲 — [[shadow-dom-selection-getcomposedranges]]
+- 他人のデッキの HTML を差し込む前の無害化 — [[innerhtml-runs-handlers-not-scripts]]
+- 1件の報告を全変種で掃いてから直す — [[bug-sweep-workflow]]
 
 ## 理解度チェック
 

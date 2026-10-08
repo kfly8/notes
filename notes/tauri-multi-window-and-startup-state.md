@@ -1,6 +1,6 @@
 ---
 created: 2026-09-06
-updated: 2026-10-07
+updated: 2026-10-08
 title: "Tauri: 複数ウィンドウとアプリ起動順序にまつわる状態管理"
 description: Tauri v2で、実行時に複数ウィンドウを開けるデスクトップアプリ(それぞれ別のファイルを独立して開ける、比較しながら作業できるもの)を作る際に踏んだ、状態管理と起動順序の落とし穴。
 tags: [tauri, rust, desktop, state-management]
@@ -92,6 +92,10 @@ fn take_pending_file(window: WebviewWindow, pending: State<PendingFiles>) -> Opt
 ```
 
 新しいウィンドウのフロントエンドは、マウント時にまず `take_pending_file` を呼び、それが `None` だった場合だけ他のフォールバック(開発用のデフォルトファイルなど)を試す、という優先順位にする。
+
+## [[tauri]] の中での位置づけ
+
+ウィンドウと状態の話の中心。イベントの受け方は [[tauri-emit-to-is-not-window-private]]、Finder からの受け渡しは [[tauri-finder-open-md-files]]。
 
 ## 理解度チェック
 

@@ -1,6 +1,6 @@
 ---
 created: 2026-09-26
-updated: 2026-09-26
+updated: 2026-10-08
 title: Tauri で macOS 26 のレイヤーアイコンを同梱する
 description: Tauri CLI 2.11.0 から、bundle.icon に Icon Composer の .icon ディレクトリか、コンパイル済みの Assets.car を並べられる。
 tags: [tauri, macos, app-icon, liquid-glass]
@@ -65,6 +65,10 @@ spawnSync('xcrun', ['actool', iconDir, '--compile', outDir, /* ... */], {
 ```
 
 ビルド後は `Info.plist` に `CFBundleIconName` が入ったこと、`Contents/Resources/Assets.car` があることを `plutil -p` と `ls` で確かめる。
+
+## [[tauri]] の中での位置づけ
+
+macOS 向け配布のうちアイコン。dmg のレイアウトは [[tauri-dmg-layout-skipped-on-ci]]。
 
 ## 理解度チェック
 
