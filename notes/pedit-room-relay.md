@@ -1,6 +1,6 @@
 ---
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-09
 title: "pedit の中継サーバー: Worker と Room Durable Object"
 description: pedit のサーバー側は packages/worker の2ファイルでできている。
 tags: [pedit, cloudflare, durable-objects, websocket]
@@ -119,6 +119,9 @@ override async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer) {
 
 Hibernation API のおかげで、部屋はメッセージの合間に眠れる。起きたときは `ctx.getWebSockets()` が接続とタグを復元し、
 `kv` の値も残る。メモリにしかない許容量は全員が満タンから始まる。
+
+この `host` タグ、`getWebSockets('host')`、`getTags` と R2 の一括削除は、Cloudflare の外の [[celld]] でもそのまま動いた
+（[[celld-pedit-experiment]]）。
 
 ## 画像の blob
 

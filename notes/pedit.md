@@ -1,6 +1,6 @@
 ---
 created: 2026-10-03
-updated: 2026-10-08
+updated: 2026-10-09
 title: pedit
 description: "ローカルのテキストファイルを、リンク1つで相手のブラウザと共同編集する CLI。編集はホストのファイルに書き戻され、サーバーは暗号文を中継するだけで中身を持たない。信頼モデルと限界も含めて、他のチームが試すかどうかを判断できる材料をまとめる。"
 tags: [pedit, e2ee, yjs, crdt, cloudflare, coding-agent]
@@ -112,6 +112,7 @@ E2E 暗号化と言っても、信頼しなくてよいのは「中継サーバ�
 - まず自分1人で、ターミナルとブラウザ2枚で動かすと、書き戻しと外部編集の取り込みの挙動が掴める。手元のエディタで保存した変更がブラウザに流れるのも見ておくとよい
 - 次に、エンジニアでない同僚と1回だけ議事録を取ってみる。相手に必要なのはリンクとブラウザだけ
 - 業務で使うなら、公開サーバーではなく self-host を勧める。[Deploy to Cloudflare のボタン](https://github.com/piconic-ai/edit/blob/main/docs/self-hosting.md)で Worker・Durable Object・R2 が自分のアカウントにでき、Access を付ければメールアドレスやグループで入れる人を絞れる
+- Cloudflare の外で動かすなら [[celld]] が候補になる。単一 node では、設定を書き換えるだけで中継サーバーのコードはそのまま動いた（[[celld-pedit-experiment]]）
 - 気になった点は [Issues](https://github.com/piconic-ai/edit/issues) へ。部屋のリンクと鍵、Access のトークン、文書の中身は書かないでほしい
 
 ## 理解度チェック

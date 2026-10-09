@@ -1,6 +1,6 @@
 ---
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 title: Workers Rate Limiting バインディング
 description: Cloudflare Workers の Rate Limiting バインディング。
 tags: [cloudflare, workers, rate-limit]
@@ -46,6 +46,9 @@ export async function overLimit(limiter: RateLimit | undefined, request: Request
 上位64ビットに丸めてから使う（`::` の省略形も展開して先頭4グループを取る）。
 
 ログには経路名だけを出してアドレスは出さない。Workers Logs で頻度だけ数えられればよい。
+
+バインディングがなければ `overLimit()` は素通りする。このバインディングを持たない [[celld]] で動かすと、落ちはしないが
+レート制限が効かない（[[celld-pedit-experiment]]）。
 
 ## 超えたときの応答
 
