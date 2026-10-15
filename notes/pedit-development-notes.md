@@ -1,6 +1,6 @@
 ---
 created: 2026-10-07
-updated: 2026-10-08
+updated: 2026-10-15
 title: pedit の開発で調べたことの見取り図
 description: pedit の開発で調べたことを、設計・Cloudflare・WebSocket・配布・Go・Web の領域ごとに並べたハブノート。
 tags: [pedit, cloudflare, moc]
@@ -37,6 +37,7 @@ pedit そのものの使い方と信頼モデルは [[pedit]] に、ソースコ
 ## 配布
 
 - [[github-artifact-attestations]] — リリースアーカイブのビルド来歴の署名と検証。
+- [[openssf-scorecard]] — サプライチェーンの慣行の採点。権限・依存更新・CodeQL・fuzzing・来歴の添付で上げた。
 - [[curl-sh-installer-hardening]] — `curl | sh` インストーラで踏んだ穴。
 - [[github-repo-rename-residue]] — 改名でリダイレクトが救わないもの。
 - [[github-readme-inline-video]] — README の動画。
@@ -46,6 +47,7 @@ pedit そのものの使い方と信頼モデルは [[pedit]] に、ソースコ
 - [[ygo-yjs-nested-types]] — ygo と Yjs で入れ子の型をやり取りする。
 - [[go-http-server-client-disconnect]] — 本文を読み終えるまで切断に気づかない。
 - [[go-select-ready-cases-random]] — select は同時 ready な case を無作為に選ぶ。
+- [[go-native-fuzzing]] — 部屋の参加者が送れるものと、外部編集の反映を fuzz する。
 
 ## Web
 
