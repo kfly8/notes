@@ -1,6 +1,6 @@
 ---
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-18
 title: pedit のソースコードを読む
 description: pedit のソースコードを、処理の流れに沿って読んだ記録の見取り図。
 tags: [pedit, go, typescript, moc]
@@ -42,7 +42,7 @@ Go を実践で書いたことがなく、暗号も「なんとなく」の理�
 4. [[pedit-room-relay]] — 中継サーバー側。部屋の作成、WebSocket の受け入れ検査、暗号文の転送、ホストが抜けたときの後始末。
 5. [[pedit-wire-format-and-sync]] — 線の上を流れるフレームの形と、Yjs の同期手順。参加者どうしがどうやって同じ文書に揃うか。
 6. [[pedit-keys-and-encryption]] — URL の `#` 以降の鍵から何が導かれ、何がサーバーに渡り、何が渡らないか。暗号の最低限の説明つき。
-7. [[pedit-file-sync]] — ホストのファイルと共有文書の同期。書き戻し、外部編集の取り込み、マージ。pedit の本体。
+7. [[pedit-file-sync]] — ホストのファイルと共有文書の同期。書き戻し、外部編集の取り込み、マージ。pedit の本体。v0.1.2 で変わった書き戻しの置き換え方は [[pedit-write-back]]。
 8. [[pedit-guest-join-flow]] — 参加する側。ブラウザが `/r/<id>#<key>` を開いてから編集できるまでと、CLI の `pedit <リンク>`。
 9. [[pedit-attachments-flow]] — 画像を貼ったときの流れ。設計は [[e2ee-ephemeral-attachments]]、ここはコードの手順。
 10. [[pedit-canvas-flow]] — `.canvas` をテキストではなく構造として共有する経路。

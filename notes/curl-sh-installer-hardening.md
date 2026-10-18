@@ -1,6 +1,6 @@
 ---
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-18
 title: "`curl | sh` インストーラで踏んだ穴と対処"
 description: curl -fsSL https://example/install.sh | sh で GitHub Releases からバイナリを入れるシェルスクリプトを書いて、 Pullfrog のレビューで指摘された穴と、その対処。
 tags: [shell, security, インストーラ]
@@ -29,7 +29,7 @@ tags: [shell, security, インストーラ]
 
 対処は、配置先と同じディレクトリに一時ファイルを置いて `mv` で rename すること。rename は実行中のバイナリの
 inode に書き込まないので成功し、書きかけのバイナリも残らない。同じファイルシステムに置くのは、`mv` が
-rename になるようにするため。
+rename になるようにするため（[[atomic-replace-rename-exchange]]）。
 
 ## 一時ファイルの名前を推測できるようにしない
 

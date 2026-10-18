@@ -1,6 +1,6 @@
 ---
 created: 2026-10-07
-updated: 2026-10-15
+updated: 2026-10-18
 title: pedit の開発で調べたことの見取り図
 description: pedit の開発で調べたことを、設計・Cloudflare・WebSocket・配布・Go・Web の領域ごとに並べたハブノート。
 tags: [pedit, cloudflare, moc]
@@ -18,6 +18,8 @@ pedit そのものの使い方と信頼モデルは [[pedit]] に、ソースコ
 - [[json-canvas-co-editing-text-or-structure]] — .canvas をテキストではなく構造として共有する判断。
 - [[three-way-apply-not-idempotent]] — base→next の三方適用は二度当てると壊れる。
 - [[json-layout-preserving-rewrite]] — 読んで書き戻しても byte で一致する JSON の扱い。
+- [[pedit-write-back]] — 共有ファイルへの書き戻し。入れ替えで置き換え、重なった保存を戻す。一般論は
+  [[atomic-replace-rename-exchange]]、動かした記録は [[pedit-write-back-experiment]]。
 
 ## Cloudflare の挙動
 
