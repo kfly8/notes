@@ -1,6 +1,6 @@
 ---
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-18
 title: pedit がホストのファイルと共有文書を同期する仕組み
 description: pedit の「ホストのローカルファイルが正本」を守っている部分。
 tags: [pedit, go, fsnotify, crdt]
@@ -66,6 +66,10 @@ tags: [pedit, go, fsnotify, crdt]
 `BoundFile.Write` は、同じディレクトリに `.pedit-<乱数16進>.tmp` を `O_EXCL` と `0600` で作り、既存ファイルのパーミッションを
 写し、書いてから `Rename` で被せる。読む側は常に完成したファイルを見る。rename の直前にもう一度、対象が通常ファイルかを
 確かめ、リンクに置き換えられていたら書かない。
+
+v0.1.2（PR #119）から、Linux と macOS ではこの rename が入れ替え（`RENAME_EXCHANGE`）になった。比べてから置き換える
+までの隙に重なったエディタの保存を、置き換えた後に見つけて戻すため。手順は [[pedit-write-back]]、入れ替えの一般論は
+[[atomic-replace-rename-exchange]]。
 
 ## 取り込み: 手元のエディタでの保存を部屋へ
 
