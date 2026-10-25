@@ -1,6 +1,6 @@
 ---
 created: 2026-10-15
-updated: 2026-10-15
+updated: 2026-10-25
 title: OpenSSF Scorecard
 description: OpenSSF のプロジェクトで、GitHub リポジトリのサプライチェーン上の慣行を 18 のチェックで 0〜10 点に採点し、重み付きで総合点を出すツール。
 tags: [supply-chain, security, github-actions, openssf]
@@ -81,7 +81,7 @@ Vulnerabilities・Maintained などが High、CI-Tests・Contributors・License�
 | Token-Permissions | ワークフローの `permissions` | 最上位を read-only にし、write はジョブ単位で宣言する |
 | Pinned-Dependencies | ワークフロー・Dockerfile・シェルスクリプトの依存 | アクションを SHA で固定する。Go モジュールは完全なセマンティックバージョンで固定扱い |
 | Dependency-Update-Tool | Dependabot か Renovate の設定 | 有効になっていればよい。動いているか、PR がマージされているかは見ない |
-| SAST | 直近約 30 件のマージ済み PR | CodeQL（code scanning）か SonarCloud が回っている |
+| SAST | 直近約 30 件のマージ済み PR | [[codeql|CodeQL]]（code scanning）か SonarCloud が回っている |
 | Fuzzing | OSS-Fuzz、ClusterFuzzLite、言語ごとの fuzz 関数 | Go なら `func FuzzXxx(f *testing.F)` があればよい（[[go-native-fuzzing]]） |
 | Signed-Releases | Release の添付ファイルの拡張子 | 全リリースに `.intoto.jsonl`（SLSA の来歴）。署名だけなら 8 点 |
 | CI-Tests | 直近約 30 コミットの check run と status | 成功したテストが CI で走っている |
@@ -170,6 +170,6 @@ Code-Review は人による承認か、コミッタと別人によるマージ�
   [#139](https://github.com/piconic-ai/pedit/pull/139)（権限・CodeQL・Dependabot）、
   [#140](https://github.com/piconic-ai/pedit/pull/140)（来歴の添付）
 
-関連: [[pedit-development-notes]]、[[dependabot-bun-security-gap]]
+関連: [[pedit-development-notes]]、[[dependabot-bun-security-gap]]、[[codeql]]
 
 #supply-chain #security #github-actions #openssf
